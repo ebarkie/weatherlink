@@ -20,8 +20,8 @@ import (
 
 // Errors.
 var (
-	ErrNotDmp  = errors.New("Not a dmp metadata packet")
-	ErrNotDmpB = errors.New("Not a revision b dmp packet")
+	ErrNotDmp  = errors.New("Not a DMP metadata packet")
+	ErrNotDmpB = errors.New("Not a revision B DMP packet")
 )
 
 // Dmp is a revision B DMP archive page consisting of 5 archive

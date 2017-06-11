@@ -228,8 +228,8 @@ func (l *Loop) FromPacket(p Packet) (err error) {
 		l.WindChill = p.get2ByteTemp(37) * 10
 	default:
 		// Valid loop but a newer version than we know about.  This
-		// should never happen since the LPS loop Packet bit mask only
-		// calls for the above versions.
+		// should never happen since the protocol LPS loop request bit
+		// mask only calls for the above versions.
 		return ErrUnknownLoop
 	}
 
@@ -237,7 +237,7 @@ func (l *Loop) FromPacket(p Packet) (err error) {
 }
 
 // ToPacket packs the data from the Loop struct into a 99-byte loop 1
-// or two packet.
+// or 2 packet.
 func (l *Loop) ToPacket(t int) (p Packet, err error) {
 	p = make(Packet, 99)
 

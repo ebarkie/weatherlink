@@ -31,8 +31,8 @@ func (w *Weatherlink) getLoops() (err error) {
 	for loopNum := 0; loopNum < numLoops; loopNum++ {
 		_, err = w.d.ReadFull(p)
 		if err != nil {
-			// LOOP stream was interrupted before we received all of the packets
-			// that we expected.
+			// LOOP stream was interrupted before we received all of the
+			// expected packets.
 			Warn.Printf("Loop stream %d/%d read interrupted: %s, aborting",
 				loopNum, numLoops, err.Error())
 			break
@@ -40,8 +40,8 @@ func (w *Weatherlink) getLoops() (err error) {
 
 		err = l.FromPacket(p)
 		if err != nil {
-			// Most likely a CRC error.  We are likely out of sync with the stream
-			// of 99-byte LOOP packets so the safest action is to abort.
+			// Most likely a CRC error.  We are probably out of sync with the
+			// steam of 99-byte LOOP packets so the safest action is to abort.
 			Error.Printf("Loop stream %d/%d decode error: %s, aborting",
 				loopNum, numLoops, err.Error())
 			break
@@ -54,7 +54,7 @@ func (w *Weatherlink) getLoops() (err error) {
 
 		// Since our Loop is combiation of LOOP1&2 don't start emitting until we have
 		// at least one of each or some values will still be zeroed resulting in
-		// inaccure data.
+		// inaccurate data.
 		if loopNum > 0 {
 			select {
 			case w.Loops <- l:
@@ -63,8 +63,8 @@ func (w *Weatherlink) getLoops() (err error) {
 			}
 		}
 
-		// A LOOP1 decode includes the next archive record indicator and if it changes we
-		// want to read it immediately.
+		// A LOOP1 decode includes the next archive record indicator and if it changes
+		// we want to read it immediately.
 		if nextArchRec < 0 {
 			nextArchRec = l.nextArchRec
 		} else if nextArchRec != l.nextArchRec {

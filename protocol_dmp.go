@@ -65,7 +65,7 @@ func (w *Weatherlink) getDmps(lastRecord time.Time) (newLastRecord time.Time, er
 	for pageNum := 0; pageNum < dm.Pages; pageNum++ {
 		_, err = w.d.ReadFull(p)
 		if err != nil {
-			// Page read failed before we got all of the pages we expected.
+			// Page read failed before we got all of the expected pages.
 			Error.Printf("Dmp download %d/%d interrupted: %s, aborting",
 				pageNum, dm.Pages, err.Error())
 			break
@@ -76,7 +76,7 @@ func (w *Weatherlink) getDmps(lastRecord time.Time) (newLastRecord time.Time, er
 		if err != nil {
 			// Most likely a CRC error.  We could NAK it and retry the page
 			// but in practice it's simpler and more reliable to just let
-			// the next invocation get it.
+			// the next invocation retry.
 			Error.Printf("Dmp page %d/%d decode error: %s, aborting",
 				pageNum, dm.Pages, err.Error())
 			w.d.Write([]byte{esc})
@@ -90,8 +90,8 @@ func (w *Weatherlink) getDmps(lastRecord time.Time) (newLastRecord time.Time, er
 		Trace.Printf("Decoded\n%+v", d)
 
 		for recordNum := 0; recordNum < len(d); recordNum++ {
-			// On the first page skip anything before the
-			// offset we were given during the download setup.
+			// On the first page skip anything before the offset
+			// given during the download setup.
 			//
 			// On the last page, after reading at least one
 			// record bail out as soon as we hit one where the

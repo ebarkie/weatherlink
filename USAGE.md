@@ -32,8 +32,8 @@ Loggers
 
 ```go
 var (
-	ErrNotDmp  = errors.New("Not a dmp metadata packet")
-	ErrNotDmpB = errors.New("Not a revision b dmp packet")
+	ErrNotDmp  = errors.New("Not a DMP metadata packet")
+	ErrNotDmpB = errors.New("Not a revision B DMP packet")
 )
 ```
 Errors.
@@ -293,8 +293,7 @@ struct.
 ```go
 func (l *Loop) ToPacket(t int) (p Packet, err error)
 ```
-ToPacket packs the data from the Loop struct into a 99-byte loop 1 or two
-packet.
+ToPacket packs the data from the Loop struct into a 99-byte loop 1 or 2 packet.
 
 #### type LoopBar
 

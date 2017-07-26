@@ -62,7 +62,7 @@ type Archive struct {
 
 // FromPacket unpacks the data from a 267-byte DMP revision B archive page
 // packet into a Dmp array of 5 Archive records.
-func (d *Dmp) FromPacket(p Packet) (err error) {
+func (d *Dmp) FromPacket(p Packet) error {
 	if crc(p) != 0 {
 		return ErrBadCRC
 	}
@@ -71,8 +71,7 @@ func (d *Dmp) FromPacket(p Packet) (err error) {
 	// revision marker but they're all going to be the same so
 	// it's only necessary to check the first one.
 	if p.getDmpType() != "b" {
-		err = ErrNotDmpB
-		return
+		return ErrNotDmpB
 	}
 
 	// Break apart the page of 5 52-byte archive records and process
@@ -132,7 +131,7 @@ func (d *Dmp) FromPacket(p Packet) (err error) {
 		d[i].WindSpeedHi = pr.get1ByteMPH(25)
 	}
 
-	return
+	return nil
 }
 
 // Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial

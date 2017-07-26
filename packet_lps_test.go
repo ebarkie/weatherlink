@@ -106,10 +106,12 @@ var testLoopPackets = map[string]Packet{
 }
 
 func TestGetLoop1(t *testing.T) {
-	l := Loop{}
-	l.FromPacket(testLoopPackets["1Rain"])
-
 	a := assert.New(t)
+
+	l := Loop{}
+	err := l.FromPacket(testLoopPackets["1Rain"])
+	a.Nil(err, "FromPacket error")
+
 	a.Equal(29.982, l.Bar.SeaLevel, "Barometer sea level")
 	a.Equal("Steady", l.Bar.Trend, "Barometer trend")
 	a.Equal(4.763671875, l.Bat.ConsoleVoltage, "Batter voltage")
@@ -155,10 +157,12 @@ func TestGetLoop1(t *testing.T) {
 }
 
 func TestGetLoop2(t *testing.T) {
-	l := Loop{}
-	l.FromPacket(testLoopPackets["2NoRain"])
-
 	a := assert.New(t)
+
+	l := Loop{}
+	err := l.FromPacket(testLoopPackets["2NoRain"])
+	a.Nil(err, "FromPacket error")
+
 	a.Equal(30.034, l.Bar.Altimeter, "Barometer altimeter")
 	a.Equal(30.012, l.Bar.SeaLevel, "Barometer sea level")
 	a.Equal(29.589, l.Bar.Station, "Barometer station")
@@ -189,9 +193,11 @@ func TestGetLoop2(t *testing.T) {
 }
 
 func TestGetLoop2NegativeTemp(t *testing.T) {
-	l := Loop{}
-	l.FromPacket(testLoopPackets["2NegativeDewPoint"])
-
 	a := assert.New(t)
+
+	l := Loop{}
+	err := l.FromPacket(testLoopPackets["2NegativeDewPoint"])
+	a.Nil(err, "FromPacket error")
+
 	a.Equal(-1.0, l.DewPoint, "Dew point")
 }

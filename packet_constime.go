@@ -17,15 +17,14 @@ type ConsTime time.Time
 
 // FromPacket unpacks the data from an 8-byte GETTIME response packet
 // into a console timestamp.
-func (ct *ConsTime) FromPacket(p Packet) (err error) {
+func (ct *ConsTime) FromPacket(p Packet) error {
 	if crc(p) != 0 {
-		err = ErrBadCRC
-		return
+		return ErrBadCRC
 	}
 
 	*ct = ConsTime(p.get6ByteDateTime(0))
 
-	return
+	return nil
 }
 
 // ToPacket packs the console timestamp into an 8-byte packet suitable

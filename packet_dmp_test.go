@@ -55,10 +55,12 @@ var testDmpPackets = map[string]Packet{
 }
 
 func TestGetDmp(t *testing.T) {
-	d := Dmp{}
-	d.FromPacket(testDmpPackets["standard"])
-
 	a := assert.New(t)
+
+	d := Dmp{}
+	err := d.FromPacket(testDmpPackets["standard"])
+	a.Nil(err, "FromPacket error")
+
 	a.Equal(30.113, d[0].Bar, "Barometer")
 	a.Equal(64, d[4].OutHumidity, "Outside humidity")
 }

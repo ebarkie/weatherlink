@@ -122,7 +122,7 @@ type LoopWindGusts struct {
 
 // FromPacket unpacks the data from a 99-byte loop 1 or 2 packet into
 // the Loop struct.
-func (l *Loop) FromPacket(p Packet) (err error) {
+func (l *Loop) FromPacket(p Packet) error {
 	if crc(p) != 0 {
 		return ErrBadCRC
 	}
@@ -233,7 +233,7 @@ func (l *Loop) FromPacket(p Packet) (err error) {
 		return ErrUnknownLoop
 	}
 
-	return
+	return nil
 }
 
 // ToPacket packs the data from the Loop struct into a 99-byte loop 1

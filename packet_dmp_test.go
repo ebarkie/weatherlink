@@ -59,7 +59,7 @@ func TestGetDmp(t *testing.T) {
 
 	d := Dmp{}
 	err := d.FromPacket(testDmpPackets["standard"])
-	a.Nil(err, "FromPacket error")
+	a.Nil(err, "FromPacket")
 
 	a.Equal(30.113, d[0].Bar, "Barometer")
 	a.Equal(64, d[4].OutHumidity, "Outside humidity")

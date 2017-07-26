@@ -110,7 +110,7 @@ func TestGetLoop1(t *testing.T) {
 
 	l := Loop{}
 	err := l.FromPacket(testLoopPackets["1Rain"])
-	a.Nil(err, "FromPacket error")
+	a.Nil(err, "FromPacket")
 
 	a.Equal(29.982, l.Bar.SeaLevel, "Barometer sea level")
 	a.Equal("Steady", l.Bar.Trend, "Barometer trend")
@@ -161,7 +161,7 @@ func TestGetLoop2(t *testing.T) {
 
 	l := Loop{}
 	err := l.FromPacket(testLoopPackets["2NoRain"])
-	a.Nil(err, "FromPacket error")
+	a.Nil(err, "FromPacket")
 
 	a.Equal(30.034, l.Bar.Altimeter, "Barometer altimeter")
 	a.Equal(30.012, l.Bar.SeaLevel, "Barometer sea level")
@@ -197,7 +197,7 @@ func TestGetLoop2NegativeTemp(t *testing.T) {
 
 	l := Loop{}
 	err := l.FromPacket(testLoopPackets["2NegativeDewPoint"])
-	a.Nil(err, "FromPacket error")
+	a.Nil(err, "FromPacket")
 
 	a.Equal(-1.0, l.DewPoint, "Dew point")
 }

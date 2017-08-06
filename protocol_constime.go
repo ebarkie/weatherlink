@@ -41,7 +41,7 @@ func (w *Weatherlink) setConsTime(t time.Time) (err error) {
 // If it exceeds the offset threshold then setConsTime is called to
 // get them in sync.
 func (w *Weatherlink) syncConsTime() (err error) {
-	const maxOffset = 30 * time.Second
+	const maxOffset = 10 * time.Second
 
 	var t time.Time
 	t, err = w.getConsTime()

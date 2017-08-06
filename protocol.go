@@ -42,6 +42,11 @@ var (
 	ErrCmdFailed   = errors.New("Protocol command failed")
 )
 
+// Tunables.
+var (
+	ConsTimeSyncFreq = 24 * time.Hour
+)
+
 // Weatherlink is used to track the Weatherlink device.
 type Weatherlink struct {
 	dev string // Device name is saved to re-connect if a hard reset is necessary
@@ -155,9 +160,8 @@ func (w *Weatherlink) Start() chan interface{} {
 	go func() (err error) {
 		defer close(ec)
 
-		// Send a console time sync command on startup and every syncConsTimerFreq.
-		const syncConsTimerFreq = 24 * time.Hour
-		syncConsTimer := time.NewTimer(0)
+		// Send a console time sync command on startup and every ConsTimeSyncFreq.
+		syncConsTime := time.NewTimer(0)
 
 		for {
 			// Before we do anything make sure we're in a non-error state.
@@ -198,9 +202,9 @@ func (w *Weatherlink) Start() chan interface{} {
 					Error.Printf("Unhandled command: %d", c)
 					err = ErrCmdFailed
 				}
-			case <-syncConsTimer.C:
+			case <-syncConsTime.C:
 				err = w.syncConsTime()
-				syncConsTimer.Reset(syncConsTimerFreq)
+				syncConsTime.Reset(ConsTimeSyncFreq)
 			default:
 				// If there's nothing in the command queue then poll loops.
 				err = w.getLoops(ec)

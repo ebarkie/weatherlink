@@ -43,6 +43,13 @@ var (
 ```
 Errors.
 
+```go
+var (
+	ConsTimeSyncFreq = 24 * time.Hour
+)
+```
+Tunables.
+
 #### type Archive
 
 ```go

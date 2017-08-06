@@ -52,8 +52,8 @@ type Archive struct {
 	ExtraHumidity  [2]*int   `json:"extraHumidity,omitempty"`
 	ExtraTemp      [3]*int   `json:"extraTemperature,omitempty"`
 	Forecast       string    `json:"forecast"`
-	InsideHumidity int       `json:"insideHumidity"`
-	InsideTemp     float64   `json:"insideTemperature"`
+	InHumidity     int       `json:"insideHumidity"`
+	InTemp         float64   `json:"insideTemperature"`
 	LeafTemp       [2]*int   `json:"leafTemperature,omitempty"`
 	LeafWetness    [2]*int   `json:"leafWetness,omitempty"`
 	OutHumidity    int       `json:"outsideHumidity"`

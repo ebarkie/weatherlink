@@ -27,8 +27,8 @@ type Archive struct {
 	ExtraHumidity  [2]*int   `json:"extraHumidity,omitempty"`
 	ExtraTemp      [3]*int   `json:"extraTemperature,omitempty"`
 	Forecast       string    `json:"forecast"`
-	InsideHumidity int       `json:"insideHumidity"`
-	InsideTemp     float64   `json:"insideTemperature"`
+	InHumidity     int       `json:"insideHumidity"`
+	InTemp         float64   `json:"insideTemperature"`
 	LeafTemp       [2]*int   `json:"leafTemperature,omitempty"`
 	LeafWetness    [2]*int   `json:"leafWetness,omitempty"`
 	OutHumidity    int       `json:"outsideHumidity"`
@@ -86,8 +86,8 @@ func (d *Dmp) FromPacket(p Packet) error {
 			}
 		}
 		d[i].Forecast = pr.getForecast(33)
-		d[i].InsideHumidity = pr.get1ByteInt(22)
-		d[i].InsideTemp = pr.get2ByteTemp10(20)
+		d[i].InHumidity = pr.get1ByteInt(22)
+		d[i].InTemp = pr.get2ByteTemp10(20)
 		for j := uint(0); j < 2; j++ {
 			if v := pr.get1ByteTemp(34 + j); v != 165 {
 				d[i].LeafTemp[j] = &v

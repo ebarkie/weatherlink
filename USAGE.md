@@ -32,31 +32,13 @@ Loggers
 
 ```go
 var (
-	ErrNotDmp  = errors.New("Not a DMP metadata packet")
-	ErrNotDmpB = errors.New("Not a revision B DMP packet")
-)
-```
-Errors.
-
-```go
-var (
-	ErrNotLoop     = errors.New("Not a loop packet")
-	ErrUnknownLoop = errors.New("Loop packet type is unknown")
-)
-```
-Errors.
-
-```go
-var (
-	ErrProtoCmdFailed = errors.New("Protocol command failed")
+	ErrBadCRC         = errors.New("CRC check failed")
+	ErrNotDmp         = errors.New("Not a DMP metadata packet")
+	ErrNotDmpB        = errors.New("Not a revision B DMP packet")
+	ErrNotLoop        = errors.New("Not a loop packet")
 	ErrNoLoopChan     = errors.New("Can't start command broker without a Loop channel")
-)
-```
-Errors.
-
-```go
-var (
-	ErrBadCRC = errors.New("CRC check failed")
+	ErrProtoCmdFailed = errors.New("Protocol command failed")
+	ErrUnknownLoop    = errors.New("Loop packet type is unknown")
 )
 ```
 Errors.

@@ -13,16 +13,7 @@ package weatherlink
 // Communication Reference Manual, section X. Data Formats,
 // subsection 4. DMP and DMPAFT data format.
 
-import (
-	"errors"
-	"time"
-)
-
-// Errors.
-var (
-	ErrNotDmp  = errors.New("Not a DMP metadata packet")
-	ErrNotDmpB = errors.New("Not a revision B DMP packet")
-)
+import "time"
 
 // Dmp is a revision B DMP archive page consisting of 5 archive
 // records.

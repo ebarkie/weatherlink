@@ -13,13 +13,6 @@ package weatherlink
 // Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
 // Communication Reference Manual, section XII. CRC calculation.
 
-import "errors"
-
-// Errors.
-var (
-	ErrBadCRC = errors.New("CRC check failed")
-)
-
 var crcTable = []uint16{
 	0x0, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,

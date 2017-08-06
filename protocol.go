@@ -33,8 +33,13 @@ const (
 
 // Errors.
 var (
-	ErrProtoCmdFailed = errors.New("Protocol command failed")
+	ErrBadCRC         = errors.New("CRC check failed")
+	ErrNotDmp         = errors.New("Not a DMP metadata packet")
+	ErrNotDmpB        = errors.New("Not a revision B DMP packet")
+	ErrNotLoop        = errors.New("Not a loop packet")
 	ErrNoLoopChan     = errors.New("Can't start command broker without a Loop channel")
+	ErrProtoCmdFailed = errors.New("Protocol command failed")
+	ErrUnknownLoop    = errors.New("Loop packet type is unknown")
 )
 
 // Weatherlink is used to track the Weatherlink device.

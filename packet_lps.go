@@ -10,16 +10,7 @@ package weatherlink
 // Communication Reference Manual, section X. Data Formats,
 // subsection 1. LOOP data format.
 
-import (
-	"errors"
-	"time"
-)
-
-// Errors.
-var (
-	ErrNotLoop     = errors.New("Not a loop packet")
-	ErrUnknownLoop = errors.New("Loop packet type is unknown")
-)
+import "time"
 
 // Loop is a combined struct representation of the union of loop1
 // and loop2 packets.  They have a lot of overlap but the precision

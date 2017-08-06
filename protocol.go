@@ -106,7 +106,7 @@ func (w *Weatherlink) sendCommand(c []byte, ps int) (p Packet, err error) {
 		w.d.Write(c)
 
 		w.d.Read(response)
-		if (len(response) > 0) && (response[0] == ack) {
+		if len(response) > 0 && response[0] == ack {
 			acked = true
 			break
 		} else {

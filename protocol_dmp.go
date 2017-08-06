@@ -96,10 +96,10 @@ func (w *Weatherlink) getDmps(lastRecord time.Time) (newLastRecord time.Time, er
 			// On the last page, after reading at least one
 			// record bail out as soon as we hit one where the
 			// date is older than the previous record.
-			if (pageNum == 0) && (recordNum < dm.FirstPageOffset) {
+			if pageNum == 0 && recordNum < dm.FirstPageOffset {
 				continue
-			} else if (pageNum == (dm.Pages - 1)) &&
-				(lastRecord != newLastRecord) &&
+			} else if pageNum == dm.Pages-1 &&
+				lastRecord != newLastRecord &&
 				newLastRecord.After(d[recordNum].Timestamp) {
 				break
 			}

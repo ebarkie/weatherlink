@@ -27,17 +27,23 @@ func (p Packet) get2ByteInt(i uint) int {
 	return int(p[i+1])<<8 | int(p[i])
 }
 
-// get1ByteTemp gets a 1-byte integer temprature like
-// extra sensors.
+// get1ByteTemp gets a 1-byte integer temprature like extra
+// sensors.
 func (p Packet) get1ByteTemp(i uint) int {
 	return p.get1ByteInt(i) - 90
 }
 
-// get2ByteTemp gets a 2-byte float temperature like
-// inside/outside sensors.
+// get2ByteTemp10 gets a 2-byte float temperature in tenth of degrees
+// like inside/outside sensors.
+func (p Packet) get2ByteTemp10(i uint) float64 {
+	return p.get2ByteTemp(i) / 10.0
+}
+
+// get2ByteTemp gets a 2-byte float temperature in whole degrees
+// like calculated values.
 func (p Packet) get2ByteTemp(i uint) float64 {
 	// Decode signed two's complement.
-	return float64(int16(uint16(p[i+1])<<8|uint16(p[i]))) / 10
+	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
 }
 
 // get2ByteDate gets a 2-byte date (no time) like rain storm
@@ -71,6 +77,11 @@ func (p Packet) get2ByteTime(i uint) time.Time {
 	// Time is stored as: hour * 100 + min
 	hour := p.get2ByteInt(i) / 100
 	minute := p.get2ByteInt(i) % 100
+	// If time is uninitialized (0xff) then return a zeroed time
+	// so it can be differentiated from midnight.
+	if hour == 655 && minute == 35 {
+		return time.Time{}
+	}
 
 	t, _ := time.ParseInLocation("2006-01-02 15:04",
 		fmt.Sprintf("%04d-%02d-%02d %02d:%02d",
@@ -352,7 +363,7 @@ func (p Packet) getForecast(i uint) string {
 		"Mostly clear and cooler.",
 	}
 
-	if (p.get1ByteInt(i) > 0) && (p.get1ByteInt(i) <= len(rules)) {
+	if p.get1ByteInt(i) > 0 && p.get1ByteInt(i) <= len(rules) {
 		return rules[p.get1ByteInt(i)]
 	}
 
@@ -399,7 +410,7 @@ func (p Packet) getVoltage(i uint) float64 {
 // to a direction in degrees.
 func (p Packet) getWindDir(i uint) int {
 	c := float64(p.get1ByteInt(i))
-	if (c < 0) || (c > 15) {
+	if c < 0 || c > 15 {
 		return 0
 	}
 

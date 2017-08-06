@@ -12,6 +12,7 @@ communication protocol.
 ```go
 const (
 	CmdGetDmps cmd = iota
+	CmdGetHiLows
 	CmdGetLoops
 	CmdStop
 	CmdSyncConsTime
@@ -32,13 +33,12 @@ Loggers
 
 ```go
 var (
-	ErrBadCRC         = errors.New("CRC check failed")
-	ErrNotDmp         = errors.New("Not a DMP metadata packet")
-	ErrNotDmpB        = errors.New("Not a revision B DMP packet")
-	ErrNotLoop        = errors.New("Not a loop packet")
-	ErrNoLoopChan     = errors.New("Can't start command broker without a Loop channel")
-	ErrProtoCmdFailed = errors.New("Protocol command failed")
-	ErrUnknownLoop    = errors.New("Loop packet type is unknown")
+	ErrBadCRC      = errors.New("CRC check failed")
+	ErrNotDmp      = errors.New("Not a DMP metadata packet")
+	ErrNotDmpB     = errors.New("Not a revision B DMP packet")
+	ErrNotLoop     = errors.New("Not a loop packet")
+	ErrUnknownLoop = errors.New("Loop packet type is unknown")
+	ErrCmdFailed   = errors.New("Protocol command failed")
 )
 ```
 Errors.
@@ -752,10 +752,8 @@ device. It blocks until the entire buffer is filled or the timeout triggers.
 
 ```go
 type Weatherlink struct {
-	Archive     chan Archive
-	LastDmpTime time.Time
-	Loops       chan Loop
 	CmdQ        chan cmd
+	LastDmpTime time.Time
 }
 ```
 
@@ -778,11 +776,11 @@ Close closes the connection to the Weatherlink.
 #### func (*Weatherlink) Start
 
 ```go
-func (w *Weatherlink) Start() (err error)
+func (w *Weatherlink) Start() chan interface{}
 ```
 Start starts the command broker. It attempts to intelligently select what
-commands should be run but also accepts commands via the CmdQ channel. The
-channel is especially useful for building multiplexing services.
+explicit commands should be run but also accepts commands via the CmdQ channel.
+The channel is especially useful for building multiplexing services.
 
 #### func (Weatherlink) Stop
 

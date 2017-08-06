@@ -10,11 +10,11 @@ Current features include:
 * Should work with any Davis station made after 2002.  Developed for a Vantage Pro
   2 Plus with all sensor types.
 * Supports Weatherlink IP, serial, or USB (genuine or clone).
-* Decodes DMP (archive), HILOWS, LOOP1, and LOOP2 packets and sends data over
-  Go channels.
+* Decodes DMP (archive), HILOWS, LOOP1, and LOOP2 events and sends them over a
+  channel.
 * Syncs console time.
 * Includes a command broker that attempts to intelligently select what
-  commands should be run but also accepts commands via a channel.
+  commands should be run but also accepts explicit commands.
 
 Future features:
 * Encode Weatherlink packets.  Useful for creating a virtual Weatherlink IP,
@@ -52,7 +52,7 @@ func main() {
 	defer w.Close()
 	log.Println("Opened station")
 
-	// Goroutine to handle station events
+	// Goroutine to receive station events
 	go func() {
 		ec := w.Start()
 		log.Println("Command broker started")
@@ -72,14 +72,16 @@ func main() {
 		log.Println("Command broker stopped")
 	}()
 
-	// Throw in some extra commands to run
+	// Send an explicit command
 	w.CmdQ <- weatherlink.CmdGetHiLows
 
+	// Run for a period of time and then send a stop signal
 	runTime := time.Duration(10 * time.Second)
 	log.Printf("Receiving events for %s", runTime)
 	time.Sleep(runTime)
 	log.Println("Stopping command broker")
 	w.Stop()
+	// (program exits when goroutine is actually stopped)
 }
 ```
 

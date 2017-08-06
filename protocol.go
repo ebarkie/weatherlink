@@ -140,13 +140,13 @@ func (w *Weatherlink) sendCommand(c []byte, ps int) (p Packet, err error) {
 }
 
 // Start starts the command broker.  It attempts to intelligently select what
-// commands should be run but also accepts commands via the CmdQ
+// explicit commands should be run but also accepts commands via the CmdQ
 // channel.  The channel is especially useful for building multiplexing
 // services.
 func (w *Weatherlink) Start() chan interface{} {
-	// Buffer the events channel to the maximum records a Vantage Pro
-	// 2 console can hold in memory.  This can speed up large downloads
-	// when the receiver is I/O bound with database writes.
+	// Buffer the event channel to the maximum records a Vantage
+	// Pro 2 console can hold in memory.  This can speed up large
+	// downloads when the receiver is I/O bound with database writes.
 	ec := make(chan interface{}, 5*512)
 
 	// Send a dmp command on startup before doing anything else.

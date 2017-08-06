@@ -10,7 +10,7 @@ import (
 )
 
 // getDmps retrieves all of the archive records *after* lastRecord and
-// sends them to the archive channel ordered from oldest to newest. It
+// sends them to the event channel ordered from oldest to newest. It
 // also returns the timestamp of the last record it read.
 //
 // If lastRecord does not match an existing archive timestamp (which is the case if

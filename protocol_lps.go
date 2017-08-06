@@ -10,8 +10,8 @@ import (
 )
 
 // getLoops starts a stream of loop packets and sends them to the
-// loops channel. It exits when either numLoops is hit or an archive
-// record was written.
+// event channel. It exits when either numLoops is hit, an archive
+// record was written, or a command is pending.
 func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 	const numLoops = 165 // (2 seconds each * 165 = ~5m30s)
 
@@ -59,7 +59,7 @@ func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 			select {
 			case ec <- l:
 			default:
-				Warn.Println("Loop channel is full, discarding latest")
+				Warn.Println("Event channel is full, discarding latest loop")
 			}
 		}
 

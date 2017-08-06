@@ -16,7 +16,7 @@ func main() {
 	defer w.Close()
 	log.Println("Opened station")
 
-	// Goroutine to handle station events
+	// Goroutine to receive station events
 	go func() {
 		ec := w.Start()
 		log.Println("Command broker started")
@@ -36,12 +36,14 @@ func main() {
 		log.Println("Command broker stopped")
 	}()
 
-	// Throw in some extra commands to run
+	// Send an explicit command
 	w.CmdQ <- weatherlink.CmdGetHiLows
 
+	// Run for a period of time and then send a stop signal
 	runTime := time.Duration(10 * time.Second)
 	log.Printf("Receiving events for %s", runTime)
 	time.Sleep(runTime)
 	log.Println("Stopping command broker")
 	w.Stop()
+	// (program exits when goroutine is actually stopped)
 }

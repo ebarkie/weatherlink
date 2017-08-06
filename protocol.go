@@ -26,6 +26,7 @@ type cmd uint8
 // Commands that can be requested.
 const (
 	CmdGetDmps cmd = iota
+	CmdGetHiLows
 	CmdGetLoops
 	CmdStop
 	CmdSyncConsTime
@@ -33,13 +34,12 @@ const (
 
 // Errors.
 var (
-	ErrBadCRC         = errors.New("CRC check failed")
-	ErrNotDmp         = errors.New("Not a DMP metadata packet")
-	ErrNotDmpB        = errors.New("Not a revision B DMP packet")
-	ErrNotLoop        = errors.New("Not a loop packet")
-	ErrNoLoopChan     = errors.New("Can't start command broker without a Loop channel")
-	ErrProtoCmdFailed = errors.New("Protocol command failed")
-	ErrUnknownLoop    = errors.New("Loop packet type is unknown")
+	ErrBadCRC      = errors.New("CRC check failed")
+	ErrNotDmp      = errors.New("Not a DMP metadata packet")
+	ErrNotDmpB     = errors.New("Not a revision B DMP packet")
+	ErrNotLoop     = errors.New("Not a loop packet")
+	ErrUnknownLoop = errors.New("Loop packet type is unknown")
+	ErrCmdFailed   = errors.New("Protocol command failed")
 )
 
 // Weatherlink is used to track the Weatherlink device.
@@ -47,10 +47,8 @@ type Weatherlink struct {
 	dev string // Device name is saved to re-connect if a hard reset is necessary
 	d   Device // Device interface is either IP or Serial
 
-	Archive     chan Archive
-	LastDmpTime time.Time
-	Loops       chan Loop
 	CmdQ        chan cmd
+	LastDmpTime time.Time
 }
 
 // Dial opens the connection to the Weatherlink.
@@ -122,7 +120,7 @@ func (w *Weatherlink) sendCommand(c []byte, ps int) (p Packet, err error) {
 	}
 	if !acked {
 		Error.Printf("Command '%s' bad response after repeated attempts", printableCommand)
-		err = ErrProtoCmdFailed
+		err = ErrCmdFailed
 		return
 	}
 
@@ -145,70 +143,83 @@ func (w *Weatherlink) sendCommand(c []byte, ps int) (p Packet, err error) {
 // commands should be run but also accepts commands via the CmdQ
 // channel.  The channel is especially useful for building multiplexing
 // services.
-func (w *Weatherlink) Start() (err error) {
-	const syncConsTimerFreq = 24 * time.Hour
+func (w *Weatherlink) Start() chan interface{} {
+	// Buffer the events channel to the maximum records a Vantage Pro
+	// 2 console can hold in memory.  This can speed up large downloads
+	// when the receiver is I/O bound with database writes.
+	ec := make(chan interface{}, 5*512)
 
-	if w.Loops == nil {
-		err = ErrNoLoopChan
-		return
-	}
-
-	// Send an dmp command on startup before doing anything else.
+	// Send a dmp command on startup before doing anything else.
 	w.CmdQ <- CmdGetDmps
 
-	// Send a console time sync command on startup and every syncConsTimerFreq.
-	syncConsTimer := time.NewTimer(0)
+	go func() (err error) {
+		defer close(ec)
 
-	for {
-		// Before we do anything make sure we're in a non-error state.
-		if err != nil {
-			// Try a soft-reset first.
-			//
-			// There's a TEST command however it's a lot more convenient to use
-			// a command that follows the ACK/NAK response flow and GETTIME fits.
-			Warn.Printf("%s, trying soft-reset", err.Error())
-			_, err = w.getConsTime()
-			// Hard-reset if we're still in an error state.
+		// Send a console time sync command on startup and every syncConsTimerFreq.
+		const syncConsTimerFreq = 24 * time.Hour
+		syncConsTimer := time.NewTimer(0)
+
+		for {
+			// Before we do anything make sure we're in a non-error state.
 			if err != nil {
-				Error.Printf("%s, trying hard-reset", err.Error())
-				w.Close()
-				err = w.open()
-				continue
+				// Try a soft-reset first.
+				//
+				// There's a TEST command however it's a lot more convenient to use
+				// a command that follows the ACK/NAK response flow and GETTIME fits.
+				Warn.Printf("%s, trying soft-reset", err.Error())
+				_, err = w.getConsTime()
+				// Hard-reset if we're still in an error state.
+				if err != nil {
+					Error.Printf("%s, trying hard-reset", err.Error())
+					w.Close()
+					err = w.open()
+					continue
+				}
 			}
-		}
 
-		// Process command queue channel.
-		Debug.Printf("%d command(s) in queue", len(w.CmdQ))
-		select {
-		case c := <-w.CmdQ:
-			switch c {
-			case CmdGetDmps:
-				w.LastDmpTime, err = w.getDmps(w.LastDmpTime)
-			case CmdGetLoops:
-				err = w.getLoops()
-			case CmdStop:
-				return
-			case CmdSyncConsTime:
+			// Process command queue channel.
+			Debug.Printf("%d command(s) in queue", len(w.CmdQ))
+			select {
+			case c := <-w.CmdQ:
+				switch c {
+				case CmdGetDmps:
+					w.LastDmpTime, err = w.getDmps(ec, w.LastDmpTime)
+				case CmdGetHiLows:
+					err = w.getHiLows(ec)
+				case CmdGetLoops:
+					err = w.getLoops(ec)
+				case CmdStop:
+					return
+				case CmdSyncConsTime:
+					err = w.syncConsTime()
+				default:
+					// Should never happen unless new commands Cmd*'s are added and
+					// not defined here.
+					Error.Printf("Unhandled command: %d", c)
+					err = ErrCmdFailed
+				}
+			case <-syncConsTimer.C:
 				err = w.syncConsTime()
+				syncConsTimer.Reset(syncConsTimerFreq)
 			default:
-				// Should never happen unless new commands Cmd*'s are added and
-				// not defined here.
-				Error.Printf("Unhandled command")
+				// If there's nothing in the command queue then poll loops.
+				err = w.getLoops(ec)
 			}
-		case <-syncConsTimer.C:
-			err = w.syncConsTime()
-			syncConsTimer.Reset(syncConsTimerFreq)
-		default:
-			// If there's nothing in the command queue then poll loops.
-			err = w.getLoops()
 		}
-	}
+	}()
+
+	return ec
 }
 
 // Stop stops the command broker.
 func (w Weatherlink) Stop() {
 	// Drain the command queue and then send a stop command.
-	for range w.CmdQ {
+	for {
+		select {
+		case <-w.CmdQ:
+		default:
+			w.CmdQ <- CmdStop
+			return
+		}
 	}
-	w.CmdQ <- CmdStop
 }

@@ -15,10 +15,7 @@ import (
 //
 // If lastRecord does not match an existing archive timestamp (which is the case if
 // left uninitialized) then all records are returned.
-func (w *Weatherlink) getDmps(lastRecord time.Time) (newLastRecord time.Time, err error) {
-	if w.Archive == nil {
-		return
-	}
+func (w *Weatherlink) getDmps(ec chan interface{}, lastRecord time.Time) (newLastRecord time.Time, err error) {
 	Debug.Printf("Retrieving archive records since %s", lastRecord)
 
 	// If for some reason we return on error before any records are read
@@ -105,7 +102,7 @@ func (w *Weatherlink) getDmps(lastRecord time.Time) (newLastRecord time.Time, er
 			}
 
 			newLastRecord = d[recordNum].Timestamp
-			w.Archive <- d[recordNum]
+			ec <- d[recordNum]
 			Info.Printf("Retrieved archive record for %s", d[recordNum].Timestamp)
 		}
 

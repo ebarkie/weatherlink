@@ -10,7 +10,7 @@ Current features include:
 * Should work with any Davis station made after 2002.  Developed for a Vantage Pro
   2 Plus with all sensor types.
 * Supports Weatherlink IP, serial, or USB (genuine or clone).
-* Decodes DMP (archive), LOOP1, and LOOP2 packets and sends data over
+* Decodes DMP (archive), HILOWS, LOOP1, and LOOP2 packets and sends data over
   Go channels.
 * Syncs console time.
 * Includes a command broker that attempts to intelligently select what
@@ -19,7 +19,7 @@ Current features include:
 Future features:
 * Encode Weatherlink packets.  Useful for creating a virtual Weatherlink IP,
   even a multiplexed one.
-* Encode/decode additional packet types like HILOW.
+* Support additional packet types like EERD (useful for getting lat/lon).
 
 ## Installation
 
@@ -38,45 +38,48 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/ebarkie/weatherlink"
 )
 
 func main() {
-	archive := make(chan weatherlink.Archive)
-	loops := make(chan weatherlink.Loop)
+	// Open station
+	w, err := weatherlink.Dial("192.168.1.254:22222")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer w.Close()
+	log.Println("Opened station")
 
-	// Start retrieving data from weather station
+	// Goroutine to handle station events
 	go func() {
-		wl, err := weatherlink.Dial("192.168.1.254:22222")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer wl.Close()
-		wl.Archive = archive
-		wl.Loops = loops
-
-		err = wl.Start() // Block forever
-		if err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	// Get incoming records
-	go func() {
-		for {
-			select {
-			case a := <-archive:
-				log.Printf("Received archive record: %+v", a)
-
-				// Do something
-			case l := <-loops:
-				log.Printf("Received loop record: %+v", l)
-
-				// Do something
+		ec := w.Start()
+		log.Println("Command broker started")
+		// Keep retrieving events until the channel is closed
+		for e := range ec {
+			switch e.(type) {
+			case weatherlink.Archive:
+				log.Printf("Received archive record: %+v", e)
+			case weatherlink.HiLows:
+				log.Printf("Received record high and lows: %+v", e)
+			case weatherlink.Loop:
+				log.Printf("Received loop packet: %+v", e)
+			default:
+				log.Printf("Received unknown event of type: %T", e)
 			}
 		}
+		log.Println("Command broker stopped")
 	}()
+
+	// Throw in some extra commands to run
+	w.CmdQ <- weatherlink.CmdGetHiLows
+
+	runTime := time.Duration(10 * time.Second)
+	log.Printf("Receiving events for %s", runTime)
+	time.Sleep(runTime)
+	log.Println("Stopping command broker")
+	w.Stop()
 }
 ```
 

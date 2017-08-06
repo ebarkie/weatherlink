@@ -12,7 +12,7 @@ import (
 // getLoops starts a stream of loop packets and sends them to the
 // loops channel. It exits when either numLoops is hit or an archive
 // record was written.
-func (w *Weatherlink) getLoops() (err error) {
+func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 	const numLoops = 165 // (2 seconds each * 165 = ~5m30s)
 
 	Info.Printf("Retrieving %d loop packets", numLoops)
@@ -57,7 +57,7 @@ func (w *Weatherlink) getLoops() (err error) {
 		// inaccurate data.
 		if loopNum > 0 {
 			select {
-			case w.Loops <- l:
+			case ec <- l:
 			default:
 				Warn.Println("Loop channel is full, discarding latest")
 			}

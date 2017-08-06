@@ -5,14 +5,19 @@
 package weatherlink
 
 // getHiLows retrieves the record high and lows.
-func (w *Weatherlink) getHiLows() (hl HiLows, err error) {
-	p, e := w.sendCommand([]byte("HILOWS\n"), 438)
+func (w *Weatherlink) getHiLows(ec chan interface{}) error {
+	p, err := w.sendCommand([]byte("HILOWS\n"), 438)
 	if err != nil {
-		err = e
-		return
+		return err
 	}
 
+	hl := HiLows{}
 	err = hl.FromPacket(p)
+	if err != nil {
+		return err
+	}
 
-	return
+	ec <- hl
+
+	return nil
 }

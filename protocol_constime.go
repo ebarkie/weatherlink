@@ -4,15 +4,13 @@
 
 package weatherlink
 
-import (
-	"time"
-)
+import "time"
 
 // getConsTime reads the console time and returns it as a time.
 func (w *Weatherlink) getConsTime() (t time.Time, err error) {
-	p, e := w.sendCommand([]byte("GETTIME\n"), 8)
+	var p Packet
+	p, err = w.sendCommand([]byte("GETTIME\n"), 8)
 	if err != nil {
-		err = e
 		return
 	}
 

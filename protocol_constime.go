@@ -14,7 +14,7 @@ func (w *Weatherlink) getConsTime() (t time.Time, err error) {
 		return
 	}
 
-	var ct ConsTime
+	ct := ConsTime{}
 	err = ct.FromPacket(p)
 	if err != nil {
 		return

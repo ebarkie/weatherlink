@@ -19,8 +19,8 @@ func (w *Weatherlink) getConsTime() (t time.Time, err error) {
 	if err != nil {
 		return
 	}
-
 	t = time.Time(ct)
+
 	return
 }
 

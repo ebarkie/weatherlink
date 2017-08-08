@@ -204,7 +204,11 @@ func (w *Weatherlink) Start() chan interface{} {
 				}
 			case <-syncConsTime.C:
 				err = w.syncConsTime()
-				syncConsTime.Reset(ConsTimeSyncFreq)
+				if err != nil {
+					syncConsTime.Reset(0)
+				} else {
+					syncConsTime.Reset(ConsTimeSyncFreq)
+				}
 			default:
 				// If there's nothing in the command queue then poll loops.
 				err = w.getLoops(ec)

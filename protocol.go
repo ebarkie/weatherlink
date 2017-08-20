@@ -26,6 +26,7 @@ type cmd uint8
 // Commands that can be requested.
 const (
 	CmdGetDmps cmd = iota
+	CmdGetEEPROM
 	CmdGetHiLows
 	CmdGetLoops
 	CmdStop
@@ -35,6 +36,7 @@ const (
 // Errors.
 var (
 	ErrBadCRC      = errors.New("CRC check failed")
+	ErrBadLocation = errors.New("Location is inconsistent")
 	ErrNotDmp      = errors.New("Not a DMP metadata packet")
 	ErrNotDmpB     = errors.New("Not a revision B DMP packet")
 	ErrNotLoop     = errors.New("Not a loop packet")
@@ -186,6 +188,8 @@ func (w *Weatherlink) Start() chan interface{} {
 			select {
 			case c := <-w.CmdQ:
 				switch c {
+				case CmdGetEEPROM:
+					err = w.getEEPROM(ec)
 				case CmdGetDmps:
 					w.LastDmpTime, err = w.getDmps(ec, w.LastDmpTime)
 				case CmdGetHiLows:

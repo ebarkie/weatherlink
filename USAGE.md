@@ -12,6 +12,7 @@ communication protocol.
 ```go
 const (
 	CmdGetDmps cmd = iota
+	CmdGetEEPROM
 	CmdGetHiLows
 	CmdGetLoops
 	CmdStop
@@ -34,6 +35,7 @@ Loggers
 ```go
 var (
 	ErrBadCRC      = errors.New("CRC check failed")
+	ErrBadLocation = errors.New("Location is inconsistent")
 	ErrNotDmp      = errors.New("Not a DMP metadata packet")
 	ErrNotDmpB     = errors.New("Not a revision B DMP packet")
 	ErrNotLoop     = errors.New("Not a loop packet")
@@ -99,8 +101,8 @@ ConsTime is the console current time.
 ```go
 func (ct *ConsTime) FromPacket(p Packet) error
 ```
-FromPacket unpacks the data from an 8-byte GETTIME response packet into a
-console timestamp.
+FromPacket unpacks an 8-byte console time response packet into the ConsTime
+struct.
 
 #### func (ConsTime) ToPacket
 
@@ -136,8 +138,8 @@ Dmp is a revision B DMP archive page consisting of 5 archive records.
 ```go
 func (d *Dmp) FromPacket(p Packet) error
 ```
-FromPacket unpacks the data from a 267-byte DMP revision B archive page packet
-into a Dmp array of 5 Archive records.
+FromPacket unpacks a 267-byte DMP revision B archive page into the Dmp array of
+5 Archive records.
 
 #### type DmpAft
 
@@ -173,7 +175,28 @@ first page.
 ```go
 func (dm *DmpMeta) FromPacket(p Packet) (err error)
 ```
-FromPacket unpacks the data from a 6-byte DMP metadata packet.
+FromPacket unpacks a 6-byte DMP metadata packet into the DmpMeta stuct.
+
+#### type EEPROM
+
+```go
+type EEPROM struct {
+	ArchivePeriod int           `json:"archivePeriod"`
+	Elev          int           `json:"elevation"`
+	Lat           float64       `json:"latitude"`
+	Lon           float64       `json:"longitude"`
+	TimeOffset    time.Duration `json:"timeOffset"`
+}
+```
+
+EEPROM represents the configuration settings.
+
+#### func (*EEPROM) FromPacket
+
+```go
+func (ee *EEPROM) FromPacket(p Packet) error
+```
+FromPacket unpacks a 4096-byte EEPROM packet into the EEPROM struct.
 
 #### type HiFloat
 
@@ -362,8 +385,7 @@ day also includes the time(s) when the record occurred.
 ```go
 func (hl *HiLows) FromPacket(p Packet) error
 ```
-FromPacket unpacks the data from a 438-byte high and lows packet into the HiLows
-struct.
+FromPacket unpacks a 438-byte high and lows packet into the HiLows struct.
 
 #### type HiRainRate
 
@@ -548,8 +570,7 @@ interleaved.
 ```go
 func (l *Loop) FromPacket(p Packet) error
 ```
-FromPacket unpacks the data from a 99-byte loop 1 or 2 packet into the Loop
-struct.
+FromPacket unpacks a 99-byte loop 1 or 2 packet into the Loop struct.
 
 #### func (*Loop) ToPacket
 

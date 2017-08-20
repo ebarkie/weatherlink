@@ -51,8 +51,8 @@ type Archive struct {
 	WindSpeedHi    int       `json:"windSpeedHigh"`
 }
 
-// FromPacket unpacks the data from a 267-byte DMP revision B archive page
-// packet into a Dmp array of 5 Archive records.
+// FromPacket unpacks a 267-byte DMP revision B archive page into
+// the Dmp array of 5 Archive records.
 func (d *Dmp) FromPacket(p Packet) error {
 	if crc(p) != 0 {
 		return ErrBadCRC
@@ -87,7 +87,7 @@ func (d *Dmp) FromPacket(p Packet) error {
 		}
 		d[i].Forecast = pr.getForecast(33)
 		d[i].InHumidity = pr.get1ByteInt(22)
-		d[i].InTemp = pr.get2ByteTemp10(20)
+		d[i].InTemp = pr.get2ByteFloat10(20)
 		for j := uint(0); j < 2; j++ {
 			if v := pr.get1ByteTemp(34 + j); v != 165 {
 				d[i].LeafTemp[j] = &v
@@ -97,9 +97,9 @@ func (d *Dmp) FromPacket(p Packet) error {
 			}
 		}
 		d[i].OutHumidity = pr.get1ByteInt(23)
-		d[i].OutTemp = pr.get2ByteTemp10(4)
-		d[i].OutTempHi = pr.get2ByteTemp10(6)
-		d[i].OutTempLow = pr.get2ByteTemp10(8)
+		d[i].OutTemp = pr.get2ByteFloat10(4)
+		d[i].OutTempHi = pr.get2ByteFloat10(6)
+		d[i].OutTempLow = pr.get2ByteFloat10(8)
 		d[i].RainAccum = pr.getRainClicks(10)
 		d[i].RainRateHi = pr.getRainClicks(12)
 		for j := uint(0); j < 4; j++ {
@@ -150,7 +150,8 @@ type DmpMeta struct {
 	FirstPageOffset int // Offset of the first record to read within the first page
 }
 
-// FromPacket unpacks the data from a 6-byte DMP metadata packet.
+// FromPacket unpacks a 6-byte DMP metadata packet into the
+// DmpMeta stuct.
 func (dm *DmpMeta) FromPacket(p Packet) (err error) {
 	if crc(p) != 0 {
 		err = ErrBadCRC
@@ -174,7 +175,7 @@ func (p Packet) getDmpType() (t string) {
 	switch p[43] {
 	case 0xff:
 		t = "a"
-	case 0x00:
+	case 0x0:
 		t = "b"
 	}
 

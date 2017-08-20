@@ -111,8 +111,8 @@ type LoopWindGusts struct {
 	Last10MinSpeed float64 `json:"last10MinutesSpeed"`
 }
 
-// FromPacket unpacks the data from a 99-byte loop 1 or 2 packet into
-// the Loop struct.
+// FromPacket unpacks a 99-byte loop 1 or 2 packet into the
+// Loop struct.
 func (l *Loop) FromPacket(p Packet) error {
 	if crc(p) != 0 {
 		return ErrBadCRC
@@ -129,9 +129,9 @@ func (l *Loop) FromPacket(p Packet) error {
 		l.Bar.Trend = p.getBarTrend(3)
 		l.Bat.ConsoleVoltage = p.getVoltage(87)
 		l.Bat.TransStatus = p.get1ByteInt(86)
-		l.ET.Today = p.get2ByteFloat(56) / 1000
-		l.ET.LastMonth = p.get2ByteFloat(58) / 100
-		l.ET.LastYear = p.get2ByteFloat(60) / 100
+		l.ET.Today = p.get2ByteFloat(56) / 1000.0
+		l.ET.LastMonth = p.get2ByteFloat(58) / 100.0
+		l.ET.LastYear = p.get2ByteFloat(60) / 100.0
 		for i := uint(0); i < 7; i++ {
 			if v := p.get1ByteInt(34 + i); v != 255 {
 				l.ExtraHumidity[i] = &v
@@ -143,7 +143,7 @@ func (l *Loop) FromPacket(p Packet) error {
 		l.Forecast = p.getForecast(90)
 		l.Icons = p.getForecastIcons(89)
 		l.InHumidity = p.get1ByteInt(11)
-		l.InTemp = p.get2ByteTemp10(9)
+		l.InTemp = p.get2ByteFloat10(9)
 		for i := uint(0); i < 4; i++ {
 			if v := p.get1ByteTemp(29 + i); v != 165 {
 				l.LeafTemp[i] = &v
@@ -160,7 +160,7 @@ func (l *Loop) FromPacket(p Packet) error {
 			}
 		}
 		l.OutHumidity = p.get1ByteInt(33)
-		l.OutTemp = p.get2ByteTemp10(12)
+		l.OutTemp = p.get2ByteFloat10(12)
 		l.Rain.Accum.Today = p.getRainClicks(50)
 		l.Rain.Accum.LastMonth = p.getRainClicks(52)
 		l.Rain.Accum.LastYear = p.getRainClicks(54)
@@ -192,13 +192,13 @@ func (l *Loop) FromPacket(p Packet) error {
 		l.Bar.SeaLevel = p.getPressure(7)
 		l.Bar.Station = p.getPressure(65)
 		l.Bar.Trend = p.getBarTrend(3)
-		l.DewPoint = p.get2ByteTemp(30)
-		l.ET.Today = p.get2ByteFloat(56) / 1000
-		l.HeatIndex = p.get2ByteTemp(35)
+		l.DewPoint = p.get2ByteFloat(30)
+		l.ET.Today = p.get2ByteFloat(56) / 1000.0
+		l.HeatIndex = p.get2ByteFloat(35)
 		l.InHumidity = p.get1ByteInt(11)
-		l.InTemp = p.get2ByteTemp10(9)
+		l.InTemp = p.get2ByteFloat10(9)
 		l.OutHumidity = p.get1ByteInt(33)
-		l.OutTemp = p.get2ByteTemp10(12)
+		l.OutTemp = p.get2ByteFloat10(12)
 		l.Rain.Accum.Last15Min = p.getRainClicks(52)
 		l.Rain.Accum.LastHour = p.getRainClicks(54)
 		l.Rain.Accum.Last24Hours = p.getRainClicks(58)
@@ -206,7 +206,7 @@ func (l *Loop) FromPacket(p Packet) error {
 		l.Rain.Accum.Storm = p.getRainClicks(46)
 		l.Rain.Rate = p.getRainClicks(41)
 		l.SolarRad = p.get2ByteInt(44)
-		l.THSWIndex = p.get2ByteTemp(39)
+		l.THSWIndex = p.get2ByteFloat(39)
 		l.UVIndex = p.getUVIndex(43)
 		l.Wind.Cur.Dir = p.get2ByteInt(16)
 		l.Wind.Cur.Speed = p.get1ByteMPH(14)
@@ -214,7 +214,7 @@ func (l *Loop) FromPacket(p Packet) error {
 		l.Wind.Avg.Last10MinSpeed = p.get2ByteMPH(18)
 		l.Wind.Gust.Last10MinDir = p.get2ByteInt(24)
 		l.Wind.Gust.Last10MinSpeed = p.get2ByteMPH(22)
-		l.WindChill = p.get2ByteTemp(37)
+		l.WindChill = p.get2ByteFloat(37)
 	default:
 		// Valid loop but a newer version than we know about.  This
 		// should never happen since the protocol LPS loop request bit

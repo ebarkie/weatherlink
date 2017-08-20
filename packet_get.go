@@ -20,7 +20,14 @@ func (p Packet) get1ByteInt(i uint) int {
 }
 
 func (p Packet) get2ByteFloat(i uint) float64 {
-	return float64(p.get2ByteInt(i))
+	// Decode signed two's complement.
+	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
+}
+
+// get2ByteFloat10 gets a 2-byte float in tenths.  This is most
+// often used for temperatures.
+func (p Packet) get2ByteFloat10(i uint) float64 {
+	return p.get2ByteFloat(i) / 10.0
 }
 
 func (p Packet) get2ByteInt(i uint) int {
@@ -31,19 +38,6 @@ func (p Packet) get2ByteInt(i uint) int {
 // sensors.
 func (p Packet) get1ByteTemp(i uint) int {
 	return p.get1ByteInt(i) - 90
-}
-
-// get2ByteTemp10 gets a 2-byte float temperature in tenth of degrees
-// like inside/outside sensors.
-func (p Packet) get2ByteTemp10(i uint) float64 {
-	return p.get2ByteTemp(i) / 10.0
-}
-
-// get2ByteTemp gets a 2-byte float temperature in whole degrees
-// like calculated values.
-func (p Packet) get2ByteTemp(i uint) float64 {
-	// Decode signed two's complement.
-	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
 }
 
 // get2ByteDate gets a 2-byte date (no time) like rain storm
@@ -140,7 +134,7 @@ func (p Packet) get1ByteMPH(i uint) int {
 
 // get2ByteMPH gets a 2-byte MPH like 2 and 10 minute values.
 func (p Packet) get2ByteMPH(i uint) float64 {
-	return p.get2ByteFloat(i) / 10
+	return p.get2ByteFloat(i) / 10.0
 }
 
 // getBarTrend converts a barometer trend code to a string.
@@ -391,19 +385,19 @@ func (p Packet) getForecastIcons(i uint) (icons []string) {
 }
 
 func (p Packet) getRainClicks(i uint) float64 {
-	return p.get2ByteFloat(i) / 100
+	return p.get2ByteFloat(i) / 100.0
 }
 
 func (p Packet) getPressure(i uint) float64 {
-	return p.get2ByteFloat(i) / 1000
+	return p.get2ByteFloat(i) / 1000.0
 }
 
 func (p Packet) getUVIndex(i uint) float64 {
-	return float64(p[i]) / 10
+	return float64(p[i]) / 10.0
 }
 
 func (p Packet) getVoltage(i uint) float64 {
-	return p.get2ByteFloat(i) * 300 / 512 / 100.0
+	return p.get2ByteFloat(i) * 300.0 / 512.0 / 100.0
 }
 
 // getWindDir converts an archive record wind direction code

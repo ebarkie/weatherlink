@@ -15,8 +15,8 @@ import "time"
 // ConsTime is the console current time.
 type ConsTime time.Time
 
-// FromPacket unpacks the data from an 8-byte GETTIME response packet
-// into a console timestamp.
+// FromPacket unpacks an 8-byte console time response packet into
+// the ConsTime struct.
 func (ct *ConsTime) FromPacket(p Packet) error {
 	if crc(p) != 0 {
 		return ErrBadCRC

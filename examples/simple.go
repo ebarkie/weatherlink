@@ -25,6 +25,8 @@ func main() {
 			switch e.(type) {
 			case weatherlink.Archive:
 				log.Printf("Received archive record: %+v", e)
+			case weatherlink.EEPROM:
+				log.Printf("Received EEPROM configuration: %+v", e)
 			case weatherlink.HiLows:
 				log.Printf("Received record high and lows: %+v", e)
 			case weatherlink.Loop:

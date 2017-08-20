@@ -19,7 +19,6 @@ Current features include:
 Future features:
 * Encode Weatherlink packets.  Useful for creating a virtual Weatherlink IP,
   even a multiplexed one.
-* Support additional packet types like EERD (useful for getting lat/lon).
 
 ## Installation
 
@@ -61,6 +60,8 @@ func main() {
 			switch e.(type) {
 			case weatherlink.Archive:
 				log.Printf("Received archive record: %+v", e)
+			case weatherlink.EEPROM:
+				log.Printf("Received EEPROM configuration: %+v", e)
 			case weatherlink.HiLows:
 				log.Printf("Received record high and lows: %+v", e)
 			case weatherlink.Loop:

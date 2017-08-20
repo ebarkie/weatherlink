@@ -48,8 +48,8 @@ var crcTable = []uint16{
 	0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0xed1, 0x1ef0,
 }
 
-// crc calculates the 2-byte CRC for the provided bytes. If decoding
-// the correct result will be zero.
+// crc calculates the 2-byte CRC for the Packet. When decoding the
+// result should be zero.
 func crc(p Packet) (c uint16) {
 	for _, v := range p {
 		c = crcTable[(c>>8)^uint16(v)] ^ (c << 8)

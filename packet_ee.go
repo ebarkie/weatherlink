@@ -55,17 +55,17 @@ func (ee *EEPROM) FromPacket(p Packet) error {
 
 	// Location
 	ee.Elev = p.get2ByteInt(15)
-	if units&0x10 != 0 {
+	if ft := units&0x10 == 0; !ft {
 		// Elevation is in meters so convert to feet
 		ee.Elev = int(float64(ee.Elev) * 3.28084)
 	}
 	ee.Lat = p.get2ByteFloat10(11)
-	if (setup&0x40 == 0 && ee.Lat > 0.0) || (setup&0x40 != 0 && ee.Lat < 0.0) {
+	if north := setup&0x40 != 0; (north && ee.Lat < 0.0) || (!north && ee.Lat > 0.0) {
 		// Equator hemisphere setting and latitude do not agree
 		return ErrBadLocation
 	}
 	ee.Lon = p.get2ByteFloat10(13)
-	if (setup&0x80 == 0 && ee.Lon > 0.0) || (setup&0x80 != 0 && ee.Lon < 0.0) {
+	if east := setup&0x80 != 0; (east && ee.Lon < 0.0) || (!east && ee.Lon > 0.0) {
 		// Prime meridian hemisphere setting and longitude do not agree
 		return ErrBadLocation
 	}

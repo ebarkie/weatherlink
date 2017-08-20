@@ -10,8 +10,8 @@ Current features include:
 * Should work with any Davis station made after 2002.  Developed for a Vantage Pro
   2 Plus with all sensor types.
 * Supports Weatherlink IP, serial, or USB (genuine or clone).
-* Decodes DMP (archive), HILOWS, LPS 1 (loop 1), and LPS 2 (loop 2) events and sends
-  them over a channel.
+* Decodes DMP (archive), EEPROM (configuration), HILOWS, LPS 1 (loop 1), and
+  LPS 2 (loop 2) events and writes them to a channel.
 * Syncs console time.
 * Includes a command broker that attempts to intelligently select what
   commands should be run but also accepts explicit commands.

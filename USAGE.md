@@ -11,6 +11,18 @@ communication protocol.
 
 ```go
 const (
+	Dash         = "-"
+	FallingRapid = "Falling Rapidly"
+	FallingSlow  = "Falling Slowly"
+	Steady       = "Steady"
+	RisingSlow   = "Rising Slowly"
+	RisingRapid  = "Rising Rapidly"
+)
+```
+Barometer trends.
+
+```go
+const (
 	CmdGetDmps cmd = iota
 	CmdGetEEPROM
 	CmdGetHiLows

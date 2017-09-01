@@ -15,6 +15,16 @@ import (
 	"time"
 )
 
+// Barometer trends.
+const (
+	Dash         = "-"
+	FallingRapid = "Falling Rapidly"
+	FallingSlow  = "Falling Slowly"
+	Steady       = "Steady"
+	RisingSlow   = "Rising Slowly"
+	RisingRapid  = "Rising Rapidly"
+)
+
 func (p Packet) get1ByteInt(i uint) int {
 	return int(p[i])
 }
@@ -141,17 +151,17 @@ func (p Packet) get2ByteMPH(i uint) float64 {
 func (p Packet) getBarTrend(i uint) string {
 	switch p.get1ByteInt(i) {
 	case -60:
-		return "Falling Rapidly"
+		return FallingRapid
 	case -20:
-		return "Falling Slowly"
+		return FallingSlow
 	case 0:
-		return "Steady"
+		return Steady
 	case 20:
-		return "Rising Slowly"
+		return RisingSlow
 	case 60:
-		return "Rising Rapidly"
+		return RisingRapid
 	default:
-		return "-"
+		return Dash
 	}
 }
 

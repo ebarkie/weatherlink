@@ -68,7 +68,11 @@ func TestDmpFromPacket(t *testing.T) {
 	err := d.FromPacket(testDmpPackets["standard"])
 	a.Nil(err, "FromPacket")
 
+	a.Equal(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Now().Location()),
+		d[0].Timestamp, "Timestamp")
 	a.Equal(30.113, d[0].Bar, "Barometer")
+	a.Equal(158, d[0].WindDirHi, "Wind direction")
+
 	a.Equal(64, d[4].OutHumidity, "Outside humidity")
 }
 

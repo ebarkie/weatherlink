@@ -401,5 +401,5 @@ func (p Packet) getWindDir(i uint) int {
 		return 0
 	}
 
-	return int((c * 22.5) + 0.5)
+	return int(c*22.5 + 0.5)
 }

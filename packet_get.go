@@ -349,11 +349,12 @@ func (p Packet) getForecast(i uint) string {
 		"Mostly clear and cooler.",
 	}
 
-	if p.get1ByteInt(i) > 0 && p.get1ByteInt(i) <= len(rules) {
-		return rules[p.get1ByteInt(i)]
+	r := p.get1ByteInt(i)
+	if r > 0 && r <= len(rules) {
+		return rules[r]
 	}
 
-	return "-"
+	return Dash
 }
 
 // getForecastIcons converts a forecast icon bit map to a slice of icon

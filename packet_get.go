@@ -10,7 +10,6 @@ package weatherlink
 // Communication Reference Manual, section X. Data Formats.
 
 import (
-	"fmt"
 	"math"
 	"time"
 )
@@ -52,76 +51,63 @@ func (p Packet) get1ByteTemp(i uint) int {
 
 // get2ByteDate gets a 2-byte date (no time) like rain storm
 // start date.
-func (p Packet) get2ByteDate(i uint) (t time.Time) {
-	// Date is stored in the two bytes as:
+func (p Packet) get2ByteDate(i uint) time.Time {
+	// If unitialized then return a zero Time.
+	d := p.get2ByteInt(i)
+	if d == 0xffff {
+		return time.Time{}
+	}
+
+	// The date is stored in the two bytes as:
 	//
 	//  MMMM DDDD DYYY YYYY
 	// 15       8         0
-	year := 2000 + p.get2ByteInt(i)&0x007f
-	day := (p.get2ByteInt(i) & 0x0f80) >> 7
-	month := (p.get2ByteInt(i) & 0xf000) >> 12
+	year := 2000 + d&0x007f
+	day := d & 0x0f80 >> 7
+	month := d & 0xf000 >> 12
 
-	// If no date has been set (e.g. no storm in progress),  we'll get
-	// back 0xffff which decodes to 2127-15-31.  In this circumstance
-	// return 1980-01-01 since it's a cool throwback to DOS.
-	if month == 15 {
-		//t = time.Unix(315550800, 0)
-	} else {
-		t, _ = time.ParseInLocation("2006-01-02",
-			fmt.Sprintf("%04d-%02d-%02d", year, month, day),
-			time.Now().Location())
-	}
-
-	return
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Now().Location())
 }
 
 // get2ByteTime gets a 2-byte time (no date) like sunrise and sunset.
 // The date will be set to today.
 func (p Packet) get2ByteTime(i uint) time.Time {
-	// Time is stored as: hour * 100 + min
-	hour := p.get2ByteInt(i) / 100
-	minute := p.get2ByteInt(i) % 100
-	// If time is uninitialized (0xff) then return a zeroed time
-	// so it can be differentiated from midnight.
-	if hour == 655 && minute == 35 {
+	// If uninitialized then return a zero Time.
+	t := p.get2ByteInt(i)
+	if t == 0xffff {
 		return time.Time{}
 	}
 
-	t, _ := time.ParseInLocation("2006-01-02 15:04",
-		fmt.Sprintf("%04d-%02d-%02d %02d:%02d",
-			time.Now().Year(),
-			time.Now().Month(),
-			time.Now().Day(),
-			hour,
-			minute),
-		time.Now().Location())
-	return t
+	// The time is stored as: hour * 100 + min
+	hour := t / 100
+	minute := t % 100
+
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
 }
 
 // get4ByteDateTime gets a 4-byte date and time like in archive
 // records.
-func (p Packet) get4ByteDateTime(i uint) (t time.Time) {
-	// Date is stored in the first two bytes as:
+func (p Packet) get4ByteDateTime(i uint) time.Time {
+	// The date is stored in the first two bytes as:
 	//
 	//  YYYY YYYM MMMD DDDD
 	// 15       8         0
-	day := p.get2ByteInt(i) & 0x001f
-	month := (p.get2ByteInt(i) & 0x01e0) >> 5
-	year := 2000 + (p.get2ByteInt(i)&0xfe00)>>9
+	d := p.get2ByteInt(i)
+	day := d & 0x001f
+	month := (d & 0x01e0) >> 5
+	year := 2000 + (d&0xfe00)>>9
 
-	// Time is stored in second two bytes stored as: hour * 100 + min
-	hour := p.get2ByteInt(i+2) / 100
-	minute := p.get2ByteInt(i+2) % 100
+	// The time is stored in second two bytes stored as: hour * 100 + min
+	t := p.get2ByteInt(i + 2)
+	hour := t / 100
+	minute := t % 100
 
-	t, _ = time.ParseInLocation("2006-01-02T15:04",
-		fmt.Sprintf("%04d-%02d-%02dT%02d:%02d", year, month, day, hour, minute),
-		time.Now().Location())
-
-	return
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Now().Location())
 }
 
 // get6ByteDateTime gets a 6-byte date and time like the console.
-func (p Packet) get6ByteDateTime(i uint) (t time.Time) {
+func (p Packet) get6ByteDateTime(i uint) time.Time {
 	second := p.get1ByteInt(i + 0)
 	minute := p.get1ByteInt(i + 1)
 	hour := p.get1ByteInt(i + 2)
@@ -129,11 +115,7 @@ func (p Packet) get6ByteDateTime(i uint) (t time.Time) {
 	month := p.get1ByteInt(i + 4)
 	year := 1900 + p.get1ByteInt(i+5)
 
-	t, _ = time.ParseInLocation("2006-01-02T15:04:05",
-		fmt.Sprintf("%04d-%02d-%02dT%02d:%02d:%02d", year, month, day, hour, minute, second),
-		time.Now().Location())
-
-	return
+	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Now().Location())
 }
 
 // get1ByteMPH gets a 1-byte MPH which is all speed values except for

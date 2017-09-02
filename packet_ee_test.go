@@ -529,7 +529,14 @@ var testEEPROMPackets = map[string]Packet{
 	},
 }
 
-func TestGetEEPROM(t *testing.T) {
+func BenchmarkEEPROMFromPacket(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		e := EEPROM{}
+		e.FromPacket(testEEPROMPackets["standard"])
+	}
+}
+
+func TestEEPROMFromPacket(t *testing.T) {
 	a := assert.New(t)
 
 	ee := EEPROM{}

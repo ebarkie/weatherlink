@@ -10,7 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetCRC(t *testing.T) {
+func BenchmarkCRC(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		crc(testLoopPackets["1NoRain"])
+	}
+}
+
+func TestCRC(t *testing.T) {
 	a := assert.New(t)
 	a.Zero(crc(testLoopPackets["1Rain"]), "Loop1 CRC check")
 	a.NotZero(crc(testLoopPackets["2BadCrc"]), "Loop1 bad CRC check")

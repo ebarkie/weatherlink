@@ -17,7 +17,14 @@ var testConsTimePackets = map[string]Packet{
 	},
 }
 
-func TestGetConsTime(t *testing.T) {
+func BenchmarkConsTimeFromPacket(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		ct := ConsTime{}
+		ct.FromPacket(testConsTimePackets["standard"])
+	}
+}
+
+func TestConsTimeFromPacket(t *testing.T) {
 	ct := ConsTime{}
 	ct.FromPacket(testConsTimePackets["standard"])
 
@@ -27,7 +34,7 @@ func TestGetConsTime(t *testing.T) {
 
 }
 
-func TestSetConsTime(t *testing.T) {
+func TestConsTimeToPacket(t *testing.T) {
 	ct := ConsTime(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Now().Location()))
 
 	a := assert.New(t)

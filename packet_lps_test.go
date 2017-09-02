@@ -105,7 +105,14 @@ var testLoopPackets = map[string]Packet{
 	},
 }
 
-func TestGetLoop1(t *testing.T) {
+func BenchmarkLoopFromPacket(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		l := Loop{}
+		l.FromPacket(testLoopPackets["1NoRain"])
+	}
+}
+
+func TestLoopFromPacketRain(t *testing.T) {
 	a := assert.New(t)
 
 	l := Loop{}
@@ -156,7 +163,7 @@ func TestGetLoop1(t *testing.T) {
 	a.Equal(0.0, l.Wind.Avg.Last10MinSpeed, "Wind speed 10 minute average")
 }
 
-func TestGetLoop2(t *testing.T) {
+func TestLoopFromPacketNoRain(t *testing.T) {
 	a := assert.New(t)
 
 	l := Loop{}
@@ -192,7 +199,7 @@ func TestGetLoop2(t *testing.T) {
 	a.Equal(78.0, l.WindChill, "Wind chill")
 }
 
-func TestGetLoop2NegativeTemp(t *testing.T) {
+func TestLoopFromPacketNegativeTemp(t *testing.T) {
 	a := assert.New(t)
 
 	l := Loop{}

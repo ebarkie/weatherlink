@@ -54,7 +54,14 @@ var testDmpPackets = map[string]Packet{
 	},
 }
 
-func TestGetDmp(t *testing.T) {
+func BenchmarkDmpFromPacket(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		d := Dmp{}
+		d.FromPacket(testDmpPackets["standard"])
+	}
+}
+
+func TestDmpFromPacket(t *testing.T) {
 	a := assert.New(t)
 
 	d := Dmp{}
@@ -65,7 +72,7 @@ func TestGetDmp(t *testing.T) {
 	a.Equal(64, d[4].OutHumidity, "Outside humidity")
 }
 
-func TestSetDmpAft(t *testing.T) {
+func TestDmpToPacket(t *testing.T) {
 	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Now().Location()))
 
 	a := assert.New(t)

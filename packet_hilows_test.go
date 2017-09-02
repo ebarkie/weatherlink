@@ -72,7 +72,14 @@ var testHiLowsPackets = map[string]Packet{
 	},
 }
 
-func TestGetHiLows(t *testing.T) {
+func BenchmarkHiLowsFromPacket(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		hl := HiLows{}
+		hl.FromPacket(testHiLowsPackets["standard"])
+	}
+}
+
+func TestHiLowsFromPacket(t *testing.T) {
 	a := assert.New(t)
 
 	hl := HiLows{}

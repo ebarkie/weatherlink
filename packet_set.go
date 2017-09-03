@@ -34,7 +34,7 @@ func (p Packet) setDateTimeBig(t time.Time) {
 // setDateTimeSmall sets a 4-byte date and time like in archive
 // records.
 func (p Packet) setDateTimeSmall(t time.Time) {
-	// Date is stored in the first two bytes as:
+	// The date is stored in the first two bytes as:
 	//
 	//  YYYY YYYM MMMD DDDD
 	// 15       8         0
@@ -42,7 +42,7 @@ func (p Packet) setDateTimeSmall(t time.Time) {
 	p[0] = uint8(date & 0xff)
 	p[1] = uint8(date >> 8)
 
-	// Time is stored in second two bytes stored as: hour * 100 + min
+	// The time is stored in second two bytes stored as: hour * 100 + min
 	hour := 100*t.Hour() + t.Minute()
 	p[2] = uint8(hour & 0xff)
 	p[3] = uint8(hour >> 8)

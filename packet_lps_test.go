@@ -112,6 +112,23 @@ func BenchmarkLoopFromPacket(b *testing.B) {
 	}
 }
 
+func ExampleLoop_metar() {
+	// The bad CRC packet gives us an empty Loop test.
+	for _, p := range testLoopPackets {
+		l := Loop{}
+		l.FromPacket(p)
+		fmt.Println(l.metar(time.Date(2006, time.January, 2, 15, 4, 5, 0, time.Now().Location())))
+	}
+
+	// Unordered output:
+	// METAR 022004Z AUTO 00000KT M18/M18 A0000 RMK AO1 SLP000 T11781178
+	// METAR 022004Z AUTO 22900KT 25/21 A3003 RMK AO1 SLP163 T02540206
+	// METAR 022004Z AUTO 19801KT +RA 24/23 A3006 RMK AO1 SLP171 P0049 70049 T02420228
+	// METAR 022004Z AUTO 30301KT 27/M18 A0000 RMK AO1 SLP199 T02701178
+	// METAR 022004Z AUTO 33900KT 29/M18 A0000 RMK AO1 SLP153 T02881178
+	// METAR 022004Z AUTO 22900KT 25/M18 A3003 RMK AO1 SLP163 T02541183
+}
+
 func TestLoopFromPacketRain(t *testing.T) {
 	a := assert.New(t)
 

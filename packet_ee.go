@@ -10,7 +10,11 @@ package weatherlink
 // Serial Communication Reference Manual, section XIII. EEPROM
 // configuration settings.
 
-import "time"
+import (
+	"time"
+
+	"github.com/ebarkie/weatherlink/internal/units"
+)
 
 // EEPROM represents the configuration settings.
 type EEPROM struct {
@@ -39,7 +43,7 @@ func (ee *EEPROM) FromPacket(p Packet) error {
 	//            |       | 2 = 0.1mm     |
 	setup := p.get1ByteInt(43)
 
-	// Units bit breakdown:
+	// Unit bit breakdown:
 	//
 	// Bit  7    6    | 5      | 4         | 3      2      | 1    0
 	//     -----------+--------+-----------+---------------+-----------
@@ -49,15 +53,15 @@ func (ee *EEPROM) FromPacket(p Packet) error {
 	//      1 = m/s   | 1 = mm | 1 = m     | 1 = F (tenth) | 1 = mm
 	//      2 = km/h  |        |           | 2 = C (whole) | 2 = hpa
 	//      3 = knots |        |           | 3 = C (tenth) | 3 = mb
-	units := p.get1ByteInt(41)
+	unit := p.get1ByteInt(41)
 
 	ee.ArchivePeriod = p.get1ByteInt(45)
 
 	// Location
 	ee.Elev = p.get2ByteInt(15)
-	if ft := units&0x10 == 0; !ft {
+	if ft := unit&0x10 == 0; !ft {
 		// Elevation is in meters so convert to feet
-		ee.Elev = int(float64(ee.Elev) * 3.28084)
+		ee.Elev = int(units.Ft(float64(ee.Elev)))
 	}
 	ee.Lat = p.get2ByteFloat10(11)
 	if north := setup&0x40 != 0; (north && ee.Lat < 0.0) || (!north && ee.Lat > 0.0) {

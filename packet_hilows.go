@@ -38,173 +38,212 @@ type HiLows struct {
 
 // HiLowBar is the record high and low barometer readings.
 type HiLowBar struct {
-	Day   HiLowTSFloat `json:"day"`
-	Month HiLowFloat   `json:"month"`
-	Year  HiLowFloat   `json:"year"`
+	Day struct {
+		Hi      float64   `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     float64   `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"year"`
 }
 
 // HiLowExtraTemp is the record high and low extra temperature readings.
 type HiLowExtraTemp struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 
 // HiHeatIndex is the record high heat index readings.
 type HiHeatIndex struct {
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 
 // HiLowHumidity is the record high and low humidity readings.
 type HiLowHumidity struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 
 // HiLowLeafWetness is the record high and low leaf wetness readings.
 type HiLowLeafWetness struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 
 // HiLowTemp is the record high and low temperature readings and dew point
 // calculations.
 type HiLowTemp struct {
-	Day   HiLowTSFloat `json:"day"`
-	Month HiLowFloat   `json:"month"`
-	Year  HiLowFloat   `json:"year"`
+	Day struct {
+		Hi      float64   `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     float64   `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"year"`
 }
 
 // HiRainRate is the record high rain rate readings.
 type HiRainRate struct {
-	Hour  HiFloat   `json:"hour"`
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Hour struct {
+		Hi float64 `json:"hi"`
+	} `json:"hour"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 
 // HiLowSoilMoist is the record high and low soil moisture readings.
 type HiLowSoilMoist struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 
 // HiSolarRad is the record high solar radiation readings.
 type HiSolarRad struct {
-	Day   HiTSInt `json:"day"`
-	Month HiInt   `json:"month"`
-	Year  HiInt   `json:"year"`
+	Day struct {
+		Hi     int       `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi int `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi int `json:"hi"`
+	} `json:"year"`
 }
 
 // HiTHSWIndex is the record high THSW index calculations.
 type HiTHSWIndex struct {
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 
 // HiUVIndex is the record high UltraViolet index readings.
 type HiUVIndex struct {
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 
 // HiWindSpeed is the record high wind speed readings.
 type HiWindSpeed struct {
-	Day   HiTSInt `json:"day"`
-	Month HiInt   `json:"month"`
-	Year  HiInt   `json:"year"`
+	Day struct {
+		Hi     int       `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi int `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi int `json:"hi"`
+	} `json:"year"`
 }
 
 // LowWindChill is the record low wind chill calculations.
 type LowWindChill struct {
-	Day   LowTSFloat `json:"day"`
-	Month LowFloat   `json:"month"`
-	Year  LowFloat   `json:"year"`
-}
-
-// LowFloat represents a record low floating point value.
-type LowFloat struct {
-	Low float64 `json:"low"`
-}
-
-// LowTSFloat represents a record low floating point value and
-// the time it occurred.
-type LowTSFloat struct {
-	LowFloat
-	LowTime time.Time `json:"lowTime,omitempty"`
-}
-
-// HiFloat represents a record high floating point value.
-type HiFloat struct {
-	Hi float64 `json:"hi"`
-}
-
-// HiTSFloat represents a record high floating point value and
-// the time it occurred.
-type HiTSFloat struct {
-	HiFloat
-	HiTime time.Time `json:"hiTime,omitempty"`
-}
-
-// HiLowFloat represents a record high and low floating point
-// value.
-type HiLowFloat struct {
-	LowFloat
-	HiFloat
-}
-
-// HiLowTSFloat represents a record high and low floating point
-// value as well as the times both occurred.
-type HiLowTSFloat struct {
-	HiLowFloat
-	LowTime time.Time `json:"lowTime,omitempty"`
-	HiTime  time.Time `json:"hiTime,omitempty"`
-}
-
-// LowInt represents a record low integer value.
-type LowInt struct {
-	Low int `json:"low"`
-}
-
-// LowTSInt represents a record low integer value and
-// the time it occurred.
-type LowTSInt struct {
-	LowInt
-	LowTime time.Time `json:"lowTime,omitempty"`
-}
-
-// HiInt represents a record high integer value.
-type HiInt struct {
-	Hi int `json:"hi"`
-}
-
-// HiTSInt represents a record high integer value and
-// the time it occurred.
-type HiTSInt struct {
-	HiInt
-	HiTime time.Time `json:"hiTime,omitempty"`
-}
-
-// HiLowInt represents a record high and low integer
-// value.
-type HiLowInt struct {
-	LowInt
-	HiInt
-}
-
-// HiLowTSInt represents a record high and low integer
-// value as well as the times both occurred.
-type HiLowTSInt struct {
-	HiLowInt
-	LowTime time.Time `json:"lowTime,omitempty"`
-	HiTime  time.Time `json:"hiTime,omitempty"`
+	Day struct {
+		Low     float64   `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Low float64 `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Low float64 `json:"low"`
+	} `json:"year"`
 }
 
 // FromPacket unpacks a 438-byte high and lows packet into the

@@ -210,45 +210,43 @@ func (ee *EEPROM) FromPacket(p Packet) error
 ```
 FromPacket unpacks a 4096-byte EEPROM packet into the EEPROM struct.
 
-#### type HiFloat
-
-```go
-type HiFloat struct {
-	Hi float64 `json:"hi"`
-}
-```
-
-HiFloat represents a record high floating point value.
-
 #### type HiHeatIndex
 
 ```go
 type HiHeatIndex struct {
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 ```
 
 HiHeatIndex is the record high heat index readings.
 
-#### type HiInt
-
-```go
-type HiInt struct {
-	Hi int `json:"hi"`
-}
-```
-
-HiInt represents a record high integer value.
-
 #### type HiLowBar
 
 ```go
 type HiLowBar struct {
-	Day   HiLowTSFloat `json:"day"`
-	Month HiLowFloat   `json:"month"`
-	Year  HiLowFloat   `json:"year"`
+	Day struct {
+		Hi      float64   `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     float64   `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"year"`
 }
 ```
 
@@ -258,55 +256,66 @@ HiLowBar is the record high and low barometer readings.
 
 ```go
 type HiLowExtraTemp struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 ```
 
 HiLowExtraTemp is the record high and low extra temperature readings.
 
-#### type HiLowFloat
-
-```go
-type HiLowFloat struct {
-	LowFloat
-	HiFloat
-}
-```
-
-HiLowFloat represents a record high and low floating point value.
-
 #### type HiLowHumidity
 
 ```go
 type HiLowHumidity struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 ```
 
 HiLowHumidity is the record high and low humidity readings.
 
-#### type HiLowInt
-
-```go
-type HiLowInt struct {
-	LowInt
-	HiInt
-}
-```
-
-HiLowInt represents a record high and low integer value.
-
 #### type HiLowLeafWetness
 
 ```go
 type HiLowLeafWetness struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 ```
 
@@ -316,47 +325,43 @@ HiLowLeafWetness is the record high and low leaf wetness readings.
 
 ```go
 type HiLowSoilMoist struct {
-	Day   HiLowTSInt `json:"day"`
-	Month HiLowInt   `json:"month"`
-	Year  HiLowInt   `json:"year"`
+	Day struct {
+		Hi      int       `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     int       `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  int `json:"hi"`
+		Low int `json:"low"`
+	} `json:"year"`
 }
 ```
 
 HiLowSoilMoist is the record high and low soil moisture readings.
 
-#### type HiLowTSFloat
-
-```go
-type HiLowTSFloat struct {
-	HiLowFloat
-	LowTime time.Time `json:"lowTime,omitempty"`
-	HiTime  time.Time `json:"hiTime,omitempty"`
-}
-```
-
-HiLowTSFloat represents a record high and low floating point value as well as
-the times both occurred.
-
-#### type HiLowTSInt
-
-```go
-type HiLowTSInt struct {
-	HiLowInt
-	LowTime time.Time `json:"lowTime,omitempty"`
-	HiTime  time.Time `json:"hiTime,omitempty"`
-}
-```
-
-HiLowTSInt represents a record high and low integer value as well as the times
-both occurred.
-
 #### type HiLowTemp
 
 ```go
 type HiLowTemp struct {
-	Day   HiLowTSFloat `json:"day"`
-	Month HiLowFloat   `json:"month"`
-	Year  HiLowFloat   `json:"year"`
+	Day struct {
+		Hi      float64   `json:"hi"`
+		HiTime  time.Time `json:"hiTime,omitempty"`
+		Low     float64   `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Hi  float64 `json:"hi"`
+		Low float64 `json:"low"`
+	} `json:"year"`
 }
 ```
 
@@ -403,10 +408,19 @@ FromPacket unpacks a 438-byte high and lows packet into the HiLows struct.
 
 ```go
 type HiRainRate struct {
-	Hour  HiFloat   `json:"hour"`
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Hour struct {
+		Hi float64 `json:"hi"`
+	} `json:"hour"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 ```
 
@@ -416,9 +430,16 @@ HiRainRate is the record high rain rate readings.
 
 ```go
 type HiSolarRad struct {
-	Day   HiTSInt `json:"day"`
-	Month HiInt   `json:"month"`
-	Year  HiInt   `json:"year"`
+	Day struct {
+		Hi     int       `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi int `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi int `json:"hi"`
+	} `json:"year"`
 }
 ```
 
@@ -428,44 +449,35 @@ HiSolarRad is the record high solar radiation readings.
 
 ```go
 type HiTHSWIndex struct {
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 ```
 
 HiTHSWIndex is the record high THSW index calculations.
 
-#### type HiTSFloat
-
-```go
-type HiTSFloat struct {
-	HiFloat
-	HiTime time.Time `json:"hiTime,omitempty"`
-}
-```
-
-HiTSFloat represents a record high floating point value and the time it
-occurred.
-
-#### type HiTSInt
-
-```go
-type HiTSInt struct {
-	HiInt
-	HiTime time.Time `json:"hiTime,omitempty"`
-}
-```
-
-HiTSInt represents a record high integer value and the time it occurred.
-
 #### type HiUVIndex
 
 ```go
 type HiUVIndex struct {
-	Day   HiTSFloat `json:"day"`
-	Month HiFloat   `json:"month"`
-	Year  HiFloat   `json:"year"`
+	Day struct {
+		Hi     float64   `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi float64 `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi float64 `json:"hi"`
+	} `json:"year"`
 }
 ```
 
@@ -475,9 +487,16 @@ HiUVIndex is the record high UltraViolet index readings.
 
 ```go
 type HiWindSpeed struct {
-	Day   HiTSInt `json:"day"`
-	Month HiInt   `json:"month"`
-	Year  HiInt   `json:"year"`
+	Day struct {
+		Hi     int       `json:"hi"`
+		HiTime time.Time `json:"hiTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Hi int `json:"hi"`
+	} `json:"month"`
+	Year struct {
+		Hi int `json:"hi"`
+	} `json:"year"`
 }
 ```
 
@@ -631,125 +650,57 @@ LoopET is the evapotranspiration related readings for a Loop struct.
 
 ```go
 type LoopRain struct {
-	Accum          LoopRainAccum `json:"accumulation"`
-	Rate           float64       `json:"rate"`
-	StormStartDate time.Time     `json:"stormStartDate,omitempty"`
+	Accum struct {
+		Last15Min   float64 `json:"last15Minutes"`
+		LastHour    float64 `json:"lastHour"`
+		Last24Hours float64 `json:"last24Hours"`
+		Today       float64 `json:"today"`
+		LastMonth   float64 `json:"lastMonth"`
+		LastYear    float64 `json:"lastYear"`
+		Storm       float64 `json:"storm"`
+	} `json:"accumulation"`
+	Rate           float64   `json:"rate"`
+	StormStartDate time.Time `json:"stormStartDate,omitempty"`
 }
 ```
 
 LoopRain is the rain sensor related readings for a Loop struct.
 
-#### type LoopRainAccum
-
-```go
-type LoopRainAccum struct {
-	Last15Min   float64 `json:"last15Minutes"`
-	LastHour    float64 `json:"lastHour"`
-	Last24Hours float64 `json:"last24Hours"`
-	Today       float64 `json:"today"`
-	LastMonth   float64 `json:"lastMonth"`
-	LastYear    float64 `json:"lastYear"`
-	Storm       float64 `json:"storm"`
-}
-```
-
-LoopRainAccum is the rain accumulation related readings for a LoopRain struct.
-
 #### type LoopWind
 
 ```go
 type LoopWind struct {
-	Avg  LoopWindAvgs  `json:"average"`
-	Cur  LoopWindCur   `json:"current"`
-	Gust LoopWindGusts `json:"gust"`
+	Avg struct {
+		Last2MinSpeed  float64 `json:"last2MinutesSpeed"`
+		Last10MinSpeed float64 `json:"last10MinutesSpeed"`
+	} `json:"average"`
+	Cur struct {
+		Dir   int `json:"direction"`
+		Speed int `json:"speed"`
+	} `json:"current"`
+	Gust struct {
+		Last10MinDir   int     `json:"last10MinutesDirection"`
+		Last10MinSpeed float64 `json:"last10MinutesSpeed"`
+	} `json:"gust"`
 }
 ```
 
 LoopWind is the wind related readings for a Loop struct.
 
-#### type LoopWindAvgs
-
-```go
-type LoopWindAvgs struct {
-	Last2MinSpeed  float64 `json:"last2MinutesSpeed"`
-	Last10MinSpeed float64 `json:"last10MinutesSpeed"`
-}
-```
-
-LoopWindAvgs is the average wind speed related readings for a LoopWind struct.
-
-#### type LoopWindCur
-
-```go
-type LoopWindCur struct {
-	Dir   int `json:"direction"`
-	Speed int `json:"speed"`
-}
-```
-
-LoopWindCur is the current wind direction and speed for a LoopWind struct.
-
-#### type LoopWindGusts
-
-```go
-type LoopWindGusts struct {
-	Last10MinDir   int     `json:"last10MinutesDirection"`
-	Last10MinSpeed float64 `json:"last10MinutesSpeed"`
-}
-```
-
-LoopWindGusts is the wind gust related readings for a LoopWind struct.
-
-#### type LowFloat
-
-```go
-type LowFloat struct {
-	Low float64 `json:"low"`
-}
-```
-
-LowFloat represents a record low floating point value.
-
-#### type LowInt
-
-```go
-type LowInt struct {
-	Low int `json:"low"`
-}
-```
-
-LowInt represents a record low integer value.
-
-#### type LowTSFloat
-
-```go
-type LowTSFloat struct {
-	LowFloat
-	LowTime time.Time `json:"lowTime,omitempty"`
-}
-```
-
-LowTSFloat represents a record low floating point value and the time it
-occurred.
-
-#### type LowTSInt
-
-```go
-type LowTSInt struct {
-	LowInt
-	LowTime time.Time `json:"lowTime,omitempty"`
-}
-```
-
-LowTSInt represents a record low integer value and the time it occurred.
-
 #### type LowWindChill
 
 ```go
 type LowWindChill struct {
-	Day   LowTSFloat `json:"day"`
-	Month LowFloat   `json:"month"`
-	Year  LowFloat   `json:"year"`
+	Day struct {
+		Low     float64   `json:"low"`
+		LowTime time.Time `json:"lowTime,omitempty"`
+	} `json:"day"`
+	Month struct {
+		Low float64 `json:"low"`
+	} `json:"month"`
+	Year struct {
+		Low float64 `json:"low"`
+	} `json:"year"`
 }
 ```
 

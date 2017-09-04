@@ -64,45 +64,33 @@ type LoopET struct {
 
 // LoopRain is the rain sensor related readings for a Loop struct.
 type LoopRain struct {
-	Accum          LoopRainAccum `json:"accumulation"`
-	Rate           float64       `json:"rate"`
-	StormStartDate time.Time     `json:"stormStartDate,omitempty"`
-}
-
-// LoopRainAccum is the rain accumulation related readings for a LoopRain struct.
-type LoopRainAccum struct {
-	Last15Min   float64 `json:"last15Minutes"`
-	LastHour    float64 `json:"lastHour"`
-	Last24Hours float64 `json:"last24Hours"`
-	Today       float64 `json:"today"`
-	LastMonth   float64 `json:"lastMonth"`
-	LastYear    float64 `json:"lastYear"`
-	Storm       float64 `json:"storm"`
+	Accum struct {
+		Last15Min   float64 `json:"last15Minutes"`
+		LastHour    float64 `json:"lastHour"`
+		Last24Hours float64 `json:"last24Hours"`
+		Today       float64 `json:"today"`
+		LastMonth   float64 `json:"lastMonth"`
+		LastYear    float64 `json:"lastYear"`
+		Storm       float64 `json:"storm"`
+	} `json:"accumulation"`
+	Rate           float64   `json:"rate"`
+	StormStartDate time.Time `json:"stormStartDate,omitempty"`
 }
 
 // LoopWind is the wind related readings for a Loop struct.
 type LoopWind struct {
-	Avg  LoopWindAvgs  `json:"average"`
-	Cur  LoopWindCur   `json:"current"`
-	Gust LoopWindGusts `json:"gust"`
-}
-
-// LoopWindAvgs is the average wind speed related readings for a LoopWind struct.
-type LoopWindAvgs struct {
-	Last2MinSpeed  float64 `json:"last2MinutesSpeed"`
-	Last10MinSpeed float64 `json:"last10MinutesSpeed"`
-}
-
-// LoopWindCur is the current wind direction and speed for a LoopWind struct.
-type LoopWindCur struct {
-	Dir   int `json:"direction"`
-	Speed int `json:"speed"`
-}
-
-// LoopWindGusts is the wind gust related readings for a LoopWind struct.
-type LoopWindGusts struct {
-	Last10MinDir   int     `json:"last10MinutesDirection"`
-	Last10MinSpeed float64 `json:"last10MinutesSpeed"`
+	Avg struct {
+		Last2MinSpeed  float64 `json:"last2MinutesSpeed"`
+		Last10MinSpeed float64 `json:"last10MinutesSpeed"`
+	} `json:"average"`
+	Cur struct {
+		Dir   int `json:"direction"`
+		Speed int `json:"speed"`
+	} `json:"current"`
+	Gust struct {
+		Last10MinDir   int     `json:"last10MinutesDirection"`
+		Last10MinSpeed float64 `json:"last10MinutesSpeed"`
+	} `json:"gust"`
 }
 
 // FromPacket unpacks a 99-byte loop 1 or 2 packet into the

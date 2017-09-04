@@ -6,22 +6,7 @@
 // conversion functions.
 package units
 
-// C converts Celsius to Fahrenheit.
-func C(f float64) float64 {
-	return (f - 32) * 0.5556
-}
-
-// F converts Fehrenheit to Celsius.
-func F(c float64) float64 {
-	return c*1.8 + 32.0
-}
-
 // Ft converts Meters to Feet.
 func Ft(m float64) float64 {
 	return m * 3.28084
-}
-
-// Kn converts Miles Per Hour (MPH) to Knots.
-func Kn(mph float64) float64 {
-	return mph * 0.8688
 }

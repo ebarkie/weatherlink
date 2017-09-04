@@ -4,13 +4,7 @@
 
 package weatherlink
 
-import (
-	"fmt"
-	"math"
-	"time"
-
-	"github.com/ebarkie/weatherlink/internal/units"
-)
+import "time"
 
 // Loop is a combined struct representation of the union of loop1
 // and loop2 packets.  They have a lot of overlap but the precision
@@ -109,94 +103,6 @@ type LoopWindCur struct {
 type LoopWindGusts struct {
 	Last10MinDir   int     `json:"last10MinutesDirection"`
 	Last10MinSpeed float64 `json:"last10MinutesSpeed"`
-}
-
-// String returns the loop struct as a U.S. METAR weather report string.
-func (l Loop) String() string {
-	return l.metar(time.Now())
-}
-
-// metar generates a U.S. METAR weather report string for the Loop struct.  The
-// observation time is not included in a Loop struct so it must be provided but
-// is typically now.
-func (l Loop) metar(t time.Time) string {
-	// Type
-	s := "METAR"
-
-	// Date/Time
-	s += fmt.Sprintf(" %sZ", t.In(time.UTC).Format("021504"))
-
-	// Report Modifier
-	s += " AUTO" // Indicates a fully automated report with no human intervention
-
-	// Wind
-	s += fmt.Sprintf(" %03d%02.f", l.Wind.Cur.Dir, units.Kn(float64(l.Wind.Cur.Speed)))
-	if units.Kn(l.Wind.Gust.Last10MinSpeed) >= 0.50 {
-		s += fmt.Sprintf("G%02.f", units.Kn(l.Wind.Gust.Last10MinSpeed))
-	}
-	s += "KT"
-
-	// Weather Phenomena
-	if l.Rain.Rate >= 1.0 { // Heavy
-		s += " +RA"
-	} else if l.Rain.Rate >= 0.5 { // Moderate
-		s += " RA"
-	} else if l.Rain.Rate > 0.0 { // Light
-		s += " -RA"
-	}
-
-	// Temperature/Dew Point
-	if t := units.C(l.OutTemp); t < 0.0 {
-		s += fmt.Sprintf(" M%02.f", t*-1)
-	} else {
-		s += fmt.Sprintf(" %02.f", t)
-	}
-	if t := units.C(l.DewPoint); t < 0.0 {
-		s += fmt.Sprintf("/M%02.f", t*-1)
-	} else {
-		s += fmt.Sprintf("/%02.f", t)
-	}
-
-	// Altimeter (in inches)
-	s += fmt.Sprintf(" A%04.f", l.Bar.Altimeter*100)
-
-	// Remarks
-	s += " RMK AO1" // Automated station without a precipitation descriminator
-
-	// Pressure Rising or Falling Rapidly
-	if l.Bar.Trend == RisingRapid {
-		s += " PRESRR"
-	} else if l.Bar.Trend == FallingRapid {
-		s += " PRESFR"
-	}
-
-	// Sea Level Pressure
-	_, d := math.Modf(l.Bar.SeaLevel * 33.8637526 / 100)
-	s += fmt.Sprintf(" SLP%03.f", d*1000)
-
-	// Hourly Precipitation Amount
-	if l.Rain.Accum.LastHour > 0.0 {
-		s += fmt.Sprintf(" P%04.f", l.Rain.Accum.LastHour*100)
-	}
-
-	// 24-Hour Precipitation Amount
-	if l.Rain.Accum.Last24Hours > 0.0 {
-		s += fmt.Sprintf(" 7%04.f", l.Rain.Accum.Last24Hours*100)
-	}
-
-	// Hourly Temperature and Dew Point
-	if t := units.C(l.OutTemp); t < 0.0 {
-		s += fmt.Sprintf(" T1%03.f", t*-10)
-	} else {
-		s += fmt.Sprintf(" T0%03.f", t*10)
-	}
-	if t := units.C(l.DewPoint); t < 0.0 {
-		s += fmt.Sprintf("1%03.f", t*-10)
-	} else {
-		s += fmt.Sprintf("0%03.f", t*10)
-	}
-
-	return s
 }
 
 // FromPacket unpacks a 99-byte loop 1 or 2 packet into the

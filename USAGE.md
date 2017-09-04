@@ -1,4 +1,5 @@
 # weatherlink
+
 ```go
 import "github.com/ebarkie/weatherlink"
 ```
@@ -582,13 +583,6 @@ interleaved.
 func (l *Loop) FromPacket(p Packet) error
 ```
 FromPacket unpacks a 99-byte loop 1 or 2 packet into the Loop struct.
-
-#### func (Loop) String
-
-```go
-func (l Loop) String() string
-```
-String returns the loop struct as a U.S. METAR weather report string.
 
 #### func (*Loop) ToPacket
 

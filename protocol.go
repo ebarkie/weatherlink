@@ -150,7 +150,7 @@ func (w *Weatherlink) sendCommand(c []byte, ps int) (p Packet, err error) {
 // explicit commands should be run but also accepts commands via the CmdQ
 // channel.  The channel is especially useful for building multiplexing
 // services.
-func (w *Weatherlink) Start() chan interface{} {
+func (w *Weatherlink) Start() <-chan interface{} {
 	// Buffer the event channel to the maximum records a Vantage
 	// Pro 2 console can hold in memory.  This can speed up large
 	// downloads when the receiver is I/O bound with database writes.

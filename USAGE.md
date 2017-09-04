@@ -767,7 +767,7 @@ Close closes the connection to the Weatherlink.
 #### func (*Weatherlink) Start
 
 ```go
-func (w *Weatherlink) Start() chan interface{}
+func (w *Weatherlink) Start() <-chan interface{}
 ```
 Start starts the command broker. It attempts to intelligently select what
 explicit commands should be run but also accepts commands via the CmdQ channel.

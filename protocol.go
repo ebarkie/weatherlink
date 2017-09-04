@@ -73,7 +73,8 @@ func Dial(dev string) (w Weatherlink, err error) {
 func (w *Weatherlink) open() (err error) {
 	const rwTimeout = 6 * time.Second
 
-	if strings.HasPrefix(w.dev, "/dev/") {
+	Trace.Printf("Opening device %s with a %s timeout", w.dev, rwTimeout)
+	if strings.HasPrefix(strings.ToLower(w.dev), "/dev/") {
 		w.d, err = DialSerial(w.dev, rwTimeout)
 	} else {
 		w.d, err = DialIP(w.dev, rwTimeout)
@@ -84,6 +85,7 @@ func (w *Weatherlink) open() (err error) {
 
 // Close closes the connection to the Weatherlink.
 func (w *Weatherlink) Close() error {
+	Trace.Printf("Closing device %s", w.dev)
 	return w.d.Close()
 }
 
@@ -222,6 +224,7 @@ func (w *Weatherlink) Start() <-chan interface{} {
 
 // Stop stops the command broker.
 func (w Weatherlink) Stop() {
+	Trace.Println("Stopping command broker by request")
 	// Drain the command queue and then send a stop command.
 	for {
 		select {

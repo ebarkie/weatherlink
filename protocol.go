@@ -74,7 +74,7 @@ func (w *Weatherlink) open() (err error) {
 	const rwTimeout = 6 * time.Second
 
 	Trace.Printf("Opening device %s with a %s timeout", w.dev, rwTimeout)
-	if strings.HasPrefix(strings.ToLower(w.dev), "/dev/") {
+	if strings.HasPrefix(w.dev, "/dev/") {
 		w.d, err = DialSerial(w.dev, rwTimeout)
 	} else {
 		w.d, err = DialIP(w.dev, rwTimeout)

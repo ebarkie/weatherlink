@@ -64,7 +64,7 @@ func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 		}
 
 		// A LOOP1 decode includes the next archive record indicator and if it changes
-		// an archive record is ready to be read.
+		// a new archive record is ready to be read.
 		//
 		// Only preemt the get loops cycle if the last archive time was set manually or
 		// as the result of a (user initiated) CmdGetDmps command, indicating the user is

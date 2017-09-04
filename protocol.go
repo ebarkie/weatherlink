@@ -156,9 +156,6 @@ func (w *Weatherlink) Start() chan interface{} {
 	// downloads when the receiver is I/O bound with database writes.
 	ec := make(chan interface{}, 5*512)
 
-	// Send a dmp command on startup before doing anything else.
-	w.CmdQ <- CmdGetDmps
-
 	go func() (err error) {
 		defer close(ec)
 

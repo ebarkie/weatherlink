@@ -67,7 +67,7 @@ func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 		// we want to read it immediately.
 		if nextArchRec < 0 {
 			nextArchRec = l.nextArchRec
-		} else if nextArchRec != l.nextArchRec {
+		} else if !w.LastDmpTime.IsZero() && nextArchRec != l.nextArchRec {
 			Trace.Printf("New archive record is available (%d->%d)", nextArchRec, l.nextArchRec)
 			// Send a dmp but make sure it doesn't block or we'll be deadlocked.
 			select {

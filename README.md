@@ -43,6 +43,11 @@ import (
 )
 
 func main() {
+	// Enable weatherlink logging to standard output
+	weatherlink.Error.SetOutput(os.Stdout)
+	weatherlink.Warn.SetOutput(os.Stdout)
+	weatherlink.Info.SetOutput(os.Stdout)
+
 	// Open station
 	w, err := weatherlink.Dial("192.168.1.254:22222")
 	if err != nil {
@@ -77,12 +82,11 @@ func main() {
 	w.CmdQ <- weatherlink.CmdGetHiLows
 
 	// Run for a period of time and then send a stop signal
-	runTime := time.Duration(10 * time.Second)
+	runTime := time.Duration(30 * time.Second)
 	log.Printf("Receiving events for %s", runTime)
 	time.Sleep(runTime)
 	log.Println("Stopping command broker")
 	w.Stop()
-	// (program exits when goroutine is actually stopped)
 }
 ```
 

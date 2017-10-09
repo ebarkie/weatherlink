@@ -28,6 +28,10 @@ func (p Packet) get1ByteInt(i uint) int {
 	return int(p[i])
 }
 
+func (p Packet) get2ByteInt(i uint) int {
+	return int(p[i+1])<<8 | int(p[i])
+}
+
 func (p Packet) get2ByteFloat(i uint) float64 {
 	// Decode signed two's complement.
 	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
@@ -39,8 +43,15 @@ func (p Packet) get2ByteFloat10(i uint) float64 {
 	return p.get2ByteFloat(i) / 10.0
 }
 
-func (p Packet) get2ByteInt(i uint) int {
-	return int(p[i+1])<<8 | int(p[i])
+// get1ByteMPH gets a 1-byte MPH which is all speed values except for
+// the 2 and 10 minute values in a loop2 packet.
+func (p Packet) get1ByteMPH(i uint) int {
+	return p.get1ByteInt(i)
+}
+
+// get2ByteMPH gets a 2-byte MPH like 2 and 10 minute values.
+func (p Packet) get2ByteMPH(i uint) float64 {
+	return p.get2ByteFloat(i) / 10.0
 }
 
 // get1ByteTemp gets a 1-byte integer temprature like extra
@@ -67,23 +78,6 @@ func (p Packet) get2ByteDate(i uint) time.Time {
 	month := d & 0xf000 >> 12
 
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Now().Location())
-}
-
-// get2ByteTime gets a 2-byte time (no date) like sunrise and sunset.
-// The date will be set to today.
-func (p Packet) get2ByteTime(i uint) time.Time {
-	// If uninitialized then return a zero Time.
-	t := p.get2ByteInt(i)
-	if t == 0xffff {
-		return time.Time{}
-	}
-
-	// The time is stored as: hour * 100 + min
-	hour := t / 100
-	minute := t % 100
-
-	now := time.Now()
-	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
 }
 
 // get4ByteDateTime gets a 4-byte date and time like in archive
@@ -118,15 +112,21 @@ func (p Packet) get6ByteDateTime(i uint) time.Time {
 	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Now().Location())
 }
 
-// get1ByteMPH gets a 1-byte MPH which is all speed values except for
-// the 2 and 10 minute values in a loop2 packet.
-func (p Packet) get1ByteMPH(i uint) int {
-	return p.get1ByteInt(i)
-}
+// get2ByteTime gets a 2-byte time (no date) like sunrise and sunset.
+// The date will be set to today.
+func (p Packet) get2ByteTime(i uint) time.Time {
+	// If uninitialized then return a zero Time.
+	t := p.get2ByteInt(i)
+	if t == 0xffff {
+		return time.Time{}
+	}
 
-// get2ByteMPH gets a 2-byte MPH like 2 and 10 minute values.
-func (p Packet) get2ByteMPH(i uint) float64 {
-	return p.get2ByteFloat(i) / 10.0
+	// The time is stored as: hour * 100 + min
+	hour := t / 100
+	minute := t % 100
+
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
 }
 
 // getBarTrend converts a barometer trend code to a string.
@@ -377,12 +377,12 @@ func (p Packet) getForecastIcons(i uint) (icons []string) {
 	return
 }
 
-func (p Packet) getRainClicks(i uint) float64 {
-	return p.get2ByteFloat(i) / 100.0
-}
-
 func (p Packet) getPressure(i uint) float64 {
 	return p.get2ByteFloat(i) / 1000.0
+}
+
+func (p Packet) getRainClicks(i uint) float64 {
+	return p.get2ByteFloat(i) / 100.0
 }
 
 func (p Packet) getUVIndex(i uint) float64 {

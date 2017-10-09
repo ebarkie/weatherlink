@@ -42,20 +42,9 @@ func (p Packet) set1ByteTemp(i uint, v int) {
 	p.set1ByteInt(i, v+90)
 }
 
-// setDateTimeBig sets a 6-byte date and time like the console
-// uses.
-func (p Packet) setDateTimeBig(i uint, t time.Time) {
-	p[i] = byte(t.Second())
-	p[i+1] = byte(t.Minute())
-	p[i+2] = byte(t.Hour())
-	p[i+3] = byte(t.Day())
-	p[i+4] = byte(t.Month())
-	p[i+5] = byte(t.Year() - 1900)
-}
-
-// setDateTimeSmall sets a 4-byte date and time like in archive
+// set4ByteDateTime sets a 4-byte date and time like in archive
 // records.
-func (p Packet) setDateTimeSmall(i uint, t time.Time) {
+func (p Packet) set4ByteDateTime(i uint, t time.Time) {
 	// The date is stored in the first two bytes as:
 	//
 	//  YYYY YYYM MMMD DDDD
@@ -68,6 +57,17 @@ func (p Packet) setDateTimeSmall(i uint, t time.Time) {
 	hour := 100*t.Hour() + t.Minute()
 	p[i+2] = byte(hour)
 	p[i+3] = byte(hour >> 8)
+}
+
+// set6ByteDateTime sets a 6-byte date and time like the console
+// uses.
+func (p Packet) set6ByteDateTime(i uint, t time.Time) {
+	p[i] = byte(t.Second())
+	p[i+1] = byte(t.Minute())
+	p[i+2] = byte(t.Hour())
+	p[i+3] = byte(t.Day())
+	p[i+4] = byte(t.Month())
+	p[i+5] = byte(t.Year() - 1900)
 }
 
 func (p Packet) setPressure(i uint, v float64) {

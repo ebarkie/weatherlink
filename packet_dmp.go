@@ -136,7 +136,7 @@ type DmpAft time.Time
 func (da DmpAft) ToPacket() (p Packet) {
 	// 4-bytes for the time and 2-bytes for the CRC.
 	p = make(Packet, 6)
-	p.setDateTimeSmall(0, time.Time(da))
+	p.set4ByteDateTime(0, time.Time(da))
 	p.setCrc()
 
 	return

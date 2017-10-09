@@ -208,3 +208,38 @@ func TestLoopFromPacketNegativeTemp(t *testing.T) {
 
 	a.Equal(-1.0, l.DewPoint, "Dew point")
 }
+
+func TestLoopToPacket(t *testing.T) {
+	a := assert.New(t)
+
+	li := Loop{}
+	li.Bar.Altimeter = 30.034
+	li.Bar.SeaLevel = 30.012
+	li.Bar.Station = 29.589
+	li.Wind.Cur.Speed = 123
+
+	lo := Loop{}
+	for t := 1; t < 3; t++ {
+		p, err := li.ToPacket(t)
+		a.Nil(err, fmt.Sprintf("ToPacket Loop %d", t))
+		lo.FromPacket(p)
+
+	}
+
+	a.Equal(30.034, lo.Bar.Altimeter, "Barometer altimeter")
+	a.Equal(30.012, lo.Bar.SeaLevel, "Barometer sea level")
+	a.Equal(29.589, lo.Bar.Station, "Barometer station")
+	a.Equal(123, lo.Wind.Cur.Speed, "Wind speed")
+}
+
+func TestLoopToPacketNegativeTemp(t *testing.T) {
+	a := assert.New(t)
+
+	li := Loop{DewPoint: -1.0}
+	p, err := li.ToPacket(2)
+	a.Nil(err, "ToPacket Loop2")
+
+	lo := Loop{}
+	lo.FromPacket(p)
+	a.Equal(-1.0, lo.DewPoint)
+}

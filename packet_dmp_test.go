@@ -77,8 +77,11 @@ func TestDmpFromPacket(t *testing.T) {
 }
 
 func TestDmpToPacket(t *testing.T) {
-	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Now().Location()))
-
 	a := assert.New(t)
-	a.Zero(0, crc(da.ToPacket()), "DMPAFT CRC")
+
+	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Now().Location()))
+	p := da.ToPacket()
+
+	a.Zero(0, crc(p), "CRC")
+	a.Equal(Packet{0xd4, 0x20, 0xd0, 0x07}, p[:len(p)-2], "Packet")
 }

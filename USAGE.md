@@ -739,6 +739,52 @@ func (s Serial) ReadFull(b []byte) (int, error)
 ReadFull reads the full size of the provided byte buffer from the Weatherlink
 device. It blocks until the entire buffer is filled or the timeout triggers.
 
+#### type Sim
+
+```go
+type Sim struct {
+}
+```
+
+Sim represents a simulted Weatherlink device.
+
+#### func (Sim) Close
+
+```go
+func (Sim) Close() error
+```
+Close closes the simulated Weatherlink device.
+
+#### func (Sim) Flush
+
+```go
+func (Sim) Flush() error
+```
+Flush flushes the input buffers of the simulated Weatherlink device.
+
+#### func (Sim) Read
+
+```go
+func (Sim) Read(b []byte) (int, error)
+```
+Read reads up to the size of the provided byte buffer from the simulated
+Weatherlink device.
+
+#### func (*Sim) ReadFull
+
+```go
+func (s *Sim) ReadFull(b []byte) (n int, err error)
+```
+ReadFull reads the full size of the provided byte buffer from the simulted
+Weatherlink device.
+
+#### func (Sim) Write
+
+```go
+func (Sim) Write(b []byte) (int, error)
+```
+Write simulates a write of the byte buffer.
+
 #### type Weatherlink
 
 ```go

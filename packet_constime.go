@@ -31,7 +31,7 @@ func (ct *ConsTime) FromPacket(p Packet) error {
 // for the SETTIME command.
 func (ct ConsTime) ToPacket() (p Packet) {
 	p = make(Packet, 8)
-	p.setDateTimeBig(time.Time(ct))
+	p.setDateTimeBig(0, time.Time(ct))
 	p.setCrc()
 
 	return

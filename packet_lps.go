@@ -211,11 +211,35 @@ func (l *Loop) FromPacket(p Packet) error {
 // or 2 packet.
 func (l *Loop) ToPacket(t int) (p Packet, err error) {
 	p = make(Packet, 99)
+	p.setLoopType(t)
 
 	switch t {
 	case 1:
+		// Loop1
+		p.setPressure(7, l.Bar.SeaLevel)
+		p.set1ByteMPH(14, l.Wind.Cur.Speed)
+		for i := uint(0); i < 4; i++ {
+			if l.SoilMoist[i] != nil {
+				p.set1ByteInt(62+i, *l.SoilMoist[i-1])
+			} else {
+				p.set1ByteInt(62+i, 255)
+			}
+			if l.SoilTemp[i] != nil {
+				p.set1ByteTemp(25+i, *l.SoilTemp[i-1])
+			} else {
+				p.set1ByteTemp(25+i, 165)
+			}
+		}
+
 		// TODO
 	case 2:
+		// Loop2
+		p.setPressure(7, l.Bar.SeaLevel)
+		p.set1ByteMPH(14, l.Wind.Cur.Speed)
+		p.set2ByteFloat(30, l.DewPoint)
+		p.setPressure(65, l.Bar.Station)
+		p.setPressure(69, l.Bar.Altimeter)
+
 		// TODO
 	default:
 		err = ErrUnknownLoop
@@ -237,4 +261,12 @@ func (p Packet) getLoopType() int {
 	}
 
 	return -1
+}
+
+func (p Packet) setLoopType(t int) {
+	p[0] = 0x4c
+	p[1] = 0x4f
+	p[2] = 0x4f // LOO
+
+	p[4] = byte(t - 1)
 }

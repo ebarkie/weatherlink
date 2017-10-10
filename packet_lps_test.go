@@ -216,6 +216,21 @@ func TestLoopToPacket(t *testing.T) {
 	li.Bar.Altimeter = 30.034
 	li.Bar.SeaLevel = 30.012
 	li.Bar.Station = 29.589
+	li.DewPoint = 69.0
+	li.ET.Today = 0.014
+	li.HeatIndex = 80.0
+	li.InHumidity = 39
+	li.InTemp = 78.9
+	li.OutHumidity = 73
+	li.OutTemp = 77.8
+	li.Rain.Rate = 1.23
+	li.Rain.Accum.Last15Min = 0.15
+	li.Rain.Accum.LastHour = 0.60
+	li.Rain.Accum.Last24Hours = 0.24
+	li.Rain.Accum.Today = 1.0
+	li.Rain.Accum.LastMonth = 30.0
+	li.Rain.Accum.LastYear = 36.5
+	li.Rain.Accum.Storm = 3.21
 	li.Wind.Cur.Speed = 123
 
 	lo := Loop{}
@@ -223,12 +238,26 @@ func TestLoopToPacket(t *testing.T) {
 		p, err := li.ToPacket(t)
 		a.Nil(err, fmt.Sprintf("ToPacket Loop %d", t))
 		lo.FromPacket(p)
-
 	}
 
 	a.Equal(30.034, lo.Bar.Altimeter, "Barometer altimeter")
 	a.Equal(30.012, lo.Bar.SeaLevel, "Barometer sea level")
 	a.Equal(29.589, lo.Bar.Station, "Barometer station")
+	a.Equal(69.0, lo.DewPoint, "Dew point")
+	a.Equal(0.014, lo.ET.Today, "ET today")
+	a.Equal(80.0, lo.HeatIndex, "Heat index")
+	a.Equal(39, lo.InHumidity, "Inside humidity")
+	a.Equal(78.9, lo.InTemp, "Inside temperature")
+	a.Equal(73, lo.OutHumidity, "Outside humidity")
+	a.Equal(77.8, lo.OutTemp, "Outside temperature")
+	a.Equal(1.23, lo.Rain.Rate, "Rain rate")
+	a.Equal(0.15, lo.Rain.Accum.Last15Min, "Rain accumulation last 15 minutes")
+	a.Equal(0.60, lo.Rain.Accum.LastHour, "Rain accumulation last hour")
+	a.Equal(0.24, lo.Rain.Accum.Last24Hours, "Rain accumulation last day")
+	a.Equal(1.0, lo.Rain.Accum.Today, "Rain accumulation today")
+	a.Equal(30.0, lo.Rain.Accum.LastMonth, "Rain accumulation this month")
+	a.Equal(36.5, lo.Rain.Accum.LastYear, "Rain accumulation this year")
+	a.Equal(3.21, lo.Rain.Accum.Storm, "Rain accumulation this storm")
 	a.Equal(123, lo.Wind.Cur.Speed, "Wind speed")
 }
 

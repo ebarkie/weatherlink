@@ -20,10 +20,6 @@ func (p Packet) setCrc() {
 	p[len(p)-1] = byte(c)
 }
 
-func (p Packet) set1ByteInt(i uint, v int) {
-	p[i] = byte(v)
-}
-
 func (p Packet) set2ByteFloat(i uint, v float64) {
 	// Encode signed two's complement.
 	p[i] = byte(v)
@@ -34,6 +30,10 @@ func (p Packet) set2ByteFloat(i uint, v float64) {
 // often used for temperatures.
 func (p Packet) set2ByteFloat10(i uint, v float64) {
 	p.set2ByteFloat(i, v*10.0)
+}
+
+func (p Packet) set1ByteInt(i uint, v int) {
+	p[i] = byte(v)
 }
 
 // set1ByteMPH sets a 1-byte MPH which is all speed values except for

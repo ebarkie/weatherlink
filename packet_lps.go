@@ -217,30 +217,62 @@ func (l *Loop) ToPacket(t int) (p Packet, err error) {
 	case 1:
 		// Loop1
 		p.setPressure(7, l.Bar.SeaLevel)
-		p.set1ByteMPH(14, l.Wind.Cur.Speed)
+		p.set2ByteFloat(56, l.ET.Today*1000.0)
+		p.set2ByteFloat(58, l.ET.LastMonth*100.0)
+		p.set2ByteFloat(60, l.ET.LastYear*100.0)
+		for i := uint(0); i < 7; i++ {
+			if l.ExtraHumidity[i] != nil {
+				p.set1ByteInt(34+i, *l.ExtraHumidity[i])
+			} else {
+				p.set1ByteInt(34+i, 255)
+			}
+			if l.ExtraTemp[i] != nil {
+				p.set1ByteTemp(18+i, *l.ExtraTemp[i])
+			} else {
+				p.set1ByteTemp(18+i, 165)
+			}
+		}
+		p.set1ByteInt(11, l.InHumidity)
+		p.set2ByteFloat10(9, l.InTemp)
+		p.set1ByteInt(33, l.OutHumidity)
+		p.set2ByteFloat10(12, l.OutTemp)
+		p.setRainClicks(50, l.Rain.Accum.Today)
+		p.setRainClicks(52, l.Rain.Accum.LastMonth)
+		p.setRainClicks(54, l.Rain.Accum.LastYear)
+		p.setRainClicks(46, l.Rain.Accum.Storm)
+		p.setRainClicks(41, l.Rain.Rate)
 		for i := uint(0); i < 4; i++ {
 			if l.SoilMoist[i] != nil {
-				p.set1ByteInt(62+i, *l.SoilMoist[i-1])
+				p.set1ByteInt(62+i, *l.SoilMoist[i])
 			} else {
 				p.set1ByteInt(62+i, 255)
 			}
 			if l.SoilTemp[i] != nil {
-				p.set1ByteTemp(25+i, *l.SoilTemp[i-1])
+				p.set1ByteTemp(25+i, *l.SoilTemp[i])
 			} else {
 				p.set1ByteTemp(25+i, 165)
 			}
 		}
-
-		// TODO
+		p.set1ByteMPH(14, l.Wind.Cur.Speed)
 	case 2:
 		// Loop2
-		p.setPressure(7, l.Bar.SeaLevel)
-		p.set1ByteMPH(14, l.Wind.Cur.Speed)
-		p.set2ByteFloat(30, l.DewPoint)
-		p.setPressure(65, l.Bar.Station)
 		p.setPressure(69, l.Bar.Altimeter)
-
-		// TODO
+		p.setPressure(7, l.Bar.SeaLevel)
+		p.setPressure(65, l.Bar.Station)
+		p.set2ByteFloat(30, l.DewPoint)
+		p.set2ByteFloat(56, l.ET.Today*1000.0)
+		p.set2ByteFloat(35, l.HeatIndex)
+		p.set1ByteInt(11, l.InHumidity)
+		p.set2ByteFloat10(9, l.InTemp)
+		p.set1ByteInt(33, l.OutHumidity)
+		p.set2ByteFloat10(12, l.OutTemp)
+		p.setRainClicks(52, l.Rain.Accum.Last15Min)
+		p.setRainClicks(54, l.Rain.Accum.LastHour)
+		p.setRainClicks(58, l.Rain.Accum.Last24Hours)
+		p.setRainClicks(50, l.Rain.Accum.Today)
+		p.setRainClicks(46, l.Rain.Accum.Storm)
+		p.setRainClicks(41, l.Rain.Rate)
+		p.set1ByteMPH(14, l.Wind.Cur.Speed)
 	default:
 		err = ErrUnknownLoop
 	}

@@ -24,17 +24,21 @@ const (
 	RisingRapid  = "Rising Rapidly"
 )
 
+func (p Packet) get1ByteFloat(i uint) float64 {
+	return float64(p[i])
+}
+
+func (p Packet) get2ByteFloat(i uint) float64 {
+	// Decode signed two's complement.
+	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
+}
+
 func (p Packet) get1ByteInt(i uint) int {
 	return int(p[i])
 }
 
 func (p Packet) get2ByteInt(i uint) int {
 	return int(p[i+1])<<8 | int(p[i])
-}
-
-func (p Packet) get2ByteFloat(i uint) float64 {
-	// Decode signed two's complement.
-	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
 }
 
 // get2ByteFloat10 gets a 2-byte float in tenths.  This is most
@@ -386,7 +390,7 @@ func (p Packet) getRainClicks(i uint) float64 {
 }
 
 func (p Packet) getUVIndex(i uint) float64 {
-	return float64(p[i]) / 10.0
+	return p.get1ByteFloat(i) / 10.0
 }
 
 func (p Packet) getVoltage(i uint) float64 {
@@ -396,10 +400,10 @@ func (p Packet) getVoltage(i uint) float64 {
 // getWindDir converts an archive record wind direction code
 // to a direction in degrees.
 func (p Packet) getWindDir(i uint) int {
-	c := float64(p.get1ByteInt(i))
+	c := p.get1ByteInt(i)
 	if c < 0 || c > 15 {
 		return 0
 	}
 
-	return int(c*22.5 + 0.5)
+	return int(float64(c)*22.5 + 0.5)
 }

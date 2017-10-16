@@ -71,17 +71,19 @@ func Dial(dev string) (w Weatherlink, err error) {
 // open connects to the Weatherlink.  It's split from Dial so it can be used
 // for hard-resets without losing the previous state.
 func (w *Weatherlink) open() (err error) {
-	const rwTimeout = 6 * time.Second
+	const timeout = 6 * time.Second
 
-	Trace.Printf("Opening device %s with a %s timeout", w.dev, rwTimeout)
+	Trace.Printf("Opening device %s with a %s timeout", w.dev, timeout)
 	switch {
 	case w.dev == "/dev/null":
 		w.d = &Sim{}
 	case strings.HasPrefix(w.dev, "/dev/"):
-		w.d, err = DialSerial(w.dev, rwTimeout)
+		w.d = &Serial{Timeout: timeout}
+
 	default:
-		w.d, err = DialIP(w.dev, rwTimeout)
+		w.d = &IP{Timeout: timeout}
 	}
+	err = w.d.Dial(w.dev)
 
 	return
 }

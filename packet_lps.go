@@ -254,6 +254,8 @@ func (l *Loop) ToPacket(t int) (p Packet, err error) {
 			}
 		}
 		p.set1ByteMPH(14, l.Wind.Cur.Speed)
+
+		p.set2ByteInt(5, l.nextArchRec)
 	case 2:
 		// Loop2
 		p.setPressure(69, l.Bar.Altimeter)

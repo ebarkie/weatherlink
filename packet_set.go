@@ -36,6 +36,11 @@ func (p Packet) set1ByteInt(i uint, v int) {
 	p[i] = byte(v)
 }
 
+func (p Packet) set2ByteInt(i uint, v int) {
+	p[i] = byte(v)
+	p[i+1] = byte(uint16(v) >> 8)
+}
+
 // set1ByteMPH sets a 1-byte MPH which is all speed values except for
 // the 2 and 10 minute values in a loop2 packet.
 func (p Packet) set1ByteMPH(i uint, v int) {

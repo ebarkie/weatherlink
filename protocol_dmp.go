@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// Archive interval.
+const archInt = time.Duration(5 * time.Minute) /// XXX Read from EEPROM.
+
 // getDmps retrieves all of the archive records *after* lastRecord and
 // sends them to the event channel ordered from oldest to newest. It
 // also returns the timestamp of the last record it read.

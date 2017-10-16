@@ -13,10 +13,9 @@ import (
 // event channel. It exits when either numLoops is hit, an archive
 // record was written, or a command is pending.
 func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
-	// If the archive period is 5m then this will never get exhausted
-	// because the next archive record will change first, triggering an
-	// exit.
-	const numLoops = 165 // 2 seconds each * 165 = ~5m30s
+	// The preferred exit condition is sensing a new archive record so
+	// try to get 30 seconds beyond that.
+	numLoops := (int(archInt.Seconds()) + 30) / 2
 
 	Info.Printf("Retrieving %d loop packets", numLoops)
 

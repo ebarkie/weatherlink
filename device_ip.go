@@ -10,25 +10,20 @@ import (
 	"time"
 )
 
-// IP represents a Weatherlink IP.
+// IP represents a Weatherlink IP device.
 type IP struct {
 	conn    net.Conn
 	Timeout time.Duration
 }
 
-// DialIP establishes a TCP connection with a Weatherlink IP.
-func DialIP(address string, timeout ...time.Duration) (i IP, err error) {
-	t := 6 * time.Second
-	if len(timeout) > 0 {
-		t = timeout[0]
-	}
-	i.Timeout = t
-	i.conn, err = net.Dial("tcp", address)
+// Dial establishes a TCP/IP connection with a Weatherlink IP.
+func (i *IP) Dial(addr string) (err error) {
+	i.conn, err = net.Dial("tcp", addr)
 
 	return
 }
 
-// Close closes the TCP connection of the Weatherlink IP.
+// Close closes the Weatherlink IP TCP/IP connection.
 func (i IP) Close() error {
 	return i.conn.Close()
 }

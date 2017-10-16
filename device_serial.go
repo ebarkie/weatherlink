@@ -14,15 +14,12 @@ import (
 // Serial represents a Weatherlink serial or USB device.
 type Serial struct {
 	*term.Term
+	Timeout time.Duration
 }
 
-// DialSerial establishes a serial port connection with a Weatherlink device.
-func DialSerial(dev string, timeout ...time.Duration) (s Serial, err error) {
-	t := 6 * time.Second
-	if len(timeout) > 0 {
-		t = timeout[0]
-	}
-	s.Term, err = term.Open(dev, term.Speed(19200), term.ReadTimeout(t), term.RawMode)
+// Dial opens a serial port connection with a weatherlink device.
+func (s *Serial) Dial(addr string) (err error) {
+	s.Term, err = term.Open(addr, term.Speed(19200), term.ReadTimeout(s.Timeout), term.RawMode)
 
 	return
 }

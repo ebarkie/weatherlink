@@ -129,8 +129,9 @@ SETTIME command.
 ```go
 type Device interface {
 	io.ReadWriteCloser
+	Dial(addr string) error
 	Flush() error
-	ReadFull(buf []byte) (int, error)
+	ReadFull(buf []byte) (n int, err error)
 }
 ```
 
@@ -510,21 +511,21 @@ type IP struct {
 }
 ```
 
-IP represents a Weatherlink IP.
-
-#### func  DialIP
-
-```go
-func DialIP(address string, timeout ...time.Duration) (i IP, err error)
-```
-DialIP establishes a TCP connection with a Weatherlink IP.
+IP represents a Weatherlink IP device.
 
 #### func (IP) Close
 
 ```go
 func (i IP) Close() error
 ```
-Close closes the TCP connection of the Weatherlink IP.
+Close closes the Weatherlink IP TCP/IP connection.
+
+#### func (*IP) Dial
+
+```go
+func (i *IP) Dial(addr string) (err error)
+```
+Dial establishes a TCP/IP connection with a Weatherlink IP.
 
 #### func (IP) Flush
 
@@ -719,17 +720,18 @@ Packet is a binary data packet.
 ```go
 type Serial struct {
 	*term.Term
+	Timeout time.Duration
 }
 ```
 
 Serial represents a Weatherlink serial or USB device.
 
-#### func  DialSerial
+#### func (*Serial) Dial
 
 ```go
-func DialSerial(dev string, timeout ...time.Duration) (s Serial, err error)
+func (s *Serial) Dial(addr string) (err error)
 ```
-DialSerial establishes a serial port connection with a Weatherlink device.
+Dial opens a serial port connection with a weatherlink device.
 
 #### func (Serial) ReadFull
 
@@ -748,12 +750,19 @@ type Sim struct {
 
 Sim represents a simulted Weatherlink device.
 
-#### func (Sim) Close
+#### func (*Sim) Close
 
 ```go
-func (Sim) Close() error
+func (s *Sim) Close() error
 ```
 Close closes the simulated Weatherlink device.
+
+#### func (*Sim) Dial
+
+```go
+func (s *Sim) Dial(addr string) error
+```
+Dial initializes the state of a simulated Weatherlink device.
 
 #### func (Sim) Flush
 

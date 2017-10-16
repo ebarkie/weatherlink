@@ -16,11 +16,28 @@ import (
 
 // Sim represents a simulted Weatherlink device.
 type Sim struct {
-	nextLoopType int
+	l            Loop // Current loop packet state
+	nextLoopType int  // Loop type to send next (so they are interleaved)
+}
+
+// Dial initializes the state of a simulated Weatherlink device.
+func (s *Sim) Dial(addr string) error {
+	// Starting loop values which will pass typical QC processes.
+	s.l.Bar.Altimeter = 29.0
+	s.l.Bar.SeaLevel = 29.0
+	s.l.Bar.Station = 29.0
+	s.l.OutHumidity = 50
+	s.l.OutTemp = 65.0
+	s.l.Wind.Cur.Speed = 3
+
+	return nil
 }
 
 // Close closes the simulated Weatherlink device.
-func (Sim) Close() error {
+func (s *Sim) Close() error {
+	s.l = Loop{}
+	s.nextLoopType = 0
+
 	return nil
 }
 
@@ -53,19 +70,20 @@ func (s *Sim) ReadFull(b []byte) (n int, err error) {
 	case 99:
 		// LPS 3 x
 
-		// Set minimal data to be useful for testing and pass any
-		// QC processes.
-		l := Loop{}
-		l.Bar.Altimeter = 6.8
-		l.Bar.SeaLevel = 25.0
-		l.Bar.Station = 6.8
-		l.Wind.Cur.Speed = rand.Intn(10)
+		// Make observation values wander around like they would on a
+		// real station.
+		s.l.Bar.Altimeter = wander(s.l.Bar.Altimeter, 0.01)
+		s.l.Bar.SeaLevel = wander(s.l.Bar.SeaLevel, 0.01)
+		s.l.Bar.Station = wander(s.l.Bar.Station, 0.01)
+		s.l.OutHumidity = int(wander(float64(s.l.OutHumidity), 1))
+		s.l.OutTemp = wander(s.l.OutTemp, 0.5)
+		s.l.Wind.Cur.Speed = int(wander(float64(s.l.Wind.Cur.Speed), 1))
 
-		// Simulate delay between packets and interleave loop
+		// Create 2s delay between packets and interleave loop
 		// types.
 		time.Sleep(2 * time.Second)
 		var p Packet
-		p, err = l.ToPacket(s.nextLoopType + 1)
+		p, err = s.l.ToPacket(s.nextLoopType + 1)
 		s.nextLoopType = (s.nextLoopType + 1) % 2
 		n = copy(b, p)
 	default:
@@ -80,4 +98,10 @@ func (s *Sim) ReadFull(b []byte) (n int, err error) {
 // Write simulates a write of the byte buffer.
 func (Sim) Write(b []byte) (int, error) {
 	return len(b), nil
+}
+
+// wander takes a value and randomly adds +/- step or zero.
+func wander(v, step float64) float64 {
+	rand.Seed(int64(time.Now().Nanosecond()))
+	return v + float64(rand.Intn(3)-1)*step
 }

@@ -10,6 +10,7 @@ import "io"
 // operations with different Weatherlink devices.
 type Device interface {
 	io.ReadWriteCloser
+	Dial(addr string) error
 	Flush() error
-	ReadFull(buf []byte) (int, error)
+	ReadFull(buf []byte) (n int, err error)
 }

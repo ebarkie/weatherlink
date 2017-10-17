@@ -6,9 +6,9 @@ package weatherlink
 
 import "io"
 
-// Device is an interface for the protocol to use to perform basic I/O
+// device is an interface for the protocol to use to perform basic I/O
 // operations with different Weatherlink devices.
-type Device interface {
+type device interface {
 	io.ReadWriteCloser
 	Dial(addr string) error
 	Flush() error

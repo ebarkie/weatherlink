@@ -52,7 +52,7 @@ var (
 // Weatherlink is used to track the Weatherlink device.
 type Weatherlink struct {
 	dev string // Device name is saved to re-connect if a hard reset is necessary
-	d   Device // Device interface is either IP or Serial
+	d   device // Device interface is either IP or Serial
 
 	CmdQ        chan cmd
 	LastDmpTime time.Time
@@ -76,12 +76,12 @@ func (w *Weatherlink) open() (err error) {
 	Trace.Printf("Opening device %s with a %s timeout", w.dev, timeout)
 	switch {
 	case w.dev == "/dev/null":
-		w.d = &Sim{}
+		w.d = &sim{}
 	case strings.HasPrefix(w.dev, "/dev/"):
-		w.d = &Serial{Timeout: timeout}
+		w.d = &serial{Timeout: timeout}
 
 	default:
-		w.d = &IP{Timeout: timeout}
+		w.d = &ip{Timeout: timeout}
 	}
 	err = w.d.Dial(w.dev)
 

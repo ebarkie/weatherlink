@@ -14,14 +14,14 @@ import (
 	"time"
 )
 
-// Sim represents a simulted Weatherlink device.
-type Sim struct {
+// sim represents a simulted Weatherlink device.
+type sim struct {
 	l            Loop // Current loop packet state
 	nextLoopType int  // Loop type to send next (so they are interleaved)
 }
 
 // Dial initializes the state of a simulated Weatherlink device.
-func (s *Sim) Dial(addr string) error {
+func (s *sim) Dial(addr string) error {
 	// Starting loop values which will pass typical QC processes.
 	s.l.Bar.Altimeter = 29.0
 	s.l.Bar.SeaLevel = 29.0
@@ -34,7 +34,7 @@ func (s *Sim) Dial(addr string) error {
 }
 
 // Close closes the simulated Weatherlink device.
-func (s *Sim) Close() error {
+func (s *sim) Close() error {
 	s.l = Loop{}
 	s.nextLoopType = 0
 
@@ -42,13 +42,13 @@ func (s *Sim) Close() error {
 }
 
 // Flush flushes the input buffers of the simulated Weatherlink device.
-func (Sim) Flush() error {
+func (sim) Flush() error {
 	return nil
 }
 
 // Read reads up to the size of the provided byte buffer from the
 // simulated Weatherlink device.
-func (Sim) Read(b []byte) (int, error) {
+func (sim) Read(b []byte) (int, error) {
 	switch len(b) {
 	case 1:
 		b[0] = ack
@@ -61,7 +61,7 @@ func (Sim) Read(b []byte) (int, error) {
 
 // ReadFull reads the full size of the provided byte buffer from the
 // simulted Weatherlink device.
-func (s *Sim) ReadFull(b []byte) (n int, err error) {
+func (s *sim) ReadFull(b []byte) (n int, err error) {
 	switch len(b) {
 	case 8:
 		// GETTIME
@@ -96,7 +96,7 @@ func (s *Sim) ReadFull(b []byte) (n int, err error) {
 }
 
 // Write simulates a write of the byte buffer.
-func (Sim) Write(b []byte) (int, error) {
+func (sim) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 

@@ -124,20 +124,6 @@ func (ct ConsTime) ToPacket() (p Packet)
 ToPacket packs the console timestamp into an 8-byte packet suitable for the
 SETTIME command.
 
-#### type Device
-
-```go
-type Device interface {
-	io.ReadWriteCloser
-	Dial(addr string) error
-	Flush() error
-	ReadFull(buf []byte) (n int, err error)
-}
-```
-
-Device is an interface for the protocol to use to perform basic I/O operations
-with different Weatherlink devices.
-
 #### type Dmp
 
 ```go
@@ -503,61 +489,6 @@ type HiWindSpeed struct {
 
 HiWindSpeed is the record high wind speed readings.
 
-#### type IP
-
-```go
-type IP struct {
-	Timeout time.Duration
-}
-```
-
-IP represents a Weatherlink IP device.
-
-#### func (IP) Close
-
-```go
-func (i IP) Close() error
-```
-Close closes the Weatherlink IP TCP/IP connection.
-
-#### func (*IP) Dial
-
-```go
-func (i *IP) Dial(addr string) (err error)
-```
-Dial establishes a TCP/IP connection with a Weatherlink IP.
-
-#### func (IP) Flush
-
-```go
-func (i IP) Flush() error
-```
-Flush flushes the input buffers of the Weatherlink IP.
-
-#### func (IP) Read
-
-```go
-func (i IP) Read(b []byte) (int, error)
-```
-Read reads up to the size of the provided byte buffer from the Weatherlink IP.
-It blocks until at least one byte is read or the timeout triggers. In practice,
-exactly how much it reads beyond one byte seems unpredictable.
-
-#### func (IP) ReadFull
-
-```go
-func (i IP) ReadFull(b []byte) (int, error)
-```
-ReadFull reads the full size of the provided byte buffer from the Weatherlink
-IP. It blocks until the entire buffer is filled or the timeout triggers.
-
-#### func (IP) Write
-
-```go
-func (i IP) Write(b []byte) (int, error)
-```
-Write writes the byte buffer to the Weatherlink IP.
-
 #### type Loop
 
 ```go
@@ -714,85 +645,6 @@ type Packet []byte
 ```
 
 Packet is a binary data packet.
-
-#### type Serial
-
-```go
-type Serial struct {
-	*term.Term
-	Timeout time.Duration
-}
-```
-
-Serial represents a Weatherlink serial or USB device.
-
-#### func (*Serial) Dial
-
-```go
-func (s *Serial) Dial(addr string) (err error)
-```
-Dial opens a serial port connection with a weatherlink device.
-
-#### func (Serial) ReadFull
-
-```go
-func (s Serial) ReadFull(b []byte) (int, error)
-```
-ReadFull reads the full size of the provided byte buffer from the Weatherlink
-device. It blocks until the entire buffer is filled or the timeout triggers.
-
-#### type Sim
-
-```go
-type Sim struct {
-}
-```
-
-Sim represents a simulted Weatherlink device.
-
-#### func (*Sim) Close
-
-```go
-func (s *Sim) Close() error
-```
-Close closes the simulated Weatherlink device.
-
-#### func (*Sim) Dial
-
-```go
-func (s *Sim) Dial(addr string) error
-```
-Dial initializes the state of a simulated Weatherlink device.
-
-#### func (Sim) Flush
-
-```go
-func (Sim) Flush() error
-```
-Flush flushes the input buffers of the simulated Weatherlink device.
-
-#### func (Sim) Read
-
-```go
-func (Sim) Read(b []byte) (int, error)
-```
-Read reads up to the size of the provided byte buffer from the simulated
-Weatherlink device.
-
-#### func (*Sim) ReadFull
-
-```go
-func (s *Sim) ReadFull(b []byte) (n int, err error)
-```
-ReadFull reads the full size of the provided byte buffer from the simulted
-Weatherlink device.
-
-#### func (Sim) Write
-
-```go
-func (Sim) Write(b []byte) (int, error)
-```
-Write simulates a write of the byte buffer.
 
 #### type Weatherlink
 

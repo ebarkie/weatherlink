@@ -6,7 +6,7 @@ package weatherlink
 
 // A Weatherlink device is simulated by guessing what commands were
 // requested based on the packet sizes.  It's not perfect but is a
-// is a convenient way to allow low level protocol testing.
+// convenient way to allow low level protocol testing.
 
 import (
 	"io"

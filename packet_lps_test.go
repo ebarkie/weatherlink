@@ -146,16 +146,16 @@ func TestLoopFromPacketRain(t *testing.T) {
 	a.Equal(0.39, l.Rain.Accum.LastMonth, "Rain accumulation this month")
 	a.Equal(0.39, l.Rain.Accum.LastYear, "Rain accumulation this year")
 	a.Equal(0.39, l.Rain.Accum.Storm, "Rain accumulation this storm")
-	a.Equal(time.Date(2016, 6, 23, 0, 0, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(2016, 6, 23, 0, 0, 0, 0, time.Local),
 		l.Rain.StormStartDate, "Storm start date")
 	for i := uint(0); i < 4; i++ {
 		a.Nil(l.SoilMoist[i], fmt.Sprintf("Soil moisture %d", i))
 		a.Nil(l.SoilTemp[i], fmt.Sprintf("Soil temperature %d", i))
 	}
 	a.Equal(151, l.SolarRad, "Solar radiation")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 6, 0, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 6, 0, 0, 0, time.Local),
 		l.Sunrise, "Sunrise")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 20, 35, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 20, 35, 0, 0, time.Local),
 		l.Sunset, "Sunset")
 	a.Equal(1.2, l.UVIndex, "UV index")
 	a.Equal(339, l.Wind.Cur.Dir, "Wind direction")

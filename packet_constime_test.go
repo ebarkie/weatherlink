@@ -29,12 +29,12 @@ func TestConsTimeFromPacket(t *testing.T) {
 	ct.FromPacket(testConsTimePackets["standard"])
 
 	a := assert.New(t)
-	a.Equal(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Now().Location()),
+	a.Equal(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local),
 		time.Time(ct), "Console time")
 }
 
 func TestConsTimeToPacket(t *testing.T) {
-	ct := ConsTime(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Now().Location()))
+	ct := ConsTime(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local))
 
 	a := assert.New(t)
 	a.Equal(testConsTimePackets["standard"], ct.ToPacket(), "Console time")

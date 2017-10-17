@@ -88,10 +88,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Barometer
 	a.Equal(30.056, hl.Bar.Day.Low, "Barometer day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 18, 20, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 18, 20, 0, 0, time.Local),
 		hl.Bar.Day.LowTime, "Dew point day low time")
 	a.Equal(30.177, hl.Bar.Day.Hi, "Barometer day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 20, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 20, 0, 0, time.Local),
 		hl.Bar.Day.HiTime, "Dew point day high time")
 	a.Equal(29.754, hl.Bar.Month.Low, "Barometer month low")
 	a.Equal(30.177, hl.Bar.Month.Hi, "Barometer month high")
@@ -100,10 +100,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Dew point
 	a.Equal(66.0, hl.DewPoint.Day.Low, "Dew point day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 4, 6, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 4, 6, 0, 0, time.Local),
 		hl.DewPoint.Day.LowTime, "Dew point day low time")
 	a.Equal(73.0, hl.DewPoint.Day.Hi, "Dew point day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 15, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 15, 0, 0, time.Local),
 		hl.DewPoint.Day.HiTime, "Dew point day high time")
 	a.Equal(65.0, hl.DewPoint.Month.Low, "Dew point month low")
 	a.Equal(82.0, hl.DewPoint.Month.Hi, "Dew point month high")
@@ -118,17 +118,17 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Heat index
 	a.Equal(96.0, hl.HeatIndex.Day.Hi, "Heat index day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 32, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 32, 0, 0, time.Local),
 		hl.HeatIndex.Day.HiTime, "Heat index day high time")
 	a.Equal(119.0, hl.HeatIndex.Month.Hi, "Heat index month high")
 	a.Equal(119.0, hl.HeatIndex.Year.Hi, "Heat index year high")
 
 	// Inside humidity
 	a.Equal(38, hl.InHumidity.Day.Low, "Inside humidity day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 49, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 49, 0, 0, time.Local),
 		hl.InHumidity.Day.LowTime, "Inside humidity day low time")
 	a.Equal(43, hl.InHumidity.Day.Hi, "Inside humidity day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 6, 36, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 6, 36, 0, 0, time.Local),
 		hl.InHumidity.Day.HiTime, "Inside humidity day high time")
 	a.Equal(37, hl.InHumidity.Month.Low, "Inside humidity month low")
 	a.Equal(51, hl.InHumidity.Month.Hi, "Inside humidity month high")
@@ -137,10 +137,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Inside temperature
 	a.Equal(77.3, hl.InTemp.Day.Low, "Inside temperature day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 9, 42, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 9, 42, 0, 0, time.Local),
 		hl.InTemp.Day.LowTime, "Inside temperature day low time")
 	a.Equal(80.0, hl.InTemp.Day.Hi, "Inside temperature day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 12, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 12, 0, 0, time.Local),
 		hl.InTemp.Day.HiTime, "Inside temperature day high time")
 	a.Equal(74.6, hl.InTemp.Month.Low, "Inside temperature month low")
 	a.Equal(81.3, hl.InTemp.Month.Hi, "Inside temperature month high")
@@ -155,10 +155,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Outside humidity
 	a.Equal(52, hl.OutHumidity.Day.Low, "Outside humidity day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 39, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 39, 0, 0, time.Local),
 		hl.OutHumidity.Day.LowTime, "Outside humidity day low time")
 	a.Equal(83, hl.OutHumidity.Day.Hi, "Outside humidity day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 5, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 5, 0, 0, time.Local),
 		hl.OutHumidity.Day.HiTime, "Outside humidity day high time")
 	a.Equal(35, hl.OutHumidity.Month.Low, "Outside humidity month low")
 	a.Equal(98, hl.OutHumidity.Month.Hi, "Outside humidity month high")
@@ -167,10 +167,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Outside temperature
 	a.Equal(71.8, hl.OutTemp.Day.Low, "Outside temperature day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 5, 10, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 5, 10, 0, 0, time.Local),
 		hl.OutTemp.Day.LowTime, "Outside temperature day low time")
 	a.Equal(88.9, hl.OutTemp.Day.Hi, "Outside temperature day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 34, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 34, 0, 0, time.Local),
 		hl.OutTemp.Day.HiTime, "Outside temperature day high time")
 	a.Equal(68.0, hl.OutTemp.Month.Low, "Outside temperature month low")
 	a.Equal(101.3, hl.OutTemp.Month.Hi, "Outside temperature month high")
@@ -186,10 +186,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Soil moisture and temperature
 	a.Equal(23, hl.SoilMoist[0].Day.Low, "Soil moisture day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.Local),
 		hl.SoilMoist[0].Day.LowTime, "Soil moisture day low time")
 	a.Equal(29, hl.SoilMoist[0].Day.Hi, "Soil moisture day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 17, 40, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 17, 40, 0, 0, time.Local),
 		hl.SoilMoist[0].Day.HiTime, "Soil moisture day high time")
 	a.Equal(1, hl.SoilMoist[0].Month.Low, "Soil moisture month low")
 	a.Equal(196, hl.SoilMoist[0].Month.Hi, "Soil moisture month high")
@@ -197,10 +197,10 @@ func TestHiLowsFromPacket(t *testing.T) {
 	a.Equal(196, hl.SoilMoist[0].Year.Hi, "Soil moisture year high")
 
 	a.Equal(80, hl.SoilTemp[0].Day.Low, "Soil temperature day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 7, 53, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 7, 53, 0, 0, time.Local),
 		hl.SoilTemp[0].Day.LowTime, "Soil temperature day low time")
 	a.Equal(83, hl.SoilTemp[0].Day.Hi, "Soil temperature day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 16, 16, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 16, 16, 0, 0, time.Local),
 		hl.SoilTemp[0].Day.HiTime, "Soil temperature day high time")
 	a.Equal(77, hl.SoilTemp[0].Month.Low, "Soil temperature month low")
 	a.Equal(85, hl.SoilTemp[0].Month.Hi, "Soil temperature month high")
@@ -214,35 +214,35 @@ func TestHiLowsFromPacket(t *testing.T) {
 
 	// Solar radiation
 	a.Equal(1160, hl.SolarRad.Day.Hi, "Solar radiation day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 13, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 13, 13, 0, 0, time.Local),
 		hl.SolarRad.Day.HiTime, "Solar radiation day high time")
 	a.Equal(1266, hl.SolarRad.Month.Hi, "Solar radiation month high")
 	a.Equal(1350, hl.SolarRad.Year.Hi, "Solar radiation year high")
 
 	// THSW index
 	a.Equal(109.0, hl.THSWIndex.Day.Hi, "THSW index day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 14, 22, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 14, 22, 0, 0, time.Local),
 		hl.THSWIndex.Day.HiTime, "THSW index day high time")
 	a.Equal(132.0, hl.THSWIndex.Month.Hi, "THSW index month high")
 	a.Equal(132.0, hl.THSWIndex.Year.Hi, "THSW index year high")
 
 	// UltraViolet index
 	a.Equal(6.2, hl.UVIndex.Day.Hi, "UltraViolet index day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 59, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 59, 0, 0, time.Local),
 		hl.UVIndex.Day.HiTime, "UltraViolet index day high time")
 	a.Equal(8.2, hl.UVIndex.Month.Hi, "UltraViolet index month high")
 	a.Equal(9.3, hl.UVIndex.Year.Hi, "UltraViolet index year high")
 
 	// Wind speed
 	a.Equal(12, hl.WindSpeed.Day.Hi, "Wind speed day high")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 1, 41, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 1, 41, 0, 0, time.Local),
 		hl.WindSpeed.Day.HiTime, "Wind speed day high time")
 	a.Equal(13, hl.WindSpeed.Month.Hi, "Wind speed month high")
 	a.Equal(27, hl.WindSpeed.Year.Hi, "Wind speed year high")
 
 	// Wind chill
 	a.Equal(72.0, hl.WindChill.Day.Low, "Wind chill day low")
-	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 4, 58, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 4, 58, 0, 0, time.Local),
 		hl.WindChill.Day.LowTime, "Wind chill day low time")
 	a.Equal(68.0, hl.WindChill.Month.Low, "Wind chill month low")
 	a.Equal(9.0, hl.WindChill.Year.Low, "Wind chill year low")

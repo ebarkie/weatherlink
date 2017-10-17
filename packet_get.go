@@ -81,7 +81,7 @@ func (p Packet) get2ByteDate(i uint) time.Time {
 	day := d & 0x0f80 >> 7
 	month := d & 0xf000 >> 12
 
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Now().Location())
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
 }
 
 // get4ByteDateTime gets a 4-byte date and time like in archive
@@ -101,7 +101,7 @@ func (p Packet) get4ByteDateTime(i uint) time.Time {
 	hour := t / 100
 	minute := t % 100
 
-	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Now().Location())
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
 }
 
 // get6ByteDateTime gets a 6-byte date and time like the console.
@@ -113,7 +113,7 @@ func (p Packet) get6ByteDateTime(i uint) time.Time {
 	month := p.get1ByteInt(i + 4)
 	year := 1900 + p.get1ByteInt(i+5)
 
-	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Now().Location())
+	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Local)
 }
 
 // get2ByteTime gets a 2-byte time (no date) like sunrise and sunset.
@@ -130,7 +130,7 @@ func (p Packet) get2ByteTime(i uint) time.Time {
 	minute := t % 100
 
 	now := time.Now()
-	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
+	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, time.Local)
 }
 
 // getBarTrend converts a barometer trend code to a string.

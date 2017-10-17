@@ -68,7 +68,7 @@ func TestDmpFromPacket(t *testing.T) {
 	err := d.FromPacket(testDmpPackets["standard"])
 	a.Nil(err, "FromPacket")
 
-	a.Equal(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Now().Location()),
+	a.Equal(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Local),
 		d[0].Timestamp, "Timestamp")
 	a.Equal(30.113, d[0].Bar, "Barometer")
 	a.Equal(158, d[0].WindDirHi, "Wind direction")
@@ -79,7 +79,7 @@ func TestDmpFromPacket(t *testing.T) {
 func TestDmpToPacket(t *testing.T) {
 	a := assert.New(t)
 
-	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Now().Location()))
+	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Local))
 	p := da.ToPacket()
 
 	a.Zero(0, crc(p), "CRC")

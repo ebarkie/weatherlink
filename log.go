@@ -23,7 +23,7 @@ import (
 // weatherlink.Debug.SetOutput(log.WriterLevel(logrus.DebugLevel))
 // weatherlink.Debug.SetFlags(log.Lshortfile)
 
-// Loggers
+// Loggers.
 var (
 	Trace = log.New(ioutil.Discard, "[TRCE]", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 	Debug = log.New(ioutil.Discard, "[DBUG]", log.LstdFlags|log.Lshortfile)

@@ -10,30 +10,30 @@ import (
 )
 
 // Archive interval.
-const archInt = time.Duration(5 * time.Minute) /// XXX Read from EEPROM.
+const archInt = 5 * time.Minute // XXX Read from EEPROM.
 
-// getDmps retrieves all of the archive records *after* lastRecord and
-// sends them to the event channel ordered from oldest to newest. It
-// also returns the timestamp of the last record it read.
+// GetDmps downloads all archive records *after* lastRec and sends
+// them to the event channel ordered from oldest to newest. It
+// returns the time of the last record it read.
 //
-// If lastRecord does not match an existing archive timestamp (which is the case if
-// left uninitialized) then all records are returned.
-func (w *Weatherlink) getDmps(ec chan interface{}, lastRecord time.Time) (newLastRecord time.Time, err error) {
-	Debug.Printf("Retrieving archive records since %s", lastRecord)
+// If lastRec does not match an existing archive timestamp (which is the case if
+// left uninitialized) then all records in memory are returned.
+func (c *Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time.Time, err error) {
+	Debug.Printf("Retrieving archive records since %s", lastRec)
 
 	// If for some reason we return on error before any records are read
-	// it's safer to at least return the original lastRecord instead of
+	// it's safer to at least return the original lastRec instead of
 	// a zeroed time.
-	newLastRecord = lastRecord
+	newLastRec = lastRec
 
 	// Setup download.
-	_, err = w.sendCommand([]byte("DMPAFT\n"), 0)
+	_, err = c.writeCmd([]byte("DMPAFT\n"), 0)
 	if err != nil {
 		Error.Printf("DMPAFT command error: %s, aborting", err.Error())
 		return
 	}
 	var p Packet
-	p, err = w.sendCommand(DmpAft(lastRecord).ToPacket(), 6)
+	p, err = c.writeCmd(DmpAft(lastRec).ToPacket(), 6)
 	if err != nil {
 		Error.Printf("Dmp metadata read error: %s, aborting", err.Error())
 		return
@@ -46,7 +46,7 @@ func (w *Weatherlink) getDmps(ec chan interface{}, lastRecord time.Time) (newLas
 	if err != nil {
 		// Most likely a CRC error so cancel gracefully.
 		Error.Printf("Dmp metadata decode error: %s, aborting", err.Error())
-		w.d.Write([]byte{esc})
+		c.dev.Write([]byte{esc})
 		return
 	}
 	// If numPages is 0 then it means there's nothing newer than what
@@ -60,10 +60,10 @@ func (w *Weatherlink) getDmps(ec chan interface{}, lastRecord time.Time) (newLas
 	// ACK to begin and then loop through all pages we were told are
 	// available.  There are 5 records per page.
 	Debug.Printf("Starting %d page dmp download", dm.Pages)
-	w.d.Write([]byte{ack})
+	c.dev.Write([]byte{ack})
 	p = make(Packet, 267)
 	for pageNum := 0; pageNum < dm.Pages; pageNum++ {
-		_, err = w.d.ReadFull(p)
+		_, err = c.dev.ReadFull(p)
 		if err != nil {
 			// Page read failed before we got all of the expected pages.
 			Error.Printf("Dmp download %d/%d interrupted: %s, aborting",
@@ -79,7 +79,7 @@ func (w *Weatherlink) getDmps(ec chan interface{}, lastRecord time.Time) (newLas
 			// the next invocation retry.
 			Error.Printf("Dmp page %d/%d decode error: %s, aborting",
 				pageNum, dm.Pages, err.Error())
-			w.d.Write([]byte{esc})
+			c.dev.Write([]byte{esc})
 			break
 		}
 
@@ -99,18 +99,18 @@ func (w *Weatherlink) getDmps(ec chan interface{}, lastRecord time.Time) (newLas
 			if pageNum == 0 && recordNum < dm.FirstPageOffset {
 				continue
 			} else if pageNum == dm.Pages-1 &&
-				lastRecord != newLastRecord &&
-				newLastRecord.After(d[recordNum].Timestamp) {
+				lastRec != newLastRec &&
+				newLastRec.After(d[recordNum].Timestamp) {
 				break
 			}
 
-			newLastRecord = d[recordNum].Timestamp
+			newLastRec = d[recordNum].Timestamp
 			ec <- d[recordNum]
 			Info.Printf("Retrieved archive record for %s", d[recordNum].Timestamp)
 		}
 
 		// ACK page as received OK so the next is sent.
-		w.d.Write([]byte{ack})
+		c.dev.Write([]byte{ack})
 	}
 
 	return

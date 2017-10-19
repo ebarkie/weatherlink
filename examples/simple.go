@@ -24,7 +24,15 @@ func main() {
 
 	// Goroutine to receive station events
 	go func() {
-		ec := w.Start()
+		// Standard idler which reads loop packets and new archive
+		// records when they're available.
+		//ec := w.Start(weatherlink.StdIdle)
+
+		// Custom idler which only reads loop packets and ignores archive
+		// records.
+		ec := w.Start(func(c *weatherlink.Conn, ec chan<- interface{}) error {
+			return c.GetLoops(ec)
+		})
 		log.Println("Command broker started")
 		// Keep retrieving events until the channel is closed
 		for e := range ec {
@@ -48,7 +56,7 @@ func main() {
 	w.CmdQ <- weatherlink.CmdGetHiLows
 
 	// Run for a period of time and then send a stop signal
-	runTime := time.Duration(30 * time.Second)
+	runTime := time.Duration(6 * time.Minute)
 	log.Printf("Receiving events for %s", runTime)
 	time.Sleep(runTime)
 	log.Println("Stopping command broker")

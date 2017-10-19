@@ -49,115 +49,131 @@ var (
 	ConsTimeSyncFreq = 24 * time.Hour
 )
 
-// Weatherlink is used to track the Weatherlink device.
-type Weatherlink struct {
-	dev string // Device name is saved to re-connect if a hard reset is necessary
-	d   device // Device interface is either IP or Serial
+// Conn holds the weatherlink connnection context.
+type Conn struct {
+	addr string // Device address
+	dev  device // Device interface (IP, serial(/USB), or simulator)
 
-	CmdQ        chan cmd
-	LastDmpTime time.Time
+	CmdQ chan cmd // Broker command queue
+
+	LatestArchRec time.Time // Time of the latest archive record available
+	LastDmp       time.Time // Time of the last downloaded archive record
 }
 
-// Dial opens the connection to the Weatherlink.
-func Dial(dev string) (w Weatherlink, err error) {
-	w.CmdQ = make(chan cmd, 16) // XXX What's the right command buffer size?
+// Dial establishes the weatherlink connection.
+func Dial(addr string) (c Conn, err error) {
+	c.CmdQ = make(chan cmd)
 
-	w.dev = dev
-	err = w.open()
+	c.addr = addr
+	err = c.open()
 
 	return
 }
 
-// open connects to the Weatherlink.  It's split from Dial so it can be used
-// for hard-resets without losing the previous state.
-func (w *Weatherlink) open() (err error) {
+// open makes the connection to the weatherlink device.  It is separate
+// from Dial() so it can be used as a reconnect during hard resets without
+// losing state.
+func (c *Conn) open() (err error) {
 	const timeout = 6 * time.Second
 
-	Trace.Printf("Opening device %s with a %s timeout", w.dev, timeout)
+	Trace.Printf("Opening device %s with a %s timeout", c.addr, timeout)
 	switch {
-	case w.dev == "/dev/null":
-		w.d = &sim{}
-	case strings.HasPrefix(w.dev, "/dev/"):
-		w.d = &serial{Timeout: timeout}
-
+	case c.addr == "/dev/null":
+		c.dev = &sim{}
+	case strings.HasPrefix(c.addr, "/dev/"):
+		c.dev = &serial{Timeout: timeout}
 	default:
-		w.d = &ip{Timeout: timeout}
+		c.dev = &ip{Timeout: timeout}
 	}
-	err = w.d.Dial(w.dev)
+	err = c.dev.Dial(c.addr)
 
 	return
 }
 
-// Close closes the connection to the Weatherlink.
-func (w *Weatherlink) Close() error {
-	Trace.Printf("Closing device %s", w.dev)
-	return w.d.Close()
+// Close closes the weatherlink connection.
+func (c *Conn) Close() error {
+	Trace.Printf("Closing device %s", c.addr)
+	return c.dev.Close()
 }
 
-// reset tries to get the Weatherlink device in a state where it's responding
-// to commands.   It's usually used to interrupt a LPS or DMPAFT command.
-func (w *Weatherlink) reset() {
+// softReset tries to get the weatherlink device to abort the current command
+// and get into a ready state.  It's usually used to interrupt LPS or DMPAFT
+// commands.
+func (c *Conn) softReset() {
 	const flushTime = 1 * time.Second
 
-	w.d.Write([]byte{lf})
+	c.dev.Write([]byte{lf})
 	time.Sleep(flushTime)
-	w.d.Flush()
+	c.dev.Flush()
 }
 
-// sendCommand is used to send commands to the Weatherlink and check to make sure
-// the command is ACKnowledged.  Optionally it will do a readFull on ps
-// bytes, if ps is greater than 0.
-func (w *Weatherlink) sendCommand(c []byte, ps int) (p Packet, err error) {
+// writeCmd runs commands with acknowledgement. It reads a response
+// packet of size n, which can be zero.
+func (c *Conn) writeCmd(cmd []byte, n int) (p Packet, err error) {
 	const retries = 3
 
-	// Determine what to print when showing the command in debug mode.  If
-	// it ends with a line-feed it usually means it's printable.
-	printableCommand := string(c[0 : len(c)-1])
-	if c[len(c)-1] != lf {
-		printableCommand = "[bytes]"
+	// Determine what to print when showing the command in debug mode.  If it
+	// ends with a line feed it's probably printable.
+	cmdStr := string(cmd[0 : len(cmd)-1])
+	if cmd[len(cmd)-1] != lf {
+		cmdStr = "[bytes]"
 	}
 
-	response := make(Packet, 1)
+	resp := make(Packet, 1)
 	acked := false
 	for tryNum := 0; tryNum < retries; tryNum++ {
-		w.d.Write(c)
+		c.dev.Write(cmd)
 
-		w.d.Read(response)
-		if len(response) > 0 && response[0] == ack {
+		c.dev.Read(resp)
+		if len(resp) > 0 && resp[0] == ack {
 			acked = true
 			break
 		} else {
 			Warn.Printf("Command '%s' bad response, retrying (%d/%d)",
-				printableCommand, tryNum+1, retries)
-			w.reset()
+				cmdStr, tryNum+1, retries)
+			c.softReset()
 		}
 	}
 	if !acked {
-		Error.Printf("Command '%s' bad response after repeated attempts", printableCommand)
+		Error.Printf("Command '%s' bad response after repeated attempts", cmdStr)
 		err = ErrCmdFailed
 		return
 	}
 
-	Debug.Printf("Command '%s' successful", printableCommand)
+	Debug.Printf("Command '%s' successful", cmdStr)
 
 	// If the dataSize is 0 we are just validating the ACK and leaving
 	// the rest of the response to be read elsewhere (e.g. DMP* and LPS commands).
-	if ps < 1 {
+	if n < 1 {
 		return nil, nil
 	}
 
-	p = make(Packet, ps)
-	_, err = w.d.ReadFull(p)
+	p = make(Packet, n)
+	_, err = c.dev.ReadFull(p)
 	Trace.Printf("Hex\n%s", hex.Dump(p))
 
 	return
 }
 
-// Start starts the command broker.  It attempts to intelligently select what
-// explicit commands should be run but also accepts commands via the CmdQ
-// channel.  The channel is especially useful for building multiplexing
-// services.
-func (w *Weatherlink) Start() <-chan interface{} {
+// Idler is the idle function the command broker executes when
+// there are no pending commands in the queue.
+type Idler func(*Conn, chan<- interface{}) error
+
+// StdIdle is the standard idler which reads loop packets and new
+// archive records when they're available.
+func StdIdle(c *Conn, ec chan<- interface{}) (err error) {
+	if c.LatestArchRec.After(c.LastDmp) {
+		c.LastDmp, err = c.GetDmps(ec, c.LastDmp)
+	} else {
+		err = c.GetLoops(ec)
+	}
+
+	return
+}
+
+// Start starts the command broker.  If no commands are pending it runs
+// the idler.
+func (c *Conn) Start(idle Idler) <-chan interface{} {
 	// Buffer the event channel to the maximum records a Vantage
 	// Pro 2 console can hold in memory.  This can speed up large
 	// downloads when the receiver is I/O bound with database writes.
@@ -177,49 +193,48 @@ func (w *Weatherlink) Start() <-chan interface{} {
 				// There's a TEST command however it's a lot more convenient to use
 				// a command that follows the ACK/NAK response flow and GETTIME fits.
 				Warn.Printf("%s, trying soft-reset", err.Error())
-				_, err = w.getConsTime()
+				_, err = c.GetConsTime()
 				// Hard-reset if we're still in an error state.
 				if err != nil {
 					Error.Printf("%s, trying hard-reset", err.Error())
-					w.Close()
-					err = w.open()
+					c.Close()
+					err = c.open()
 					continue
 				}
 			}
 
 			// Process command queue channel.
-			Debug.Printf("%d command(s) in queue", len(w.CmdQ))
+			Debug.Printf("%d command(s) in queue", len(c.CmdQ))
 			select {
-			case c := <-w.CmdQ:
-				switch c {
+			case cmd := <-c.CmdQ:
+				switch cmd {
 				case CmdGetEEPROM:
-					err = w.getEEPROM(ec)
+					err = c.GetEEPROM(ec)
 				case CmdGetDmps:
-					w.LastDmpTime, err = w.getDmps(ec, w.LastDmpTime)
+					c.LastDmp, err = c.GetDmps(ec, c.LastDmp)
 				case CmdGetHiLows:
-					err = w.getHiLows(ec)
+					err = c.GetHiLows(ec)
 				case CmdGetLoops:
-					err = w.getLoops(ec)
+					err = c.GetLoops(ec)
 				case CmdStop:
 					return
 				case CmdSyncConsTime:
-					err = w.syncConsTime()
+					err = c.SyncConsTime()
 				default:
 					// Should never happen unless new commands Cmd*'s are added and
 					// not defined here.
-					Error.Printf("Unhandled command: %d", c)
+					Error.Printf("Unhandled command: %d", cmd)
 					err = ErrCmdFailed
 				}
 			case <-syncConsTime.C:
-				err = w.syncConsTime()
+				err = c.SyncConsTime()
 				if err != nil {
 					syncConsTime.Reset(0)
 				} else {
 					syncConsTime.Reset(ConsTimeSyncFreq)
 				}
 			default:
-				// If there's nothing in the command queue then poll loops.
-				err = w.getLoops(ec)
+				err = idle(c, ec)
 			}
 		}
 	}()
@@ -228,14 +243,14 @@ func (w *Weatherlink) Start() <-chan interface{} {
 }
 
 // Stop stops the command broker.
-func (w Weatherlink) Stop() {
+func (c Conn) Stop() {
 	Trace.Println("Stopping command broker by request")
-	// Drain the command queue and then send a stop command.
+	// Drain the command queue and send a stop command.
 	for {
 		select {
-		case <-w.CmdQ:
+		case <-c.CmdQ:
 		default:
-			w.CmdQ <- CmdStop
+			c.CmdQ <- CmdStop
 			return
 		}
 	}

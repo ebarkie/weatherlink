@@ -7,12 +7,13 @@ package weatherlink
 import (
 	"encoding/hex"
 	"fmt"
+	"time"
 )
 
-// getLoops starts a stream of loop packets and sends them to the
-// event channel. It exits when either numLoops is hit, an archive
+// GetLoops starts a stream of loop packets and sends them to the
+// event channel. It exits when numLoops is hit, an archive
 // record was written, or a command is pending.
-func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
+func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 	// The preferred exit condition is sensing a new archive record so
 	// try to get 30 seconds beyond that.
 	numLoops := (int(archInt.Seconds()) + 30) / 2
@@ -21,7 +22,7 @@ func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 
 	// Start a stream of LOOP1&2 packets, loop through, decode, and
 	// send each one to the loops channel.
-	_, err = w.sendCommand([]byte(fmt.Sprintf("LPS 3 %d\n", numLoops)), 0)
+	_, err = c.writeCmd([]byte(fmt.Sprintf("LPS 3 %d\n", numLoops)), 0)
 	if err != nil {
 		Error.Printf("LPS command error: %s, aborting", err.Error())
 		return
@@ -31,7 +32,7 @@ func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 	var l Loop
 	nextArchRec := -1
 	for loopNum := 0; loopNum < numLoops; loopNum++ {
-		_, err = w.d.ReadFull(p)
+		_, err = c.dev.ReadFull(p)
 		if err != nil {
 			// LOOP stream was interrupted before we received all of the
 			// expected packets.
@@ -73,21 +74,16 @@ func (w *Weatherlink) getLoops(ec chan interface{}) (err error) {
 		// interested in archive records.
 		if nextArchRec < 0 {
 			nextArchRec = l.nextArchRec
-		} else if !w.LastDmpTime.IsZero() && nextArchRec != l.nextArchRec {
-			Trace.Printf("New archive record is available (%d->%d)", nextArchRec, l.nextArchRec)
-			// Send a dmp but make sure it doesn't block or we'll be deadlocked.
-			select {
-			case w.CmdQ <- CmdGetDmps:
-			default:
-				// If it's blocked then just drop it, nextArchRec is not
-				// updated so this will keep retrying.
-			}
+		} else if nextArchRec != l.nextArchRec {
+			Debug.Printf("New archive record is available (%d->%d)", nextArchRec, l.nextArchRec)
+			c.LatestArchRec = time.Now()
+			return
 		}
 
 		// Loops are low priority so if something else is waiting to run then exit.
-		if len(w.CmdQ) > 0 {
+		if len(c.CmdQ) > 0 {
 			Debug.Println("Command queue is not empty, cancelling get loops")
-			w.reset()
+			c.softReset()
 			break
 		}
 	}

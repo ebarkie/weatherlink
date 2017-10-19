@@ -4,9 +4,9 @@
 
 package weatherlink
 
-// getEEPROM retrieves the entire EEPROM configuration.
-func (w *Weatherlink) getEEPROM(ec chan interface{}) error {
-	p, err := w.sendCommand([]byte("GETEE\n"), 4098)
+// GetEEPROM retrieves the entire EEPROM configuration.
+func (c *Conn) GetEEPROM(ec chan<- interface{}) error {
+	p, err := c.writeCmd([]byte("GETEE\n"), 4098)
 	if err != nil {
 		return err
 	}

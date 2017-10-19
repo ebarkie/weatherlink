@@ -6,19 +6,17 @@
 Go package for working with Davis Instruments Weatherlink protocol over a
 Weatherlink IP, serial, or USB interface.
 
-Current features include:
-* Should work with any Davis station made after 2002.  Developed for a Vantage Pro
+Features:
+* Should work with any Davis station made after 2002.  Developed using a Vantage Pro
   2 Plus with all sensor types.
-* Supports Weatherlink IP, serial, or USB (genuine or clone).
+* Device support for Weatherlink IP, serial, USB (genuine or clone).
+* Device simulator.
 * Decodes DMP (archive), EEPROM (configuration), HILOWS, LPS 1 (loop 1), and
   LPS 2 (loop 2) events and writes them to a channel.
-* Syncs console time.
-* Includes a command broker that attempts to intelligently select what
-  commands should be run but also accepts explicit commands.
-
-Future features:
-* Encode Weatherlink packets.  Useful for creating a virtual Weatherlink IP,
-  even a multiplexed one.
+* Partial encoding (work in progress).
+* Sync console time.
+* Command broker that coordinates commands.  Use the standard idler or define a
+  custom one.
 
 ## Installation
 
@@ -37,6 +35,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/ebarkie/weatherlink"
@@ -58,7 +57,15 @@ func main() {
 
 	// Goroutine to receive station events
 	go func() {
-		ec := w.Start()
+		// Standard idler which reads loop packets and new archive
+		// records when they're available.
+		//ec := w.Start(weatherlink.StdIdle)
+
+		// Custom idler which only reads loop packets and ignores archive
+		// records.
+		ec := w.Start(func(c *weatherlink.Conn, ec chan<- interface{}) error {
+			return c.GetLoops(ec)
+		})
 		log.Println("Command broker started")
 		// Keep retrieving events until the channel is closed
 		for e := range ec {
@@ -82,7 +89,7 @@ func main() {
 	w.CmdQ <- weatherlink.CmdGetHiLows
 
 	// Run for a period of time and then send a stop signal
-	runTime := time.Duration(30 * time.Second)
+	runTime := time.Duration(6 * time.Minute)
 	log.Printf("Receiving events for %s", runTime)
 	time.Sleep(runTime)
 	log.Println("Stopping command broker")

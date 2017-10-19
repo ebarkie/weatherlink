@@ -42,7 +42,7 @@ var (
 	Error = log.New(ioutil.Discard, "[ERRO]", log.LstdFlags|log.Lshortfile)
 )
 ```
-Loggers
+Loggers.
 
 ```go
 var (
@@ -63,6 +63,14 @@ var (
 )
 ```
 Tunables.
+
+#### func  StdIdle
+
+```go
+func StdIdle(c *Conn, ec chan<- interface{}) (err error)
+```
+StdIdle is the standard idler which reads loop packets and new archive records
+when they're available.
 
 #### type Archive
 
@@ -99,6 +107,97 @@ type Archive struct {
 ```
 
 Archive represents all of the data in a revision B DMP archive record.
+
+#### type Conn
+
+```go
+type Conn struct {
+	CmdQ chan cmd // Broker command queue
+
+	LatestArchRec time.Time // Time of the latest archive record available
+	LastDmp       time.Time // Time of the last downloaded archive record
+}
+```
+
+Conn holds the weatherlink connnection context.
+
+#### func  Dial
+
+```go
+func Dial(addr string) (c Conn, err error)
+```
+Dial establishes the weatherlink connection.
+
+#### func (*Conn) Close
+
+```go
+func (c *Conn) Close() error
+```
+Close closes the weatherlink connection.
+
+#### func (*Conn) GetConsTime
+
+```go
+func (c *Conn) GetConsTime() (t time.Time, err error)
+```
+GetConsTime gets the console time.
+
+#### func (*Conn) GetDmps
+
+```go
+func (c *Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time.Time, err error)
+```
+GetDmps downloads all archive records *after* lastRec and sends them to the
+event channel ordered from oldest to newest. It returns the time of the last
+record it read.
+
+If lastRec does not match an existing archive timestamp (which is the case if
+left uninitialized) then all records in memory are returned.
+
+#### func (*Conn) GetEEPROM
+
+```go
+func (c *Conn) GetEEPROM(ec chan<- interface{}) error
+```
+GetEEPROM retrieves the entire EEPROM configuration.
+
+#### func (*Conn) GetHiLows
+
+```go
+func (c *Conn) GetHiLows(ec chan<- interface{}) error
+```
+GetHiLows retrieves the record high and lows.
+
+#### func (*Conn) GetLoops
+
+```go
+func (c *Conn) GetLoops(ec chan<- interface{}) (err error)
+```
+GetLoops starts a stream of loop packets and sends them to the event channel. It
+exits when numLoops is hit, an archive record was written, or a command is
+pending.
+
+#### func (*Conn) Start
+
+```go
+func (c *Conn) Start(idle Idler) <-chan interface{}
+```
+Start starts the command broker. If no commands are pending it runs the idler.
+
+#### func (Conn) Stop
+
+```go
+func (c Conn) Stop()
+```
+Stop stops the command broker.
+
+#### func (*Conn) SyncConsTime
+
+```go
+func (c *Conn) SyncConsTime() (err error)
+```
+SyncConsTime synchronizes the console time with the local system time if the
+offset exceeds 10 seconds.
 
 #### type ConsTime
 
@@ -489,6 +588,15 @@ type HiWindSpeed struct {
 
 HiWindSpeed is the record high wind speed readings.
 
+#### type Idler
+
+```go
+type Idler func(*Conn, chan<- interface{}) error
+```
+
+Idler is the idle function the command broker executes when there are no pending
+commands in the queue.
+
 #### type Loop
 
 ```go
@@ -645,44 +753,3 @@ type Packet []byte
 ```
 
 Packet is a binary data packet.
-
-#### type Weatherlink
-
-```go
-type Weatherlink struct {
-	CmdQ        chan cmd
-	LastDmpTime time.Time
-}
-```
-
-Weatherlink is used to track the Weatherlink device.
-
-#### func  Dial
-
-```go
-func Dial(dev string) (w Weatherlink, err error)
-```
-Dial opens the connection to the Weatherlink.
-
-#### func (*Weatherlink) Close
-
-```go
-func (w *Weatherlink) Close() error
-```
-Close closes the connection to the Weatherlink.
-
-#### func (*Weatherlink) Start
-
-```go
-func (w *Weatherlink) Start() <-chan interface{}
-```
-Start starts the command broker. It attempts to intelligently select what
-explicit commands should be run but also accepts commands via the CmdQ channel.
-The channel is especially useful for building multiplexing services.
-
-#### func (Weatherlink) Stop
-
-```go
-func (w Weatherlink) Stop()
-```
-Stop stops the command broker.

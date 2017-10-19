@@ -6,10 +6,10 @@ package weatherlink
 
 import "time"
 
-// getConsTime reads the console time and returns it as a time.
-func (w *Weatherlink) getConsTime() (t time.Time, err error) {
+// GetConsTime gets the console time.
+func (c *Conn) GetConsTime() (t time.Time, err error) {
 	var p Packet
-	p, err = w.sendCommand([]byte("GETTIME\n"), 8)
+	p, err = c.writeCmd([]byte("GETTIME\n"), 8)
 	if err != nil {
 		return
 	}
@@ -24,25 +24,24 @@ func (w *Weatherlink) getConsTime() (t time.Time, err error) {
 	return
 }
 
-// setConsTime sets the console time to the specified time.
-func (w *Weatherlink) setConsTime(t time.Time) (err error) {
-	_, err = w.sendCommand([]byte("SETTIME\n"), 0)
+// setConsTime sets the console time.
+func (c *Conn) setConsTime(t time.Time) (err error) {
+	_, err = c.writeCmd([]byte("SETTIME\n"), 0)
 	if err != nil {
 		return
 	}
-	_, err = w.sendCommand(ConsTime(t).ToPacket(), 0)
+	_, err = c.writeCmd(ConsTime(t).ToPacket(), 0)
 
 	return
 }
 
-// syncConsTime uses getConsTime and compares it to the system time.
-// If it exceeds the offset threshold then setConsTime is called to
-// get them in sync.
-func (w *Weatherlink) syncConsTime() (err error) {
+// SyncConsTime synchronizes the console time with the local
+// system time if the offset exceeds 10 seconds.
+func (c *Conn) SyncConsTime() (err error) {
 	const maxOffset = 10 * time.Second
 
 	var t time.Time
-	t, err = w.getConsTime()
+	t, err = c.GetConsTime()
 	if err != nil {
 		return
 	}
@@ -54,7 +53,7 @@ func (w *Weatherlink) syncConsTime() (err error) {
 
 	if offset > maxOffset {
 		Info.Printf("Console time is off by %s, syncing", offset)
-		err = w.setConsTime(time.Now())
+		err = c.setConsTime(time.Now())
 		if err != nil {
 			Error.Println(err.Error())
 		}

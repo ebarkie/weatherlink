@@ -10,8 +10,8 @@ import (
 )
 
 // GetLoops starts a stream of loop packets and sends them to the
-// event channel. It exits when numLoops is hit, an archive
-// record was written, or a command is pending.
+// event channel. It exits when numLoops is hit, an archive record
+// was written, or a command is pending.
 func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 	// The preferred exit condition is sensing a new archive record so
 	// try to get 30 seconds beyond that.
@@ -67,10 +67,6 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 
 		// A LOOP1 decode includes the next archive record indicator and if it changes
 		// a new archive record is ready to be read.
-		//
-		// Only preemt the get loops cycle if the last archive time was set manually or
-		// as the result of a (user initiated) CmdGetDmps command, indicating the user is
-		// interested in archive records.
 		if nextArcRec < 0 {
 			nextArcRec = l.nextArcRec
 		} else if nextArcRec != l.nextArcRec {

@@ -162,7 +162,7 @@ func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
 
 	p = make(Packet, n)
 	_, err = c.dev.ReadFull(p)
-	Trace.Printf("Hex\n%s", hex.Dump(p))
+	Trace.Printf("Packet\n%s", hex.Dump(p))
 
 	return
 }

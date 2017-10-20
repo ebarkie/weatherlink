@@ -7,7 +7,7 @@ package weatherlink
 import "time"
 
 // GetConsTime gets the console time.
-func (c *Conn) GetConsTime() (t time.Time, err error) {
+func (c Conn) GetConsTime() (t time.Time, err error) {
 	var p Packet
 	p, err = c.writeCmd([]byte("GETTIME\n"), []byte{ack}, 8)
 	if err != nil {
@@ -25,7 +25,7 @@ func (c *Conn) GetConsTime() (t time.Time, err error) {
 }
 
 // setConsTime sets the console time.
-func (c *Conn) setConsTime(t time.Time) (err error) {
+func (c Conn) setConsTime(t time.Time) (err error) {
 	_, err = c.writeCmd([]byte("SETTIME\n"), []byte{ack}, 0)
 	if err != nil {
 		return
@@ -37,7 +37,7 @@ func (c *Conn) setConsTime(t time.Time) (err error) {
 
 // SyncConsTime synchronizes the console time with the local
 // system time if the offset exceeds 10 seconds.
-func (c *Conn) SyncConsTime() (err error) {
+func (c Conn) SyncConsTime() (err error) {
 	const maxOffset = 10 * time.Second
 
 	var t time.Time

@@ -5,7 +5,7 @@
 package weatherlink
 
 // GetHiLows retrieves the record high and lows.
-func (c *Conn) GetHiLows(ec chan<- interface{}) error {
+func (c Conn) GetHiLows(ec chan<- interface{}) error {
 	p, err := c.writeCmd([]byte("HILOWS\n"), []byte{ack}, 438)
 	if err != nil {
 		return err

@@ -94,7 +94,7 @@ func (c *Conn) open() (err error) {
 }
 
 // Close closes the weatherlink connection.
-func (c *Conn) Close() error {
+func (c Conn) Close() error {
 	Trace.Printf("Closing device %s", c.addr)
 	return c.dev.Close()
 }
@@ -102,7 +102,7 @@ func (c *Conn) Close() error {
 // softReset tries to get the weatherlink device to abort the current command
 // and get into a ready state.  It's usually used to interrupt LPS or DMPAFT
 // commands.
-func (c *Conn) softReset() {
+func (c Conn) softReset() {
 	const flushTime = 1 * time.Second
 
 	c.dev.Write([]byte{lf})
@@ -110,9 +110,16 @@ func (c *Conn) softReset() {
 	c.dev.Flush()
 }
 
+// test sends a test command.
+func (c Conn) test() (err error) {
+	_, err = c.writeCmd([]byte("TEST\n"), []byte{lf, cr, 'T', 'E', 'S', 'T', lf, cr}, 0)
+
+	return
+}
+
 // writeCmd runs a command and requires an acknowledgement response.  If n > 0
 // then a Packet of that length will be read after the acknowledgement.
-func (c *Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
+func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
 	const retries = 3
 
 	// Determine what to print when showing the command in debug mode.  If it
@@ -132,6 +139,8 @@ func (c *Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) 
 			acked = true
 			break
 		} else {
+			Trace.Printf("Expected ack\n%s", hex.Dump(cmdAck))
+			Trace.Printf("Actual ack\n%s", hex.Dump(resp))
 			Warn.Printf("Command '%s' bad response, retrying (%d/%d)",
 				cmdStr, tryNum+1, retries)
 			c.softReset()
@@ -192,11 +201,8 @@ func (c *Conn) Start(idle Idler) <-chan interface{} {
 			// Before we do anything make sure we're in a non-error state.
 			if err != nil {
 				// Try a soft-reset first.
-				//
-				// There's a TEST command however it's a lot more convenient to use
-				// a command that follows the ACK/NAK response flow and GETTIME fits.
 				Warn.Printf("%s, trying soft-reset", err.Error())
-				_, err = c.GetConsTime()
+				err = c.test()
 				// Hard-reset if we're still in an error state.
 				if err != nil {
 					Error.Printf("%s, trying hard-reset", err.Error())

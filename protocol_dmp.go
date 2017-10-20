@@ -18,7 +18,7 @@ const archInt = 5 * time.Minute // XXX Read from EEPROM.
 //
 // If lastRec does not match an existing archive timestamp (which is the case if
 // left uninitialized) then all records in memory are returned.
-func (c *Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time.Time, err error) {
+func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time.Time, err error) {
 	Debug.Printf("Retrieving archive records since %s", lastRec)
 
 	// If for some reason we return on error before any records are read

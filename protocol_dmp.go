@@ -77,7 +77,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 			// Most likely a CRC error - NAK and retry the page.
 			Error.Printf("Dmp page %d/%d decode error: %s, retrying",
 				pageNum, dm.Pages, err.Error())
-			c.dev.Write([]byte{nak})
+			c.dev.Write([]byte{nakDmp})
 			pageNum--
 			continue
 		}

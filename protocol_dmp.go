@@ -19,6 +19,11 @@ const archInt = 5 * time.Minute // XXX Read from EEPROM.
 // If lastRec does not match an existing archive timestamp (which is the case if
 // left uninitialized) then all records in memory are returned.
 func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time.Time, err error) {
+	const (
+		nak = 0x15 // Not acknowledge
+		esc = 0x1b // Escape
+	)
+
 	Debug.Printf("Retrieving archive records since %s", lastRec)
 
 	// If for some reason we return on error before any records are read
@@ -77,7 +82,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 			// Most likely a CRC error - NAK and retry the page.
 			Error.Printf("Dmp page %d/%d decode error: %s, retrying",
 				pageNum, dm.Pages, err.Error())
-			c.dev.Write([]byte{nakDmp})
+			c.dev.Write([]byte{nak})
 			pageNum--
 			continue
 		}

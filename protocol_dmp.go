@@ -88,8 +88,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 		}
 
 		// We have a valid decoded archive page
-		Trace.Printf("Valid dmp packet (%d:%d/%d)",
-			pageNum, int(p[0]), dm.Pages)
+		Debug.Printf("Valid dmp page (%d:%d/%d)", pageNum, int(p[0]), dm.Pages)
 		Trace.Printf("Packet\n%s", hex.Dump(p))
 		Trace.Printf("Decoded\n%+v", d)
 

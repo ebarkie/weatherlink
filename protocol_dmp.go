@@ -74,13 +74,12 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 		d := Dmp{}
 		err = d.FromPacket(p)
 		if err != nil {
-			// Most likely a CRC error.  We could NAK it and retry the page
-			// but in practice it's simpler and more reliable to just let
-			// the next invocation retry.
-			Error.Printf("Dmp page %d/%d decode error: %s, aborting",
+			// Most likely a CRC error - NAK and retry the page.
+			Error.Printf("Dmp page %d/%d decode error: %s, retrying",
 				pageNum, dm.Pages, err.Error())
-			c.dev.Write([]byte{esc})
-			break
+			c.dev.Write([]byte{nak})
+			pageNum--
+			continue
 		}
 
 		// We have a valid decoded archive page

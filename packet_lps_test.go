@@ -138,7 +138,7 @@ func TestLoopFromPacketRain(t *testing.T) {
 		a.Nil(l.LeafTemp[i], fmt.Sprintf("Leaf temperature %d", i))
 		a.Nil(l.LeafWetness[i], fmt.Sprintf("Leaf wetness %d", i))
 	}
-	a.Equal(284, l.nextArchRec, "Next archive record")
+	a.Equal(284, l.nextArcRec, "Next archive record")
 	a.Equal(73, l.OutHumidity, "Outside humidity")
 	a.Equal(83.9, l.OutTemp, "Outside temperature")
 	a.Equal(0.0, l.Rain.Rate, "Rain rate")

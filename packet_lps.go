@@ -38,7 +38,7 @@ type Loop struct {
 	UVIndex       float64   `json:"UVIndex"`
 	Wind          LoopWind  `json:"wind"`
 	WindChill     float64   `json:"windChill"`
-	nextArchRec   int
+	nextArcRec    int
 }
 
 // LoopBar is the barometer related readings for a Loop struct.
@@ -167,7 +167,7 @@ func (l *Loop) FromPacket(p Packet) error {
 		// the loop2 decode is more precise.
 		// l.Wind.Avg.Last10MinSpeed = p.get1ByteMPH(15)
 
-		l.nextArchRec = p.get2ByteInt(5)
+		l.nextArcRec = p.get2ByteInt(5)
 	case 2:
 		// Loop2
 		l.Bar.Altimeter = p.getPressure(69)
@@ -255,7 +255,7 @@ func (l *Loop) ToPacket(t int) (p Packet, err error) {
 		}
 		p.set1ByteMPH(14, l.Wind.Cur.Speed)
 
-		p.set2ByteInt(5, l.nextArchRec)
+		p.set2ByteInt(5, l.nextArcRec)
 	case 2:
 		// Loop2
 		p.setPressure(69, l.Bar.Altimeter)

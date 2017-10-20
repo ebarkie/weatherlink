@@ -29,7 +29,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 
 	p := make(Packet, 99)
 	var l Loop
-	nextArchRec := -1
+	nextArcRec := -1
 	for loopNum := 0; loopNum < numLoops; loopNum++ {
 		_, err = c.dev.ReadFull(p)
 		if err != nil {
@@ -71,11 +71,11 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 		// Only preemt the get loops cycle if the last archive time was set manually or
 		// as the result of a (user initiated) CmdGetDmps command, indicating the user is
 		// interested in archive records.
-		if nextArchRec < 0 {
-			nextArchRec = l.nextArchRec
-		} else if nextArchRec != l.nextArchRec {
-			Debug.Printf("New archive record is available (%d->%d)", nextArchRec, l.nextArchRec)
-			c.NewArchRec = true
+		if nextArcRec < 0 {
+			nextArcRec = l.nextArcRec
+		} else if nextArcRec != l.nextArcRec {
+			Debug.Printf("New archive record is available (%d->%d)", nextArcRec, l.nextArcRec)
+			c.NewArcRec = true
 			return
 		}
 

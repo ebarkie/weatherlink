@@ -100,8 +100,7 @@ func (l *Loop) FromPacket(p Packet) error {
 		return ErrBadCRC
 	}
 
-	t := p.getLoopType()
-	switch t {
+	switch p.getLoopType() {
 	case -1:
 		// Packet length or header didn't make sense.
 		return ErrNotLoop

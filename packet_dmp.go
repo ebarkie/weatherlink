@@ -58,23 +58,28 @@ func (d *Dmp) FromPacket(p Packet) error {
 		return ErrBadCRC
 	}
 
+	if len(p) != 267 {
+		return ErrNotDmp
+	}
+
 	// Each individual record within the archive page contains a
 	// revision marker but they're all going to be the same so
 	// it's only necessary to check the first one.
-	if p.getDmpType() != "b" {
+	if p[1:53].getDmpType() != "b" {
 		return ErrNotDmpB
 	}
 
 	// Break apart the page of 5 52-byte archive records and process
 	// each one.  There are 4 unused bytes at the end.
 	for i := 0; i < 5; i++ {
-		offset := (52 * i) + 1
+		offset := 1 + (52 * i)
 		pr := p[offset : offset+52]
 
 		d[i].Bar = pr.getPressure(14)
-		d[i].ET = float64(pr[29]) / 1000
+		d[i].ET = pr.get1ByteFloat(29) / 1000
 		// There are 2 extra humidity sensors and 3 extra temperature
-		// sensors.  Usually they match but not for archive.
+		// sensors.  Usually the quantities match but not for archive
+		// records.
 		for j := uint(0); j < 2; j++ {
 			if v := pr.get1ByteInt(43 + j); v != 255 {
 				d[i].ExtraHumidity[j] = &v
@@ -152,27 +157,29 @@ type DmpMeta struct {
 
 // FromPacket unpacks a 6-byte DMP metadata packet into the
 // DmpMeta stuct.
-func (dm *DmpMeta) FromPacket(p Packet) (err error) {
+func (dm *DmpMeta) FromPacket(p Packet) error {
 	if crc(p) != 0 {
-		err = ErrBadCRC
-		return
+		return ErrBadCRC
 	}
 
 	if len(p) != 6 {
-		err = ErrNotDmp
-		return
+		return ErrNotDmpMeta
 	}
 
 	dm.Pages = p.get2ByteInt(0)
 	dm.FirstPageOffset = p.get2ByteInt(2)
 
-	return
+	return nil
 }
 
 // getDmpType returns the Dmp packet revision or empty string
 // if it's not a valid archive packet.
 func (p Packet) getDmpType() (t string) {
-	switch p[43] {
+	if len(p) != 52 {
+		return
+	}
+
+	switch p[42] {
 	case 0xff:
 		t = "a"
 	case 0x0:

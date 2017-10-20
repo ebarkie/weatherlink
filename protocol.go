@@ -40,8 +40,9 @@ const (
 var (
 	ErrBadCRC      = errors.New("CRC check failed")
 	ErrBadLocation = errors.New("Location is inconsistent")
-	ErrNotDmp      = errors.New("Not a DMP metadata packet")
-	ErrNotDmpB     = errors.New("Not a revision B DMP packet")
+	ErrNotDmp      = errors.New("Not a memory packet")
+	ErrNotDmpB     = errors.New("Not a revision B memory packet")
+	ErrNotDmpMeta  = errors.New("Not a memory metadata packet")
 	ErrNotLoop     = errors.New("Not a loop packet")
 	ErrUnknownLoop = errors.New("Loop packet type is unknown")
 	ErrCmdFailed   = errors.New("Protocol command failed")

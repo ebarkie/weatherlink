@@ -59,8 +59,8 @@ type Conn struct {
 
 	CmdQ chan cmd // Broker command queue
 
-	LatestArchRec time.Time // Time of the latest archive record available
-	LastDmp       time.Time // Time of the last downloaded archive record
+	NewArchRec bool      // Indicates a new archive record is available
+	LastDmp    time.Time // Time of the last downloaded archive record
 }
 
 // Dial establishes the weatherlink connection.
@@ -174,7 +174,8 @@ type Idler func(*Conn, chan<- interface{}) error
 // StdIdle is the standard idler which reads loop packets and new
 // archive records when they're available.
 func StdIdle(c *Conn, ec chan<- interface{}) (err error) {
-	if c.LatestArchRec.After(c.LastDmp) {
+	if c.NewArchRec {
+		c.NewArchRec = false
 		c.LastDmp, err = c.GetDmps(ec, c.LastDmp)
 	} else {
 		err = c.GetLoops(ec)

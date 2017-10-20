@@ -7,7 +7,6 @@ package weatherlink
 import (
 	"encoding/hex"
 	"strconv"
-	"time"
 )
 
 // GetLoops starts a stream of loop packets and sends them to the
@@ -76,7 +75,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 			nextArchRec = l.nextArchRec
 		} else if nextArchRec != l.nextArchRec {
 			Debug.Printf("New archive record is available (%d->%d)", nextArchRec, l.nextArchRec)
-			c.LatestArchRec = time.Now()
+			c.NewArchRec = true
 			return
 		}
 

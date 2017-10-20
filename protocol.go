@@ -110,8 +110,8 @@ func (c *Conn) softReset() {
 	c.dev.Flush()
 }
 
-// writeCmd runs commands with acknowledgement. It reads a response
-// packet of size n, which can be zero.
+// writeCmd runs a command and requires an acknowledgement response.  If n > 0
+// then a Packet of that length will be read after the acknowledgement.
 func (c *Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
 	const retries = 3
 

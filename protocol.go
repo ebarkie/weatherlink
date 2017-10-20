@@ -7,6 +7,7 @@
 package weatherlink
 
 import (
+	"bytes"
 	"encoding/hex"
 	"errors"
 	"strings"
@@ -25,12 +26,14 @@ type cmd uint8
 
 // Commands that can be requested.
 const (
-	CmdGetDmps cmd = iota
-	CmdGetEEPROM
-	CmdGetHiLows
-	CmdGetLoops
-	CmdStop
-	CmdSyncConsTime
+	GetDmps cmd = iota
+	GetEEPROM
+	GetHiLows
+	GetLoops
+	LampsOff
+	LampsOn
+	Stop
+	SyncConsTime
 )
 
 // Errors.
@@ -62,7 +65,7 @@ type Conn struct {
 
 // Dial establishes the weatherlink connection.
 func Dial(addr string) (c Conn, err error) {
-	c.CmdQ = make(chan cmd)
+	c.CmdQ = make(chan cmd, 1)
 
 	c.addr = addr
 	err = c.open()
@@ -109,7 +112,7 @@ func (c *Conn) softReset() {
 
 // writeCmd runs commands with acknowledgement. It reads a response
 // packet of size n, which can be zero.
-func (c *Conn) writeCmd(cmd []byte, n int) (p Packet, err error) {
+func (c *Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
 	const retries = 3
 
 	// Determine what to print when showing the command in debug mode.  If it
@@ -119,13 +122,13 @@ func (c *Conn) writeCmd(cmd []byte, n int) (p Packet, err error) {
 		cmdStr = "[bytes]"
 	}
 
-	resp := make(Packet, 1)
+	resp := make(Packet, len(cmdAck))
 	acked := false
 	for tryNum := 0; tryNum < retries; tryNum++ {
 		c.dev.Write(cmd)
 
-		c.dev.Read(resp)
-		if len(resp) > 0 && resp[0] == ack {
+		c.dev.ReadFull(resp)
+		if bytes.Equal(cmdAck, resp) {
 			acked = true
 			break
 		} else {
@@ -208,17 +211,21 @@ func (c *Conn) Start(idle Idler) <-chan interface{} {
 			select {
 			case cmd := <-c.CmdQ:
 				switch cmd {
-				case CmdGetEEPROM:
+				case GetEEPROM:
 					err = c.GetEEPROM(ec)
-				case CmdGetDmps:
+				case GetDmps:
 					c.LastDmp, err = c.GetDmps(ec, c.LastDmp)
-				case CmdGetHiLows:
+				case GetHiLows:
 					err = c.GetHiLows(ec)
-				case CmdGetLoops:
+				case GetLoops:
 					err = c.GetLoops(ec)
-				case CmdStop:
+				case LampsOff:
+					err = c.SetLamps(false)
+				case LampsOn:
+					err = c.SetLamps(true)
+				case Stop:
 					return
-				case CmdSyncConsTime:
+				case SyncConsTime:
 					err = c.SyncConsTime()
 				default:
 					// Should never happen unless new commands Cmd*'s are added and
@@ -250,7 +257,7 @@ func (c Conn) Stop() {
 		select {
 		case <-c.CmdQ:
 		default:
-			c.CmdQ <- CmdStop
+			c.CmdQ <- Stop
 			return
 		}
 	}

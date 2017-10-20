@@ -6,7 +6,7 @@ package weatherlink
 
 import (
 	"encoding/hex"
-	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -22,7 +22,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 
 	// Start a stream of LOOP1&2 packets, loop through, decode, and
 	// send each one to the loops channel.
-	_, err = c.writeCmd([]byte(fmt.Sprintf("LPS 3 %d\n", numLoops)), 0)
+	_, err = c.writeCmd([]byte("LPS 3 "+strconv.Itoa(numLoops)+"\n"), []byte{ack}, 0)
 	if err != nil {
 		Error.Printf("LPS command error: %s, aborting", err.Error())
 		return

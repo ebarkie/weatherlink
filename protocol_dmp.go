@@ -27,13 +27,13 @@ func (c *Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec tim
 	newLastRec = lastRec
 
 	// Setup download.
-	_, err = c.writeCmd([]byte("DMPAFT\n"), 0)
+	_, err = c.writeCmd([]byte("DMPAFT\n"), []byte{ack}, 0)
 	if err != nil {
 		Error.Printf("DMPAFT command error: %s, aborting", err.Error())
 		return
 	}
 	var p Packet
-	p, err = c.writeCmd(DmpAft(lastRec).ToPacket(), 6)
+	p, err = c.writeCmd(DmpAft(lastRec).ToPacket(), []byte{ack}, 6)
 	if err != nil {
 		Error.Printf("Dmp metadata read error: %s, aborting", err.Error())
 		return

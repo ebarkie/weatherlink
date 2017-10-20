@@ -53,7 +53,7 @@ func main() {
 	}()
 
 	// Send an explicit command
-	w.CmdQ <- weatherlink.CmdGetHiLows
+	w.CmdQ <- weatherlink.GetHiLows
 
 	// Run for a period of time and then send a stop signal
 	runTime := time.Duration(6 * time.Minute)

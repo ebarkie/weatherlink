@@ -9,7 +9,7 @@ import "time"
 // GetConsTime gets the console time.
 func (c *Conn) GetConsTime() (t time.Time, err error) {
 	var p Packet
-	p, err = c.writeCmd([]byte("GETTIME\n"), 8)
+	p, err = c.writeCmd([]byte("GETTIME\n"), []byte{ack}, 8)
 	if err != nil {
 		return
 	}
@@ -26,11 +26,11 @@ func (c *Conn) GetConsTime() (t time.Time, err error) {
 
 // setConsTime sets the console time.
 func (c *Conn) setConsTime(t time.Time) (err error) {
-	_, err = c.writeCmd([]byte("SETTIME\n"), 0)
+	_, err = c.writeCmd([]byte("SETTIME\n"), []byte{ack}, 0)
 	if err != nil {
 		return
 	}
-	_, err = c.writeCmd(ConsTime(t).ToPacket(), 0)
+	_, err = c.writeCmd(ConsTime(t).ToPacket(), []byte{ack}, 0)
 
 	return
 }

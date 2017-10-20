@@ -23,12 +23,14 @@ Barometer trends.
 
 ```go
 const (
-	CmdGetDmps cmd = iota
-	CmdGetEEPROM
-	CmdGetHiLows
-	CmdGetLoops
-	CmdStop
-	CmdSyncConsTime
+	GetDmps cmd = iota
+	GetEEPROM
+	GetHiLows
+	GetLoops
+	LampsOff
+	LampsOn
+	Stop
+	SyncConsTime
 )
 ```
 Commands that can be requested.
@@ -176,6 +178,13 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error)
 GetLoops starts a stream of loop packets and sends them to the event channel. It
 exits when numLoops is hit, an archive record was written, or a command is
 pending.
+
+#### func (Conn) SetLamps
+
+```go
+func (c Conn) SetLamps(on bool) (err error)
+```
+SetLamps sets the console lamps state.
 
 #### func (*Conn) Start
 

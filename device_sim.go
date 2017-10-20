@@ -49,20 +49,18 @@ func (sim) Flush() error {
 // Read reads up to the size of the provided byte buffer from the
 // simulated Weatherlink device.
 func (sim) Read(b []byte) (int, error) {
-	switch len(b) {
-	case 1:
-		b[0] = ack
-		return 1, nil
-	default:
-		Debug.Printf("Unhandled simulated read %d bytes", len(b))
-		return 0, io.ErrUnexpectedEOF
-	}
+	Debug.Printf("Unhandled simulated read %d bytes", len(b))
+	return 0, io.ErrUnexpectedEOF
 }
 
 // ReadFull reads the full size of the provided byte buffer from the
 // simulted Weatherlink device.
 func (s *sim) ReadFull(b []byte) (n int, err error) {
 	switch len(b) {
+	case 1:
+		// Command ack
+		b[0] = ack
+		return 1, nil
 	case 8:
 		// GETTIME
 		ct := ConsTime(time.Now())

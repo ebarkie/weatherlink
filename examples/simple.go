@@ -27,14 +27,9 @@ func main() {
 	go func() {
 		// Standard idler which reads loop packets and new archive
 		// records when they're available.
-		//ec := w.Start(weatherlink.StdIdle)
-
-		// Custom idler which only reads loop packets and ignores archive
-		// records.
-		ec := w.Start(func(c *weatherlink.Conn, ec chan<- interface{}) error {
-			return c.GetLoops(ec)
-		})
+		ec := w.Start(weatherlink.StdIdle)
 		log.Println("Command broker started")
+
 		// Keep retrieving events until the channel is closed
 		for e := range ec {
 			switch e.(type) {

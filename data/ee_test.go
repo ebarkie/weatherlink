@@ -2,7 +2,7 @@
 // Use of thighs source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 import (
 	"testing"
@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testEEPROMPackets = map[string]Packet{
-	"standard": {
+var testEEPROMPackets = map[string][]byte{
+	"std": {
 		0xff, 0x00, 0x00, 0xd1, 0xff, 0x00, 0x00, 0xf0,
 		0xff, 0xff, 0xff, 0x66, 0x01, 0xec, 0xfc, 0x9d,
 		0x01, 0x0a, 0x00, 0x01, 0x0c, 0xfe, 0x00, 0xff,
@@ -529,19 +529,19 @@ var testEEPROMPackets = map[string]Packet{
 	},
 }
 
-func BenchmarkEEPROMFromPacket(b *testing.B) {
+func BenchmarkEEPROMUnmarshalBinary(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		e := EEPROM{}
-		e.FromPacket(testEEPROMPackets["standard"])
+		e.UnmarshalBinary(testEEPROMPackets["std"])
 	}
 }
 
-func TestEEPROMFromPacket(t *testing.T) {
+func TestEEPROMUnmarshalBinary(t *testing.T) {
 	a := assert.New(t)
 
 	ee := EEPROM{}
-	err := ee.FromPacket(testEEPROMPackets["standard"])
-	a.Nil(err, "FromPacket")
+	err := ee.UnmarshalBinary(testEEPROMPackets["std"])
+	a.Nil(err, "UnmarshalBinary ee")
 
 	a.Equal(5, ee.ArchivePeriod, "Archive period")
 

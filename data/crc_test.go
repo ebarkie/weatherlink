@@ -2,22 +2,24 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 import (
 	"testing"
+
+	"github.com/ebarkie/weatherlink/packet"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func BenchmarkCRC(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		crc(testLoopPackets["1NoRain"])
+		packet.Crc(testLoopPackets["1NoRain"])
 	}
 }
 
 func TestCRC(t *testing.T) {
 	a := assert.New(t)
-	a.Zero(crc(testLoopPackets["1Rain"]), "Loop1 CRC check")
-	a.NotZero(crc(testLoopPackets["2BadCrc"]), "Loop1 bad CRC check")
+	a.Zero(packet.Crc(testLoopPackets["1Rain"]), "Loop1 CRC check")
+	a.NotZero(packet.Crc(testLoopPackets["2BadCrc"]), "Loop1 bad CRC check")
 }

@@ -4,6 +4,8 @@
 
 package weatherlink
 
+import "github.com/ebarkie/weatherlink/data"
+
 // GetEEPROM retrieves the entire EEPROM configuration.
 func (c Conn) GetEEPROM(ec chan<- interface{}) error {
 	p, err := c.writeCmd([]byte("GETEE\n"), []byte{ack}, 4098)
@@ -11,8 +13,8 @@ func (c Conn) GetEEPROM(ec chan<- interface{}) error {
 		return err
 	}
 
-	ee := EEPROM{}
-	err = ee.FromPacket(p)
+	ee := data.EEPROM{}
+	err = ee.UnmarshalBinary(p)
 	if err != nil {
 		return err
 	}

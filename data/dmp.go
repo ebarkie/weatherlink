@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 // Packet coding logic for DMP revision B packets. Unlike loop
 // packets where multiple versions are still in use, DMP switched
@@ -13,13 +13,13 @@ package weatherlink
 // Communication Reference Manual, section X. Data Formats,
 // subsection 4. DMP and DMPAFT data format.
 
-import "time"
+import (
+	"time"
 
-// Dmp is a revision B DMP archive page consisting of 5 archive
-// records.
-type Dmp [5]Archive
+	"github.com/ebarkie/weatherlink/packet"
+)
 
-// Archive represents all of the data in a revision B DMP archive
+// Archive represents all of the data in a revision B archive
 // record.
 type Archive struct {
 	Bar            float64   `json:"barometer"`
@@ -51,80 +51,87 @@ type Archive struct {
 	WindSpeedHi    int       `json:"windSpeedHigh"`
 }
 
-// FromPacket unpacks a 267-byte DMP revision B archive page into
-// the Dmp array of 5 Archive records.
-func (d *Dmp) FromPacket(p Packet) error {
-	if crc(p) != 0 {
+// UnmarshalBinary decodes a 52-byte revision B archive record.
+func (a *Archive) UnmarshalBinary(p []byte) error {
+	if getArcType(p) != "b" {
+		return ErrNotArchive
+	}
+
+	a.Bar = packet.GetPressure(p, 14)
+	a.ET = packet.GetFloat8(p, 29) / 1000
+	// There are 2 extra humidity sensors and 3 extra temperature
+	// sensors.  Usually the quantities match but not for archive
+	// records.
+	for j := uint(0); j < 2; j++ {
+		if v := packet.GetInt8(p, 43+j); v != 255 {
+			a.ExtraHumidity[j] = &v
+		}
+	}
+	for j := uint(0); j < 3; j++ {
+		if v := packet.GetTemp8(p, 45+j); v != 165 {
+			a.ExtraTemp[j] = &v
+		}
+	}
+	a.Forecast = packet.GetForecast(p, 33)
+	a.InHumidity = packet.GetInt8(p, 22)
+	a.InTemp = packet.GetFloat16_10(p, 20)
+	for j := uint(0); j < 2; j++ {
+		if v := packet.GetTemp8(p, 34+j); v != 165 {
+			a.LeafTemp[j] = &v
+		}
+		if v := packet.GetInt8(p, 36+j); v != 255 {
+			a.LeafWetness[j] = &v
+		}
+	}
+	a.OutHumidity = packet.GetInt8(p, 23)
+	a.OutTemp = packet.GetFloat16_10(p, 4)
+	a.OutTempHi = packet.GetFloat16_10(p, 6)
+	a.OutTempLow = packet.GetFloat16_10(p, 8)
+	a.RainAccum = packet.GetRainClicks(p, 10)
+	a.RainRateHi = packet.GetRainClicks(p, 12)
+	for j := uint(0); j < 4; j++ {
+		if v := packet.GetInt8(p, 48+j); v != 255 {
+			a.SoilMoist[j] = &v
+		}
+		if v := packet.GetTemp8(p, 38+j); v != 165 {
+			a.SoilTemp[j] = &v
+		}
+	}
+	a.SolarRad = packet.GetInt16(p, 16)
+	a.SolarRadHi = packet.GetInt16(p, 30)
+	a.Timestamp = packet.GetDateTime32(p, 0)
+	a.UVIndexAvg = packet.GetUVIndex(p, 28)
+	a.UVIndexHi = packet.GetUVIndex(p, 32)
+	a.WindDirHi = packet.GetWindDir(p, 26)
+	a.WindDirPrevail = packet.GetWindDir(p, 27)
+	a.WindSamples = packet.GetInt16(p, 18)
+	a.WindSpeedAvg = packet.GetMPH8(p, 24)
+	a.WindSpeedHi = packet.GetMPH8(p, 25)
+
+	return nil
+}
+
+// Dmp is a download memory page which contains 5 archive
+// records.
+type Dmp [5]Archive
+
+// UnmarshalBinary decodes a 267-byte download memory page into an
+// array of 5 Archive records.
+func (d *Dmp) UnmarshalBinary(p []byte) error {
+	if packet.Crc(p) != 0 {
 		return ErrBadCRC
-	}
-
-	if len(p) != 267 {
+	} else if len(p) != 267 {
 		return ErrNotDmp
-	}
-
-	// Each individual record within the archive page contains a
-	// revision marker but they're all going to be the same so
-	// it's only necessary to check the first one.
-	if p[1:53].getDmpType() != "b" {
-		return ErrNotDmpB
 	}
 
 	// Break apart the page of 5 52-byte archive records and process
 	// each one.  There are 4 unused bytes at the end.
 	for i := 0; i < 5; i++ {
 		offset := 1 + (52 * i)
-		pr := p[offset : offset+52]
-
-		d[i].Bar = pr.getPressure(14)
-		d[i].ET = pr.get1ByteFloat(29) / 1000
-		// There are 2 extra humidity sensors and 3 extra temperature
-		// sensors.  Usually the quantities match but not for archive
-		// records.
-		for j := uint(0); j < 2; j++ {
-			if v := pr.get1ByteInt(43 + j); v != 255 {
-				d[i].ExtraHumidity[j] = &v
-			}
+		err := d[i].UnmarshalBinary(p[offset : offset+52])
+		if err != nil {
+			return err
 		}
-		for j := uint(0); j < 3; j++ {
-			if v := pr.get1ByteTemp(45 + j); v != 165 {
-				d[i].ExtraTemp[j] = &v
-			}
-		}
-		d[i].Forecast = pr.getForecast(33)
-		d[i].InHumidity = pr.get1ByteInt(22)
-		d[i].InTemp = pr.get2ByteFloat10(20)
-		for j := uint(0); j < 2; j++ {
-			if v := pr.get1ByteTemp(34 + j); v != 165 {
-				d[i].LeafTemp[j] = &v
-			}
-			if v := pr.get1ByteInt(36 + j); v != 255 {
-				d[i].LeafWetness[j] = &v
-			}
-		}
-		d[i].OutHumidity = pr.get1ByteInt(23)
-		d[i].OutTemp = pr.get2ByteFloat10(4)
-		d[i].OutTempHi = pr.get2ByteFloat10(6)
-		d[i].OutTempLow = pr.get2ByteFloat10(8)
-		d[i].RainAccum = pr.getRainClicks(10)
-		d[i].RainRateHi = pr.getRainClicks(12)
-		for j := uint(0); j < 4; j++ {
-			if v := pr.get1ByteInt(48 + j); v != 255 {
-				d[i].SoilMoist[j] = &v
-			}
-			if v := pr.get1ByteTemp(38 + j); v != 165 {
-				d[i].SoilTemp[j] = &v
-			}
-		}
-		d[i].SolarRad = pr.get2ByteInt(16)
-		d[i].SolarRadHi = pr.get2ByteInt(30)
-		d[i].Timestamp = pr.get4ByteDateTime(0)
-		d[i].UVIndexAvg = pr.getUVIndex(28)
-		d[i].UVIndexHi = pr.getUVIndex(32)
-		d[i].WindDirHi = pr.getWindDir(26)
-		d[i].WindDirPrevail = pr.getWindDir(27)
-		d[i].WindSamples = pr.get2ByteInt(18)
-		d[i].WindSpeedAvg = pr.get1ByteMPH(24)
-		d[i].WindSpeedHi = pr.get1ByteMPH(25)
 	}
 
 	return nil
@@ -136,13 +143,13 @@ func (d *Dmp) FromPacket(p Packet) error {
 // DmpAft is a timestamp appropriate for the "DMP after" command.
 type DmpAft time.Time
 
-// ToPacket packs the data from the DmpAft struct into a 6-byte packet
+// MarshalBinary encodes the data from the DmpAft struct into a 6-byte packet
 // appropriate for use with the DMPAFT command.
-func (da DmpAft) ToPacket() (p Packet) {
+func (da DmpAft) MarshalBinary() (p []byte, err error) {
 	// 4-bytes for the time and 2-bytes for the CRC.
-	p = make(Packet, 6)
-	p.set4ByteDateTime(0, time.Time(da))
-	p.setCrc()
+	p = make([]byte, 6)
+	packet.SetDateTime32(&p, 0, time.Time(da))
+	packet.SetCrc(&p)
 
 	return
 }
@@ -155,10 +162,10 @@ type DmpMeta struct {
 	FirstPageOffset int // Offset of the first record to read within the first page
 }
 
-// FromPacket unpacks a 6-byte DMP metadata packet into the
+// UnmarshalBinary decodes a 6-byte DMP metadata packet into the
 // DmpMeta stuct.
-func (dm *DmpMeta) FromPacket(p Packet) error {
-	if crc(p) != 0 {
+func (dm *DmpMeta) UnmarshalBinary(p []byte) error {
+	if packet.Crc(p) != 0 {
 		return ErrBadCRC
 	}
 
@@ -166,15 +173,15 @@ func (dm *DmpMeta) FromPacket(p Packet) error {
 		return ErrNotDmpMeta
 	}
 
-	dm.Pages = p.get2ByteInt(0)
-	dm.FirstPageOffset = p.get2ByteInt(2)
+	dm.Pages = packet.GetInt16(p, 0)
+	dm.FirstPageOffset = packet.GetInt16(p, 2)
 
 	return nil
 }
 
-// getDmpType returns the Dmp packet revision or empty string
+// getArcType returns the Dmp packet revision or empty string
 // if it's not a valid archive packet.
-func (p Packet) getDmpType() (t string) {
+func getArcType(p []byte) (t string) {
 	if len(p) != 52 {
 		return
 	}

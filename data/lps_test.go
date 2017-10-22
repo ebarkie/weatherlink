@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testLoopPackets = map[string]Packet{
+var testLoopPackets = map[string][]byte{
 	"1NoRain": {
 		0x4c, 0x4f, 0x4f, 0x00, 0x00, 0x47, 0x01, 0xa7,
 		0x75, 0x20, 0x03, 0x29, 0x26, 0x03, 0x01, 0x01,
@@ -58,7 +58,7 @@ var testLoopPackets = map[string]Packet{
 		0x7f, 0xff, 0x7f, 0xff, 0x7f, 0xff, 0x7f, 0x0a,
 		0x0d, 0x64, 0x38,
 	},
-	"2NegativeDewPoint": {
+	"2NegDewPoint": {
 		0x4c, 0x4f, 0x4f, 0x14, 0x01, 0xff, 0x7f, 0x3c,
 		0x75, 0x15, 0x03, 0x27, 0x0a, 0x03, 0x00, 0xff,
 		0xe5, 0x00, 0x06, 0x00, 0x0b, 0x00, 0x02, 0x00,
@@ -105,19 +105,19 @@ var testLoopPackets = map[string]Packet{
 	},
 }
 
-func BenchmarkLoopFromPacket(b *testing.B) {
+func BenchmarkLoopUnmarshalBinary(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		l := Loop{}
-		l.FromPacket(testLoopPackets["1NoRain"])
+		l.UnmarshalBinary(testLoopPackets["1NoRain"])
 	}
 }
 
-func TestLoopFromPacketRain(t *testing.T) {
+func TestLoopUnmarshalBinaryLoop1Rain(t *testing.T) {
 	a := assert.New(t)
 
 	l := Loop{}
-	err := l.FromPacket(testLoopPackets["1Rain"])
-	a.Nil(err, "FromPacket")
+	err := l.UnmarshalBinary(testLoopPackets["1Rain"])
+	a.Nil(err, "UnmarshalBinary loop1")
 
 	a.Equal(29.982, l.Bar.SeaLevel, "Barometer sea level")
 	a.Equal("Steady", l.Bar.Trend, "Barometer trend")
@@ -138,7 +138,7 @@ func TestLoopFromPacketRain(t *testing.T) {
 		a.Nil(l.LeafTemp[i], fmt.Sprintf("Leaf temperature %d", i))
 		a.Nil(l.LeafWetness[i], fmt.Sprintf("Leaf wetness %d", i))
 	}
-	a.Equal(284, l.nextArcRec, "Next archive record")
+	a.Equal(284, l.NextArcRec, "Next archive record")
 	a.Equal(73, l.OutHumidity, "Outside humidity")
 	a.Equal(83.9, l.OutTemp, "Outside temperature")
 	a.Equal(0.0, l.Rain.Rate, "Rain rate")
@@ -163,12 +163,12 @@ func TestLoopFromPacketRain(t *testing.T) {
 	a.Equal(0.0, l.Wind.Avg.Last10MinSpeed, "Wind speed 10 minute average")
 }
 
-func TestLoopFromPacketNoRain(t *testing.T) {
+func TestLoopUnmarshalBinaryLoop2NoRain(t *testing.T) {
 	a := assert.New(t)
 
 	l := Loop{}
-	err := l.FromPacket(testLoopPackets["2NoRain"])
-	a.Nil(err, "FromPacket")
+	err := l.UnmarshalBinary(testLoopPackets["2NoRain"])
+	a.Nil(err, "UnmarshalBinary loop2")
 
 	a.Equal(30.034, l.Bar.Altimeter, "Barometer altimeter")
 	a.Equal(30.012, l.Bar.SeaLevel, "Barometer sea level")
@@ -199,17 +199,17 @@ func TestLoopFromPacketNoRain(t *testing.T) {
 	a.Equal(78.0, l.WindChill, "Wind chill")
 }
 
-func TestLoopFromPacketNegativeTemp(t *testing.T) {
+func TestLoopUnmarshalBinaryLoop2NegTemp(t *testing.T) {
 	a := assert.New(t)
 
 	l := Loop{}
-	err := l.FromPacket(testLoopPackets["2NegativeDewPoint"])
-	a.Nil(err, "FromPacket")
+	err := l.UnmarshalBinary(testLoopPackets["2NegDewPoint"])
+	a.Nil(err, "UnmarshalBinary loop2")
 
 	a.Equal(-1.0, l.DewPoint, "Dew point")
 }
 
-func TestLoopToPacket(t *testing.T) {
+func TestLoopMarshalBinary(t *testing.T) {
 	a := assert.New(t)
 
 	li := Loop{}
@@ -235,9 +235,10 @@ func TestLoopToPacket(t *testing.T) {
 
 	lo := Loop{}
 	for t := 1; t < 3; t++ {
-		p, err := li.ToPacket(t)
-		a.Nil(err, fmt.Sprintf("ToPacket Loop %d", t))
-		lo.FromPacket(p)
+		li.LoopType = t
+		p, err := li.MarshalBinary()
+		a.Nil(err, fmt.Sprintf("MarshalBinary loop%d", t))
+		lo.UnmarshalBinary(p)
 	}
 
 	a.Equal(30.034, lo.Bar.Altimeter, "Barometer altimeter")
@@ -261,14 +262,19 @@ func TestLoopToPacket(t *testing.T) {
 	a.Equal(123, lo.Wind.Cur.Speed, "Wind speed")
 }
 
-func TestLoopToPacketNegativeTemp(t *testing.T) {
+func TestLoopMarshalBinaryLoop2NegTemp(t *testing.T) {
 	a := assert.New(t)
 
-	li := Loop{DewPoint: -1.0}
-	p, err := li.ToPacket(2)
-	a.Nil(err, "ToPacket Loop2")
+	li := Loop{
+		DewPoint: -1.0,
+		LoopType: 2,
+	}
+	p, err := li.MarshalBinary()
+	a.Nil(err, "MarshalBinary loop2")
 
 	lo := Loop{}
-	lo.FromPacket(p)
+	err = lo.UnmarshalBinary(p)
+	a.Nil(err, "UnmarshalBinary loop2")
+
 	a.Equal(-1.0, lo.DewPoint)
 }

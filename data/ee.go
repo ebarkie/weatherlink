@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 // Packet coding logic for EEPROM packets.
 //
@@ -13,7 +13,8 @@ package weatherlink
 import (
 	"time"
 
-	"github.com/ebarkie/weatherlink/internal/units"
+	"github.com/ebarkie/weatherlink/packet"
+	"github.com/ebarkie/weatherlink/units"
 )
 
 // EEPROM represents the configuration settings.
@@ -25,10 +26,10 @@ type EEPROM struct {
 	TimeOffset    time.Duration `json:"timeOffset"`
 }
 
-// FromPacket unpacks a 4096-byte EEPROM packet into the
+// UnmarshalBinary decodes a 4096-byte EEPROM packet into the
 // EEPROM struct.
-func (ee *EEPROM) FromPacket(p Packet) error {
-	if crc(p) != 0 {
+func (ee *EEPROM) UnmarshalBinary(p []byte) error {
+	if packet.Crc(p) != 0 {
 		return ErrBadCRC
 	}
 
@@ -41,7 +42,7 @@ func (ee *EEPROM) FromPacket(p Packet) error {
 	//      0 = W | 0 = S | 0 = 0.01in    | 0 = Small | 0 = Month/Day | 0 = PM   | 0 = AM/PM
 	//      1 = E | 1 = N | 1 = 0.2mm     | 1 = Large | 1 = Day/Month | 1 = AM   | 1 = 24hr
 	//            |       | 2 = 0.1mm     |
-	setup := p.get1ByteInt(43)
+	setup := packet.GetInt8(p, 43)
 
 	// Unit bit breakdown:
 	//
@@ -53,28 +54,28 @@ func (ee *EEPROM) FromPacket(p Packet) error {
 	//      1 = m/s   | 1 = mm | 1 = m     | 1 = F (tenth) | 1 = mm
 	//      2 = km/h  |        |           | 2 = C (whole) | 2 = hpa
 	//      3 = knots |        |           | 3 = C (tenth) | 3 = mb
-	unit := p.get1ByteInt(41)
+	unit := packet.GetInt8(p, 41)
 
-	ee.ArchivePeriod = p.get1ByteInt(45)
+	ee.ArchivePeriod = packet.GetInt8(p, 45)
 
 	// Location
-	ee.Elev = p.get2ByteInt(15)
+	ee.Elev = packet.GetInt16(p, 15)
 	if ft := unit&0x10 == 0; !ft {
 		// Elevation is in meters so convert to feet
 		ee.Elev = int(units.Ft(float64(ee.Elev)))
 	}
-	ee.Lat = p.get2ByteFloat10(11)
+	ee.Lat = packet.GetFloat16_10(p, 11)
 	if north := setup&0x40 != 0; (north && ee.Lat < 0.0) || (!north && ee.Lat > 0.0) {
 		// Equator hemisphere setting and latitude do not agree
 		return ErrBadLocation
 	}
-	ee.Lon = p.get2ByteFloat10(13)
+	ee.Lon = packet.GetFloat16_10(p, 13)
 	if east := setup&0x80 != 0; (east && ee.Lon < 0.0) || (!east && ee.Lon > 0.0) {
 		// Prime meridian hemisphere setting and longitude do not agree
 		return ErrBadLocation
 	}
 
-	ee.TimeOffset = time.Duration(p.get2ByteFloat(20)/100.0) * time.Hour
+	ee.TimeOffset = time.Duration(packet.GetFloat16(p, 20)/100.0) * time.Hour
 
 	return nil
 }

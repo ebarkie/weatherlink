@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package device
 
 // A Weatherlink device is simulated by guessing what commands were
 // requested based on the packet sizes.  It's not perfect but is a
@@ -12,16 +12,22 @@ import (
 	"io"
 	"math/rand"
 	"time"
+
+	"github.com/ebarkie/weatherlink/data"
 )
 
-// sim represents a simulted Weatherlink device.
-type sim struct {
-	l            Loop // Current loop packet state
-	nextLoopType int  // Loop type to send next (so they are interleaved)
+const (
+	ack = 0x06 // Acknowledge
+)
+
+// Sim represents a simulted Weatherlink device.
+type Sim struct {
+	l            data.Loop // Current loop packet state
+	nextLoopType int       // Loop type to send next (so they are interleaved)
 }
 
 // Dial initializes the state of a simulated Weatherlink device.
-func (s *sim) Dial(addr string) error {
+func (s *Sim) Dial(addr string) error {
 	// Starting loop values which will pass typical QC processes.
 	s.l.Bar.Altimeter = 29.0
 	s.l.Bar.SeaLevel = 29.0
@@ -34,28 +40,27 @@ func (s *sim) Dial(addr string) error {
 }
 
 // Close closes the simulated Weatherlink device.
-func (s *sim) Close() error {
-	s.l = Loop{}
+func (s *Sim) Close() error {
+	s.l = data.Loop{}
 	s.nextLoopType = 0
 
 	return nil
 }
 
 // Flush flushes the input buffers of the simulated Weatherlink device.
-func (sim) Flush() error {
+func (Sim) Flush() error {
 	return nil
 }
 
 // Read reads up to the size of the provided byte buffer from the
 // simulated Weatherlink device.
-func (sim) Read(b []byte) (int, error) {
-	Debug.Printf("Unhandled simulated read %d bytes", len(b))
+func (Sim) Read(b []byte) (int, error) {
 	return 0, io.ErrUnexpectedEOF
 }
 
 // ReadFull reads the full size of the provided byte buffer from the
 // simulted Weatherlink device.
-func (s *sim) ReadFull(b []byte) (n int, err error) {
+func (s *Sim) ReadFull(b []byte) (n int, err error) {
 	switch len(b) {
 	case 1:
 		// Command ack
@@ -63,10 +68,16 @@ func (s *sim) ReadFull(b []byte) (n int, err error) {
 		return 1, nil
 	case 8:
 		// GETTIME
-		ct := ConsTime(time.Now())
-		n = copy(b, ct.ToPacket())
+		ct := data.ConsTime(time.Now())
+		var p []byte
+		p, err = ct.MarshalBinary()
+		n = copy(b, p)
 	case 99:
 		// LPS 3 x
+
+		// Interleave loop types.
+		s.l.LoopType = s.nextLoopType + 1
+		s.nextLoopType = (s.nextLoopType + 1) % 2
 
 		// Make observation values wander around like they would on a
 		// real station.
@@ -77,15 +88,15 @@ func (s *sim) ReadFull(b []byte) (n int, err error) {
 		s.l.OutTemp = wander(s.l.OutTemp, 0.5)
 		s.l.Wind.Cur.Speed = int(wander(float64(s.l.Wind.Cur.Speed), 1))
 
-		// Create 2s delay between packets and interleave loop
-		// types.
-		time.Sleep(2 * time.Second)
-		var p Packet
-		p, err = s.l.ToPacket(s.nextLoopType + 1)
+		s.l.LoopType = s.nextLoopType + 1
 		s.nextLoopType = (s.nextLoopType + 1) % 2
+
+		// Create 2s delay between packets.
+		time.Sleep(2 * time.Second)
+		var p []byte
+		p, err = s.l.MarshalBinary()
 		n = copy(b, p)
 	default:
-		Debug.Printf("Unhandled simulated read full %d bytes", len(b))
 		err = io.ErrUnexpectedEOF
 		return
 	}
@@ -94,7 +105,7 @@ func (s *sim) ReadFull(b []byte) (n int, err error) {
 }
 
 // Write simulates a write of the byte buffer.
-func (sim) Write(b []byte) (int, error) {
+func (Sim) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 

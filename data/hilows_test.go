@@ -2,7 +2,7 @@
 // Use of thighs source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 import (
 	"fmt"
@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testHiLowsPackets = map[string]Packet{
-	"standard": {
+var testHiLowsPackets = map[string][]byte{
+	"std": {
 		0x68, 0x75, 0xe1, 0x75, 0x3a, 0x74, 0xe1, 0x75,
 		0x11, 0x72, 0x92, 0x78, 0x1c, 0x07, 0xfc, 0x03,
 		0x0c, 0x8d, 0x00, 0x0d, 0x1b, 0x20, 0x03, 0x05,
@@ -72,19 +72,19 @@ var testHiLowsPackets = map[string]Packet{
 	},
 }
 
-func BenchmarkHiLowsFromPacket(b *testing.B) {
+func BenchmarkHiLowsUnmarshalBinary(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		hl := HiLows{}
-		hl.FromPacket(testHiLowsPackets["standard"])
+		hl.UnmarshalBinary(testHiLowsPackets["std"])
 	}
 }
 
-func TestHiLowsFromPacket(t *testing.T) {
+func TestHiLowsUnmarshalBinary(t *testing.T) {
 	a := assert.New(t)
 
 	hl := HiLows{}
-	err := hl.FromPacket(testHiLowsPackets["standard"])
-	a.Nil(err, "FromPacket")
+	err := hl.UnmarshalBinary(testHiLowsPackets["std"])
+	a.Nil(err, "UnmarshalBinary hilows")
 
 	// Barometer
 	a.Equal(30.056, hl.Bar.Day.Low, "Barometer day low")

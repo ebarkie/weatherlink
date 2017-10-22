@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 // Packet coding logic for HILOWS packets.
 //
@@ -10,7 +10,11 @@ package weatherlink
 // Communication Reference Manual, section X. Data Formats,
 // subsection 3. HILOW data format.
 
-import "time"
+import (
+	"time"
+
+	"github.com/ebarkie/weatherlink/packet"
+)
 
 // HiLows represents all of the record high and lows by day, month, and
 // year.  The day also includes the time(s) when the record occurred.
@@ -246,10 +250,10 @@ type LowWindChill struct {
 	} `json:"year"`
 }
 
-// FromPacket unpacks a 438-byte high and lows packet into the
+// UnmarshalBinary decodes a 438-byte high and lows packet into the
 // HiLows struct.
-func (hl *HiLows) FromPacket(p Packet) error {
-	if crc(p) != 0 {
+func (hl *HiLows) UnmarshalBinary(p []byte) error {
+	if packet.Crc(p) != 0 {
 		return ErrBadCRC
 	}
 
@@ -258,174 +262,174 @@ func (hl *HiLows) FromPacket(p Packet) error {
 	// difficult.
 
 	// Barometer
-	hl.Bar.Day.Low = p.getPressure(0)
-	hl.Bar.Day.LowTime = p.get2ByteTime(12)
-	hl.Bar.Day.Hi = p.getPressure(2)
-	hl.Bar.Day.HiTime = p.get2ByteTime(14)
-	hl.Bar.Month.Low = p.getPressure(4)
-	hl.Bar.Month.Hi = p.getPressure(6)
-	hl.Bar.Year.Low = p.getPressure(8)
-	hl.Bar.Year.Hi = p.getPressure(10)
+	hl.Bar.Day.Low = packet.GetPressure(p, 0)
+	hl.Bar.Day.LowTime = packet.GetTime16(p, 12)
+	hl.Bar.Day.Hi = packet.GetPressure(p, 2)
+	hl.Bar.Day.HiTime = packet.GetTime16(p, 14)
+	hl.Bar.Month.Low = packet.GetPressure(p, 4)
+	hl.Bar.Month.Hi = packet.GetPressure(p, 6)
+	hl.Bar.Year.Low = packet.GetPressure(p, 8)
+	hl.Bar.Year.Hi = packet.GetPressure(p, 10)
 
 	// Dew point
-	hl.DewPoint.Day.Low = p.get2ByteFloat(63)
-	hl.DewPoint.Day.LowTime = p.get2ByteTime(67)
-	hl.DewPoint.Day.Hi = p.get2ByteFloat(65)
-	hl.DewPoint.Day.HiTime = p.get2ByteTime(69)
-	hl.DewPoint.Month.Low = p.get2ByteFloat(73)
-	hl.DewPoint.Month.Hi = p.get2ByteFloat(71)
-	hl.DewPoint.Year.Low = p.get2ByteFloat(77)
-	hl.DewPoint.Year.Hi = p.get2ByteFloat(75)
+	hl.DewPoint.Day.Low = packet.GetFloat16(p, 63)
+	hl.DewPoint.Day.LowTime = packet.GetTime16(p, 67)
+	hl.DewPoint.Day.Hi = packet.GetFloat16(p, 65)
+	hl.DewPoint.Day.HiTime = packet.GetTime16(p, 69)
+	hl.DewPoint.Month.Low = packet.GetFloat16(p, 73)
+	hl.DewPoint.Month.Hi = packet.GetFloat16(p, 71)
+	hl.DewPoint.Year.Low = packet.GetFloat16(p, 77)
+	hl.DewPoint.Year.Hi = packet.GetFloat16(p, 75)
 
 	// Extra humidity and temperatures
-	extraHumidity := func(i uint) (h HiLowHumidity) {
-		h.Day.Low = p.get1ByteInt(276 + i)
-		h.Day.LowTime = p.get2ByteTime(292 + i*2)
-		h.Day.Hi = p.get1ByteInt(284 + i)
-		h.Day.HiTime = p.get2ByteTime(308 + i*2)
-		h.Month.Low = p.get1ByteInt(332 + i)
-		h.Month.Hi = p.get1ByteInt(324 + i)
-		h.Year.Low = p.get1ByteInt(348 + i)
-		h.Year.Hi = p.get1ByteInt(340 + i)
+	extraHumidity := func(p []byte, i uint) (h HiLowHumidity) {
+		h.Day.Low = packet.GetInt8(p, 276+i)
+		h.Day.LowTime = packet.GetTime16(p, 292+i*2)
+		h.Day.Hi = packet.GetInt8(p, 284+i)
+		h.Day.HiTime = packet.GetTime16(p, 308+i*2)
+		h.Month.Low = packet.GetInt8(p, 332+i)
+		h.Month.Hi = packet.GetInt8(p, 324+i)
+		h.Year.Low = packet.GetInt8(p, 348+i)
+		h.Year.Hi = packet.GetInt8(p, 340+i)
 
 		return
 	}
-	extraTemp := func(i uint) (et HiLowExtraTemp) {
-		et.Day.Low = p.get1ByteTemp(126 + i)
-		et.Day.LowTime = p.get2ByteTime(156 + i*2)
-		et.Day.Hi = p.get1ByteTemp(141 + i)
-		et.Day.HiTime = p.get2ByteTime(186 + i*2)
-		et.Month.Low = p.get1ByteTemp(231 + i)
-		et.Month.Hi = p.get1ByteTemp(216 + i)
-		et.Year.Low = p.get1ByteTemp(261 + i)
-		et.Year.Hi = p.get1ByteTemp(246 + i)
+	extraTemp := func(p []byte, i uint) (et HiLowExtraTemp) {
+		et.Day.Low = packet.GetTemp8(p, 126+i)
+		et.Day.LowTime = packet.GetTime16(p, 156+i*2)
+		et.Day.Hi = packet.GetTemp8(p, 141+i)
+		et.Day.HiTime = packet.GetTime16(p, 186+i*2)
+		et.Month.Low = packet.GetTemp8(p, 231+i)
+		et.Month.Hi = packet.GetTemp8(p, 216+i)
+		et.Year.Low = packet.GetTemp8(p, 261+i)
+		et.Year.Hi = packet.GetTemp8(p, 246+i)
 
 		return
 	}
 	for i := uint(0); i < 7; i++ {
-		if eh := extraHumidity(1 + i); eh.Day.Low != 255 {
+		if eh := extraHumidity(p, 1+i); eh.Day.Low != 255 {
 			hl.ExtraHumidity[i] = &eh
 		}
-		if et := extraTemp(i); et.Day.Low != 165 {
+		if et := extraTemp(p, i); et.Day.Low != 165 {
 			hl.ExtraTemp[i] = &et
 		}
 	}
 
 	// Heat index
-	hl.HeatIndex.Day.Hi = p.get2ByteFloat(87)
-	hl.HeatIndex.Day.HiTime = p.get2ByteTime(89)
-	hl.HeatIndex.Month.Hi = p.get2ByteFloat(91)
-	hl.HeatIndex.Year.Hi = p.get2ByteFloat(93)
+	hl.HeatIndex.Day.Hi = packet.GetFloat16(p, 87)
+	hl.HeatIndex.Day.HiTime = packet.GetTime16(p, 89)
+	hl.HeatIndex.Month.Hi = packet.GetFloat16(p, 91)
+	hl.HeatIndex.Year.Hi = packet.GetFloat16(p, 93)
 
 	// Inside humidity
-	hl.InHumidity.Day.Low = p.get1ByteInt(38)
-	hl.InHumidity.Day.LowTime = p.get2ByteTime(41)
-	hl.InHumidity.Day.Hi = p.get1ByteInt(37)
-	hl.InHumidity.Day.HiTime = p.get2ByteTime(39)
-	hl.InHumidity.Month.Low = p.get1ByteInt(44)
-	hl.InHumidity.Month.Hi = p.get1ByteInt(43)
-	hl.InHumidity.Year.Low = p.get1ByteInt(46)
-	hl.InHumidity.Year.Hi = p.get1ByteInt(45)
+	hl.InHumidity.Day.Low = packet.GetInt8(p, 38)
+	hl.InHumidity.Day.LowTime = packet.GetTime16(p, 41)
+	hl.InHumidity.Day.Hi = packet.GetInt8(p, 37)
+	hl.InHumidity.Day.HiTime = packet.GetTime16(p, 39)
+	hl.InHumidity.Month.Low = packet.GetInt8(p, 44)
+	hl.InHumidity.Month.Hi = packet.GetInt8(p, 43)
+	hl.InHumidity.Year.Low = packet.GetInt8(p, 46)
+	hl.InHumidity.Year.Hi = packet.GetInt8(p, 45)
 
 	// Inside temperature
-	hl.InTemp.Day.Low = p.get2ByteFloat10(23)
-	hl.InTemp.Day.LowTime = p.get2ByteTime(27)
-	hl.InTemp.Day.Hi = p.get2ByteFloat10(21)
-	hl.InTemp.Day.HiTime = p.get2ByteTime(25)
-	hl.InTemp.Month.Low = p.get2ByteFloat10(29)
-	hl.InTemp.Month.Hi = p.get2ByteFloat10(31)
-	hl.InTemp.Year.Low = p.get2ByteFloat10(33)
-	hl.InTemp.Year.Hi = p.get2ByteFloat10(35)
+	hl.InTemp.Day.Low = packet.GetFloat16_10(p, 23)
+	hl.InTemp.Day.LowTime = packet.GetTime16(p, 27)
+	hl.InTemp.Day.Hi = packet.GetFloat16_10(p, 21)
+	hl.InTemp.Day.HiTime = packet.GetTime16(p, 25)
+	hl.InTemp.Month.Low = packet.GetFloat16_10(p, 29)
+	hl.InTemp.Month.Hi = packet.GetFloat16_10(p, 31)
+	hl.InTemp.Year.Low = packet.GetFloat16_10(p, 33)
+	hl.InTemp.Year.Hi = packet.GetFloat16_10(p, 35)
 
 	// Leaf temperature and wetness
 	for i := uint(0); i < 4; i++ {
-		if et := extraTemp(11 + i); et.Day.Low != 165 {
+		if et := extraTemp(p, 11+i); et.Day.Low != 165 {
 			hl.LeafTemp[i] = &et
 		}
 
-		if low := p.get1ByteInt(408 + i); low != 255 {
+		if low := packet.GetInt8(p, 408+i); low != 255 {
 			lw := HiLowLeafWetness{}
 			lw.Day.Low = low
-			lw.Day.LowTime = p.get2ByteTime(412 + i*2)
-			lw.Day.Hi = p.get1ByteInt(396 + i)
-			lw.Day.HiTime = p.get2ByteTime(400 + i*2)
-			lw.Month.Low = p.get1ByteInt(420 + i)
-			lw.Month.Hi = p.get1ByteInt(424 + i)
-			lw.Year.Low = p.get1ByteInt(428 + i)
-			lw.Year.Hi = p.get1ByteInt(432 + i)
+			lw.Day.LowTime = packet.GetTime16(p, 412+i*2)
+			lw.Day.Hi = packet.GetInt8(p, 396+i)
+			lw.Day.HiTime = packet.GetTime16(p, 400+i*2)
+			lw.Month.Low = packet.GetInt8(p, 420+i)
+			lw.Month.Hi = packet.GetInt8(p, 424+i)
+			lw.Year.Low = packet.GetInt8(p, 428+i)
+			lw.Year.Hi = packet.GetInt8(p, 432+i)
 			hl.LeafWetness[i] = &lw
 		}
 	}
 
 	// Outside humidity
-	hl.OutHumidity = extraHumidity(0)
+	hl.OutHumidity = extraHumidity(p, 0)
 
 	// Outside temperature
-	hl.OutTemp.Day.Low = p.get2ByteFloat10(47)
-	hl.OutTemp.Day.LowTime = p.get2ByteTime(51)
-	hl.OutTemp.Day.Hi = p.get2ByteFloat10(49)
-	hl.OutTemp.Day.HiTime = p.get2ByteTime(53)
-	hl.OutTemp.Month.Low = p.get2ByteFloat10(57)
-	hl.OutTemp.Month.Hi = p.get2ByteFloat10(55)
-	hl.OutTemp.Year.Low = p.get2ByteFloat10(61)
-	hl.OutTemp.Year.Hi = p.get2ByteFloat10(59)
+	hl.OutTemp.Day.Low = packet.GetFloat16_10(p, 47)
+	hl.OutTemp.Day.LowTime = packet.GetTime16(p, 51)
+	hl.OutTemp.Day.Hi = packet.GetFloat16_10(p, 49)
+	hl.OutTemp.Day.HiTime = packet.GetTime16(p, 53)
+	hl.OutTemp.Month.Low = packet.GetFloat16_10(p, 57)
+	hl.OutTemp.Month.Hi = packet.GetFloat16_10(p, 55)
+	hl.OutTemp.Year.Low = packet.GetFloat16_10(p, 61)
+	hl.OutTemp.Year.Hi = packet.GetFloat16_10(p, 59)
 
 	// Rain rate
-	hl.RainRate.Hour.Hi = p.getRainClicks(120)
-	hl.RainRate.Day.Hi = p.getRainClicks(116)
-	hl.RainRate.Day.HiTime = p.get2ByteTime(118)
-	hl.RainRate.Month.Hi = p.getRainClicks(122)
-	hl.RainRate.Year.Hi = p.getRainClicks(124)
+	hl.RainRate.Hour.Hi = packet.GetRainClicks(p, 120)
+	hl.RainRate.Day.Hi = packet.GetRainClicks(p, 116)
+	hl.RainRate.Day.HiTime = packet.GetTime16(p, 118)
+	hl.RainRate.Month.Hi = packet.GetRainClicks(p, 122)
+	hl.RainRate.Year.Hi = packet.GetRainClicks(p, 124)
 
 	// Soil moisture and temperature
 	for i := uint(0); i < 4; i++ {
-		if low := p.get1ByteInt(368 + i); low != 255 {
+		if low := packet.GetInt8(p, 368+i); low != 255 {
 			sm := HiLowSoilMoist{}
 			sm.Day.Low = low
-			sm.Day.LowTime = p.get2ByteTime(372 + i*2)
-			sm.Day.Hi = p.get1ByteInt(356 + i)
-			sm.Day.HiTime = p.get2ByteTime(360 + i*2)
-			sm.Month.Low = p.get1ByteInt(380 + i)
-			sm.Month.Hi = p.get1ByteInt(384 + i)
-			sm.Year.Low = p.get1ByteInt(388 + i)
-			sm.Year.Hi = p.get1ByteInt(392 + i)
+			sm.Day.LowTime = packet.GetTime16(p, 372+i*2)
+			sm.Day.Hi = packet.GetInt8(p, 356+i)
+			sm.Day.HiTime = packet.GetTime16(p, 360+i*2)
+			sm.Month.Low = packet.GetInt8(p, 380+i)
+			sm.Month.Hi = packet.GetInt8(p, 384+i)
+			sm.Year.Low = packet.GetInt8(p, 388+i)
+			sm.Year.Hi = packet.GetInt8(p, 392+i)
 			hl.SoilMoist[i] = &sm
 		}
 
-		if et := extraTemp(7 + i); et.Day.Low != 165 {
+		if et := extraTemp(p, 7+i); et.Day.Low != 165 {
 			hl.SoilTemp[i] = &et
 		}
 	}
 
 	// Solar radiation
-	hl.SolarRad.Day.Hi = p.get2ByteInt(103)
-	hl.SolarRad.Day.HiTime = p.get2ByteTime(105)
-	hl.SolarRad.Month.Hi = p.get2ByteInt(107)
-	hl.SolarRad.Year.Hi = p.get2ByteInt(109)
+	hl.SolarRad.Day.Hi = packet.GetInt16(p, 103)
+	hl.SolarRad.Day.HiTime = packet.GetTime16(p, 105)
+	hl.SolarRad.Month.Hi = packet.GetInt16(p, 107)
+	hl.SolarRad.Year.Hi = packet.GetInt16(p, 109)
 
 	// THSW index
-	hl.THSWIndex.Day.Hi = p.get2ByteFloat(95)
-	hl.THSWIndex.Day.HiTime = p.get2ByteTime(97)
-	hl.THSWIndex.Month.Hi = p.get2ByteFloat(99)
-	hl.THSWIndex.Year.Hi = p.get2ByteFloat(101)
+	hl.THSWIndex.Day.Hi = packet.GetFloat16(p, 95)
+	hl.THSWIndex.Day.HiTime = packet.GetTime16(p, 97)
+	hl.THSWIndex.Month.Hi = packet.GetFloat16(p, 99)
+	hl.THSWIndex.Year.Hi = packet.GetFloat16(p, 101)
 
 	// UltraViolet index
-	hl.UVIndex.Day.Hi = p.getUVIndex(111)
-	hl.UVIndex.Day.HiTime = p.get2ByteTime(112)
-	hl.UVIndex.Month.Hi = p.getUVIndex(114)
-	hl.UVIndex.Year.Hi = p.getUVIndex(115)
+	hl.UVIndex.Day.Hi = packet.GetUVIndex(p, 111)
+	hl.UVIndex.Day.HiTime = packet.GetTime16(p, 112)
+	hl.UVIndex.Month.Hi = packet.GetUVIndex(p, 114)
+	hl.UVIndex.Year.Hi = packet.GetUVIndex(p, 115)
 
 	// Wind speed
-	hl.WindSpeed.Day.Hi = p.get1ByteMPH(16)
-	hl.WindSpeed.Day.HiTime = p.get2ByteTime(17)
-	hl.WindSpeed.Month.Hi = p.get1ByteMPH(19)
-	hl.WindSpeed.Year.Hi = p.get1ByteMPH(20)
+	hl.WindSpeed.Day.Hi = packet.GetMPH8(p, 16)
+	hl.WindSpeed.Day.HiTime = packet.GetTime16(p, 17)
+	hl.WindSpeed.Month.Hi = packet.GetMPH8(p, 19)
+	hl.WindSpeed.Year.Hi = packet.GetMPH8(p, 20)
 
 	// Wind chill
-	hl.WindChill.Day.Low = p.get2ByteFloat(79)
-	hl.WindChill.Day.LowTime = p.get2ByteTime(81)
-	hl.WindChill.Month.Low = p.get2ByteFloat(83)
-	hl.WindChill.Year.Low = p.get2ByteFloat(85)
+	hl.WindChill.Day.Low = packet.GetFloat16(p, 79)
+	hl.WindChill.Day.LowTime = packet.GetTime16(p, 81)
+	hl.WindChill.Month.Low = packet.GetFloat16(p, 83)
+	hl.WindChill.Year.Low = packet.GetFloat16(p, 85)
 
 	return nil
 }

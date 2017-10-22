@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package packet
 
 // The CRC checking algorithm is based on the CRC-CCIT standard.  It
 // uses a two byte CRC-accumulator that runs each successive data byte
@@ -48,9 +48,9 @@ var crcTable = []uint16{
 	0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0xed1, 0x1ef0,
 }
 
-// crc calculates the 2-byte CRC for the Packet. When decoding the
+// Crc calculates the 16-bit CRC for the Packet. When decoding the
 // result should be zero.
-func crc(p Packet) (c uint16) {
+func Crc(p []byte) (c uint16) {
 	for _, v := range p {
 		c = crcTable[(c>>8)^uint16(v)] ^ (c << 8)
 	}

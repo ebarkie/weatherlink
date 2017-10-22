@@ -4,6 +4,8 @@
 
 package weatherlink
 
+import "github.com/ebarkie/weatherlink/data"
+
 // GetHiLows retrieves the record high and lows.
 func (c Conn) GetHiLows(ec chan<- interface{}) error {
 	p, err := c.writeCmd([]byte("HILOWS\n"), []byte{ack}, 438)
@@ -11,8 +13,8 @@ func (c Conn) GetHiLows(ec chan<- interface{}) error {
 		return err
 	}
 
-	hl := HiLows{}
-	err = hl.FromPacket(p)
+	hl := data.HiLows{}
+	err = hl.UnmarshalBinary(p)
 	if err != nil {
 		return err
 	}

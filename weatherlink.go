@@ -10,8 +10,11 @@ import (
 	"bytes"
 	"encoding/hex"
 	"errors"
+	"io"
 	"strings"
 	"time"
+
+	"github.com/ebarkie/weatherlink/internal/device"
 )
 
 const (
@@ -53,10 +56,19 @@ var (
 	ConsTimeSyncFreq = 24 * time.Hour
 )
 
+// dev is an interface for the protocol to use to perform basic I/O
+// operations with different Weatherlink devices.
+type dev interface {
+	io.ReadWriteCloser
+	Dial(addr string) error
+	Flush() error
+	ReadFull(buf []byte) (n int, err error)
+}
+
 // Conn holds the weatherlink connnection context.
 type Conn struct {
 	addr string // Device address
-	dev  device // Device interface (IP, serial(/USB), or simulator)
+	dev  dev    // Device interface (IP, serial(/USB), or simulator)
 
 	CmdQ chan cmd // Broker command queue
 
@@ -83,11 +95,11 @@ func (c *Conn) open() (err error) {
 	Trace.Printf("Opening device %s with a %s timeout", c.addr, timeout)
 	switch {
 	case c.addr == "/dev/null":
-		c.dev = &sim{}
+		c.dev = &device.Sim{}
 	case strings.HasPrefix(c.addr, "/dev/"):
-		c.dev = &serial{Timeout: timeout}
+		c.dev = &device.Serial{Timeout: timeout}
 	default:
-		c.dev = &ip{Timeout: timeout}
+		c.dev = &device.IP{Timeout: timeout}
 	}
 	err = c.dev.Dial(c.addr)
 
@@ -120,7 +132,7 @@ func (c Conn) test() (err error) {
 
 // writeCmd runs a command and requires an acknowledgement response.  If n > 0
 // then a Packet of that length will be read after the acknowledgement.
-func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
+func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p []byte, err error) {
 	const retries = 3
 
 	// Determine what to print when showing the command in debug mode.  If it
@@ -130,7 +142,7 @@ func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
 		cmdStr = "[bytes]"
 	}
 
-	resp := make(Packet, len(cmdAck))
+	resp := make([]byte, len(cmdAck))
 	acked := false
 	for tryNum := 0; tryNum < retries; tryNum++ {
 		c.dev.Write(cmd)
@@ -161,7 +173,7 @@ func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p Packet, err error) {
 		return nil, nil
 	}
 
-	p = make(Packet, n)
+	p = make([]byte, n)
 	_, err = c.dev.ReadFull(p)
 	Trace.Printf("Packet\n%s", hex.Dump(p))
 

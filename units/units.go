@@ -2,8 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-// Package units implements very simple and lightweight unit
-// conversion functions.
+// Package units implements simple unit conversion functions.
 package units
 
 // Ft converts Meters to Feet.

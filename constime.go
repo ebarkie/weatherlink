@@ -4,18 +4,22 @@
 
 package weatherlink
 
-import "time"
+import (
+	"time"
+
+	"github.com/ebarkie/weatherlink/data"
+)
 
 // GetConsTime gets the console time.
 func (c Conn) GetConsTime() (t time.Time, err error) {
-	var p Packet
+	var p []byte
 	p, err = c.writeCmd([]byte("GETTIME\n"), []byte{ack}, 8)
 	if err != nil {
 		return
 	}
 
-	ct := ConsTime{}
-	err = ct.FromPacket(p)
+	ct := data.ConsTime{}
+	err = ct.UnmarshalBinary(p)
 	if err != nil {
 		return
 	}
@@ -30,7 +34,14 @@ func (c Conn) setConsTime(t time.Time) (err error) {
 	if err != nil {
 		return
 	}
-	_, err = c.writeCmd(ConsTime(t).ToPacket(), []byte{ack}, 0)
+
+	var p []byte
+	p, err = data.ConsTime(t).MarshalBinary()
+	if err != nil {
+		return
+	}
+
+	_, err = c.writeCmd(p, []byte{ack}, 0)
 
 	return
 }

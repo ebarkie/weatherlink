@@ -7,6 +7,8 @@ package weatherlink
 import (
 	"encoding/hex"
 	"strconv"
+
+	"github.com/ebarkie/weatherlink/data"
 )
 
 // GetLoops starts a stream of loop packets and sends them to the
@@ -27,8 +29,8 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 		return
 	}
 
-	p := make(Packet, 99)
-	var l Loop
+	p := make([]byte, 99)
+	var l data.Loop
 	nextArcRec := -1
 	for loopNum := 0; loopNum < numLoops; loopNum++ {
 		_, err = c.dev.ReadFull(p)
@@ -40,7 +42,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 			break
 		}
 
-		err = l.FromPacket(p)
+		err = l.UnmarshalBinary(p)
 		if err != nil {
 			// Most likely a CRC error.  We are probably out of sync with the
 			// steam of 99-byte LOOP packets so the safest action is to abort.
@@ -68,9 +70,9 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 		// A LOOP1 decode includes the next archive record indicator and if it changes
 		// a new archive record is ready to be read.
 		if nextArcRec < 0 {
-			nextArcRec = l.nextArcRec
-		} else if nextArcRec != l.nextArcRec {
-			Debug.Printf("New archive record is available (%d->%d)", nextArcRec, l.nextArcRec)
+			nextArcRec = l.NextArcRec
+		} else if nextArcRec != l.NextArcRec {
+			Debug.Printf("New archive record is available (%d->%d)", nextArcRec, l.NextArcRec)
 			c.NewArcRec = true
 			return
 		}

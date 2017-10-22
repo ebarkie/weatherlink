@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ebarkie/weatherlink"
+	"github.com/ebarkie/weatherlink/data"
 )
 
 func main() {
@@ -37,13 +38,13 @@ func main() {
 		// Keep retrieving events until the channel is closed
 		for e := range ec {
 			switch e.(type) {
-			case weatherlink.Archive:
+			case data.Archive:
 				log.Printf("Received archive record: %+v", e)
-			case weatherlink.EEPROM:
+			case data.EEPROM:
 				log.Printf("Received EEPROM configuration: %+v", e)
-			case weatherlink.HiLows:
+			case data.HiLows:
 				log.Printf("Received record high and lows: %+v", e)
-			case weatherlink.Loop:
+			case data.Loop:
 				log.Printf("Received loop packet: %+v", e)
 			default:
 				log.Printf("Received unknown event of type: %T", e)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package packet
 
 // Common binary packet decoding logic for packets.
 //
@@ -24,118 +24,10 @@ const (
 	RisingRapid  = "Rising Rapidly"
 )
 
-func (p Packet) get1ByteFloat(i uint) float64 {
-	return float64(p[i])
-}
-
-func (p Packet) get2ByteFloat(i uint) float64 {
-	// Decode signed two's complement.
-	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
-}
-
-func (p Packet) get1ByteInt(i uint) int {
-	return int(p[i])
-}
-
-func (p Packet) get2ByteInt(i uint) int {
-	return int(p[i+1])<<8 | int(p[i])
-}
-
-// get2ByteFloat10 gets a 2-byte float in tenths.  This is most
-// often used for temperatures.
-func (p Packet) get2ByteFloat10(i uint) float64 {
-	return p.get2ByteFloat(i) / 10.0
-}
-
-// get1ByteMPH gets a 1-byte MPH which is all speed values except for
-// the 2 and 10 minute values in a loop2 packet.
-func (p Packet) get1ByteMPH(i uint) int {
-	return p.get1ByteInt(i)
-}
-
-// get2ByteMPH gets a 2-byte MPH like 2 and 10 minute values.
-func (p Packet) get2ByteMPH(i uint) float64 {
-	return p.get2ByteFloat(i) / 10.0
-}
-
-// get1ByteTemp gets a 1-byte integer temprature like extra
-// sensors.
-func (p Packet) get1ByteTemp(i uint) int {
-	return p.get1ByteInt(i) - 90
-}
-
-// get2ByteDate gets a 2-byte date (no time) like rain storm
-// start date.
-func (p Packet) get2ByteDate(i uint) time.Time {
-	// If unitialized then return a zero Time.
-	d := p.get2ByteInt(i)
-	if d == 0xffff {
-		return time.Time{}
-	}
-
-	// The date is stored in the two bytes as:
-	//
-	//  MMMM DDDD DYYY YYYY
-	// 15       8         0
-	year := 2000 + d&0x007f
-	day := d & 0x0f80 >> 7
-	month := d & 0xf000 >> 12
-
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
-}
-
-// get4ByteDateTime gets a 4-byte date and time like in archive
-// records.
-func (p Packet) get4ByteDateTime(i uint) time.Time {
-	// The date is stored in the first two bytes as:
-	//
-	//  YYYY YYYM MMMD DDDD
-	// 15       8         0
-	d := p.get2ByteInt(i)
-	day := d & 0x001f
-	month := (d & 0x01e0) >> 5
-	year := 2000 + (d&0xfe00)>>9
-
-	// The time is stored in second two bytes stored as: hour * 100 + min
-	t := p.get2ByteInt(i + 2)
-	hour := t / 100
-	minute := t % 100
-
-	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
-}
-
-// get6ByteDateTime gets a 6-byte date and time like the console.
-func (p Packet) get6ByteDateTime(i uint) time.Time {
-	second := p.get1ByteInt(i + 0)
-	minute := p.get1ByteInt(i + 1)
-	hour := p.get1ByteInt(i + 2)
-	day := p.get1ByteInt(i + 3)
-	month := p.get1ByteInt(i + 4)
-	year := 1900 + p.get1ByteInt(i+5)
-
-	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Local)
-}
-
-// get2ByteTime gets a 2-byte time (no date) like sunrise and sunset.
-// The date will be set to today.
-func (p Packet) get2ByteTime(i uint) time.Time {
-	// If uninitialized then return a zero Time.
-	t := p.get2ByteInt(i)
-	if t == 0xffff {
-		return time.Time{}
-	}
-
-	// The time is stored as: hour * 100 + min
-	hour := t / 100
-	minute := t % 100
-
-	now := time.Now()
-	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, time.Local)
-}
-
-// getBarTrend converts a barometer trend code to a string.
-func (p Packet) getBarTrend(i uint) string {
-	switch p.get1ByteInt(i) {
+// GetBarTrend gets a barometer trend from a given packet at
+// the specified index.
+func GetBarTrend(p []byte, i uint) string {
+	switch GetInt8(p, i) {
 	case -60:
 		return FallingRapid
 	case -20:
@@ -151,8 +43,80 @@ func (p Packet) getBarTrend(i uint) string {
 	}
 }
 
-// getForecast converts a forecast rule index to a string.
-func (p Packet) getForecast(i uint) string {
+// GetDate16 gets a 2-byte date (no time) value from a given packet
+// at the specified index.
+func GetDate16(p []byte, i uint) time.Time {
+	// If unitialized then return a zero Time.
+	d := GetInt16(p, i)
+	if d == 0xffff {
+		return time.Time{}
+	}
+
+	// The date is stored in the two bytes as:
+	//
+	//  MMMM DDDD DYYY YYYY
+	// 15       8         0
+	year := 2000 + d&0x007f
+	day := d & 0x0f80 >> 7
+	month := d & 0xf000 >> 12
+
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
+}
+
+// GetDateTime32 gets a 4-byte date and time value from a given packet
+// at the specified index.
+func GetDateTime32(p []byte, i uint) time.Time {
+	// The date is stored in the first two bytes as:
+	//
+	//  YYYY YYYM MMMD DDDD
+	// 15       8         0
+	d := GetInt16(p, i)
+	day := d & 0x001f
+	month := (d & 0x01e0) >> 5
+	year := 2000 + (d&0xfe00)>>9
+
+	// The time is stored in second two bytes stored as: hour * 100 + min
+	t := GetInt16(p, i+2)
+	hour := t / 100
+	minute := t % 100
+
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
+}
+
+// GetDateTime48 gets a 6-byte date and time value from a given packet
+// at the specified index.
+func GetDateTime48(p []byte, i uint) time.Time {
+	second := GetInt8(p, i)
+	minute := GetInt8(p, i+1)
+	hour := GetInt8(p, i+2)
+	day := GetInt8(p, i+3)
+	month := GetInt8(p, i+4)
+	year := 1900 + GetInt8(p, i+5)
+
+	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Local)
+}
+
+// GetFloat8 gets a 1-byte float value from a given packet at
+// the specified index.
+func GetFloat8(p []byte, i uint) float64 {
+	return float64(p[i])
+}
+
+// GetFloat16 gets a 2-byte signed two's complement float value from
+// a given packet at the specified index.
+func GetFloat16(p []byte, i uint) float64 {
+	return float64(int16(uint16(p[i+1])<<8 | uint16(p[i])))
+}
+
+// GetFloat16_10 gets a 2-byte signed two's complement float value
+// in tenths in a given packet at the specified index.
+func GetFloat16_10(p []byte, i uint) float64 {
+	return GetFloat16(p, i) / 10.0
+}
+
+// GetForecast gets a forecast string from a given packet at the
+// specified index.
+func GetForecast(p []byte, i uint) string {
 	var rules = []string{
 		"Mostly clear and cooler.",
 		"Mostly clear with little temperature change.",
@@ -353,7 +317,7 @@ func (p Packet) getForecast(i uint) string {
 		"Mostly clear and cooler.",
 	}
 
-	r := p.get1ByteInt(i)
+	r := GetInt8(p, i)
 	if r > 0 && r <= len(rules) {
 		return rules[r]
 	}
@@ -361,9 +325,9 @@ func (p Packet) getForecast(i uint) string {
 	return Dash
 }
 
-// getForecastIcons converts a forecast icon bit map to a slice of icon
-// names.
-func (p Packet) getForecastIcons(i uint) (icons []string) {
+// GetForecastIcons gets a forecast icon bit map from a given packet at
+// the specified index.
+func GetForecastIcons(p []byte, i uint) (icons []string) {
 	var iconBits = []string{ // Bit
 		"Rain",          // 0
 		"Cloud",         // 1
@@ -373,7 +337,7 @@ func (p Packet) getForecastIcons(i uint) (icons []string) {
 	}
 
 	for j := 0; j < len(iconBits); j++ {
-		if p.get1ByteInt(i)&int(math.Pow(2, float64(j))) != 0 {
+		if GetInt8(p, i)&int(math.Pow(2, float64(j))) != 0 {
 			icons = append(icons, iconBits[j])
 		}
 	}
@@ -381,26 +345,81 @@ func (p Packet) getForecastIcons(i uint) (icons []string) {
 	return
 }
 
-func (p Packet) getPressure(i uint) float64 {
-	return p.get2ByteFloat(i) / 1000.0
+// GetInt8 gets a 1-byte integer value from a given packet at
+// the specified index.
+func GetInt8(p []byte, i uint) int {
+	return int(p[i])
 }
 
-func (p Packet) getRainClicks(i uint) float64 {
-	return p.get2ByteFloat(i) / 100.0
+// GetInt16 gets a 2-byte integer value from a given packet at
+// the specified index.
+func GetInt16(p []byte, i uint) int {
+	return int(p[i+1])<<8 | int(p[i])
 }
 
-func (p Packet) getUVIndex(i uint) float64 {
-	return p.get1ByteFloat(i) / 10.0
+// GetMPH8 gets a 1-byte MPH value from a given packet at the
+// specified index.
+func GetMPH8(p []byte, i uint) int {
+	return GetInt8(p, i)
 }
 
-func (p Packet) getVoltage(i uint) float64 {
-	return p.get2ByteFloat(i) * 300.0 / 512.0 / 100.0
+// GetMPH16 gets a 2-byte MPH value from a given packet at the
+// specified index.
+func GetMPH16(p []byte, i uint) float64 {
+	return GetFloat16(p, i) / 10.0
 }
 
-// getWindDir converts an archive record wind direction code
-// to a direction in degrees.
-func (p Packet) getWindDir(i uint) int {
-	c := p.get1ByteInt(i)
+// GetTemp8 gets a 1-byte temperature value in a given packet
+// at the specified index.
+func GetTemp8(p []byte, i uint) int {
+	return GetInt8(p, i) - 90
+}
+
+// GetTime16 gets a 2-byte time (no date) value in a given packet
+// at the specified index.
+func GetTime16(p []byte, i uint) time.Time {
+	// If uninitialized then return a zero Time.
+	t := GetInt16(p, i)
+	if t == 0xffff {
+		return time.Time{}
+	}
+
+	// The time is stored as: hour * 100 + min
+	hour := t / 100
+	minute := t % 100
+
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, time.Local)
+}
+
+// GetPressure gets a pressure value from a given packet at
+// the specified index.
+func GetPressure(p []byte, i uint) float64 {
+	return GetFloat16(p, i) / 1000.0
+}
+
+// GetRainClicks gets a rain rate or accumulation value from
+// a given packet at the specified index.
+func GetRainClicks(p []byte, i uint) float64 {
+	return GetFloat16(p, i) / 100.0
+}
+
+// GetUVIndex gets a Ultraviolet index value from a given packet
+// at the specified index.
+func GetUVIndex(p []byte, i uint) float64 {
+	return GetFloat8(p, i) / 10.0
+}
+
+// GetVoltage gets a battery voltage value from a given packet
+// at the specified index.
+func GetVoltage(p []byte, i uint) float64 {
+	return GetFloat16(p, i) * 300.0 / 512.0 / 100.0
+}
+
+// GetWindDir gets a wind direction value in degrees from a
+// given packet at the specified index.
+func GetWindDir(p []byte, i uint) int {
+	c := GetInt8(p, i)
 	if c < 0 || c > 15 {
 		return 0
 	}

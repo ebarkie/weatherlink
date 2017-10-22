@@ -7,6 +7,8 @@ package weatherlink
 import (
 	"encoding/hex"
 	"time"
+
+	"github.com/ebarkie/weatherlink/data"
 )
 
 // Archive interval.
@@ -37,17 +39,23 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 		Error.Printf("DMPAFT command error: %s, aborting", err.Error())
 		return
 	}
-	var p Packet
-	p, err = c.writeCmd(DmpAft(lastRec).ToPacket(), []byte{ack}, 6)
+	var p []byte
+	p, err = data.DmpAft(lastRec).MarshalBinary()
+	if err != nil {
+		Error.Printf("DmpAft marshal error: %s, aborting", err.Error())
+		return
+	}
+	p, err = c.writeCmd(p, []byte{ack}, 6)
 	if err != nil {
 		Error.Printf("Dmp metadata read error: %s, aborting", err.Error())
 		return
 	}
+
 	// The response tells us the number of pages we need to download
 	// and the offset of the first record we should look at within
 	// the first page.
-	dm := DmpMeta{}
-	err = dm.FromPacket(p)
+	dm := data.DmpMeta{}
+	err = dm.UnmarshalBinary(p)
 	if err != nil {
 		// Most likely a CRC error so cancel gracefully.
 		Error.Printf("Dmp metadata decode error: %s, aborting", err.Error())
@@ -66,7 +74,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 	// available.  There are 5 records per page.
 	Debug.Printf("Starting %d page dmp download", dm.Pages)
 	c.dev.Write([]byte{ack})
-	p = make(Packet, 267)
+	p = make([]byte, 267)
 	for pageNum := 0; pageNum < dm.Pages; pageNum++ {
 		_, err = c.dev.ReadFull(p)
 		if err != nil {
@@ -76,8 +84,8 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 			break
 		}
 
-		d := Dmp{}
-		err = d.FromPacket(p)
+		d := data.Dmp{}
+		err = d.UnmarshalBinary(p)
 		if err != nil {
 			// Most likely a CRC error - NAK and retry the page.
 			Error.Printf("Dmp page %d/%d decode error: %s, retrying",

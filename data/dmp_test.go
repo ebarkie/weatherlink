@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
-package weatherlink
+package data
 
 import (
 	"testing"
@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testDmpPackets = map[string]Packet{
-	"standard": {
+var testDmpPackets = map[string][]byte{
+	"std": {
 		0x14,                                           // Page
 		0xd4, 0x20, 0xd0, 0x07, 0x19, 0x03, 0x2d, 0x03, // Record 1
 		0x19, 0x03, 0x00, 0x00, 0x00, 0x00, 0xa1, 0x75,
@@ -54,19 +54,19 @@ var testDmpPackets = map[string]Packet{
 	},
 }
 
-func BenchmarkDmpFromPacket(b *testing.B) {
+func BenchmarkDmpUnmarshalBinary(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		d := Dmp{}
-		d.FromPacket(testDmpPackets["standard"])
+		d.UnmarshalBinary(testDmpPackets["std"])
 	}
 }
 
-func TestDmpFromPacket(t *testing.T) {
+func TestDmpUnmarshalBinary(t *testing.T) {
 	a := assert.New(t)
 
 	d := Dmp{}
-	err := d.FromPacket(testDmpPackets["standard"])
-	a.Nil(err, "FromPacket")
+	err := d.UnmarshalBinary(testDmpPackets["std"])
+	a.Nil(err, "UnmarshalBinary")
 
 	a.Equal(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Local),
 		d[0].Timestamp, "Timestamp")
@@ -76,12 +76,12 @@ func TestDmpFromPacket(t *testing.T) {
 	a.Equal(64, d[4].OutHumidity, "Outside humidity")
 }
 
-func TestDmpToPacket(t *testing.T) {
+func TestDmpMarshalBinary(t *testing.T) {
 	a := assert.New(t)
 
 	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Local))
-	p := da.ToPacket()
+	p, err := da.MarshalBinary()
+	a.Nil(err, "MarshalBinary")
 
-	a.Zero(0, crc(p), "CRC")
-	a.Equal(Packet{0xd4, 0x20, 0xd0, 0x07}, p[:len(p)-2], "Packet")
+	a.Equal([]byte{0xd4, 0x20, 0xd0, 0x07}, p[:len(p)-2], "Packet")
 }

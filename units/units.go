@@ -5,12 +5,12 @@
 // Package units implements simple unit conversion functions.
 package units
 
-// C converts Celsius to Fahrenheit.
+// C converts Fahrenheit to Celsius.
 func C(f float64) float64 {
 	return (f - 32.0) * 5.0 / 9.0
 }
 
-// F converts Fahrenheit to Celsius.
+// F converts Celsius to Fahrenheit.
 func F(c float64) float64 {
 	return c*1.8 + 32.0
 }

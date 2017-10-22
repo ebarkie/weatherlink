@@ -13,14 +13,14 @@ Package units implements simple unit conversion functions.
 ```go
 func C(f float64) float64
 ```
-C converts Celsius to Fahrenheit.
+C converts Fahrenheit to Celsius.
 
 #### func  F
 
 ```go
 func F(c float64) float64
 ```
-F converts Fahrenheit to Celsius.
+F converts Celsius to Fahrenheit.
 
 #### func  Ft
 

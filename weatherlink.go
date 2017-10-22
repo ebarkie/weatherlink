@@ -41,7 +41,7 @@ const (
 
 // Errors.
 var (
-	ErrCmdFailed = errors.New("Protocol command failed")
+	ErrCmdFailed = errors.New("Command failed")
 )
 
 // Tunables.

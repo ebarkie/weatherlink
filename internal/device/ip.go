@@ -12,30 +12,25 @@ import (
 
 // IP represents a Weatherlink IP device.
 type IP struct {
-	conn    net.Conn
+	net.Conn
 	Timeout time.Duration
 }
 
 // Dial establishes a TCP/IP connection with a Weatherlink IP.
 func (i *IP) Dial(addr string) (err error) {
-	i.conn, err = net.Dial("tcp", addr)
+	i.Conn, err = net.Dial("tcp", addr)
 
 	return
-}
-
-// Close closes the Weatherlink IP TCP/IP connection.
-func (i IP) Close() error {
-	return i.conn.Close()
 }
 
 // Flush flushes the input buffers of the Weatherlink IP.
 func (i IP) Flush() error {
 	// No lower level flush is available so allocate an absurdly
-	// large buffer and read everything we can, expecting the
-	// timeout to kick in.
+	// large buffer and read what we can.
 	b := make([]byte, 8*1024)
-	i.conn.SetReadDeadline(time.Now().Add(1 * time.Second))
-	i.ReadFull(b)
+	i.Conn.SetReadDeadline(time.Now().Add(1 * time.Second))
+	i.Read(b)
+
 	return nil
 }
 
@@ -44,20 +39,20 @@ func (i IP) Flush() error {
 // or the timeout triggers.  In practice, exactly how much it
 // reads beyond one byte seems unpredictable.
 func (i IP) Read(b []byte) (int, error) {
-	i.conn.SetReadDeadline(time.Now().Add(i.Timeout))
-	return i.conn.Read(b)
+	i.Conn.SetReadDeadline(time.Now().Add(i.Timeout))
+	return i.Conn.Read(b)
 }
 
 // ReadFull reads the full size of the provided byte buffer from the
 // Weatherlink IP.  It blocks until the entire buffer is filled
 // or the timeout triggers.
 func (i IP) ReadFull(b []byte) (int, error) {
-	i.conn.SetReadDeadline(time.Now().Add(i.Timeout))
-	return io.ReadFull(i.conn, b)
+	i.Conn.SetReadDeadline(time.Now().Add(i.Timeout))
+	return io.ReadFull(i.Conn, b)
 }
 
 // Write writes the byte buffer to the Weatherlink IP.
 func (i IP) Write(b []byte) (int, error) {
-	i.conn.SetWriteDeadline(time.Now().Add(i.Timeout))
-	return i.conn.Write(b)
+	i.Conn.SetWriteDeadline(time.Now().Add(i.Timeout))
+	return i.Conn.Write(b)
 }

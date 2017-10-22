@@ -28,7 +28,7 @@ func (i IP) Flush() error {
 	// No lower level flush is available so allocate an absurdly
 	// large buffer and read what we can.
 	b := make([]byte, 8*1024)
-	i.Conn.SetReadDeadline(time.Now().Add(1 * time.Second))
+	i.Conn.SetReadDeadline(time.Now().Add(i.Timeout))
 	i.Read(b)
 
 	return nil

@@ -138,6 +138,7 @@ func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p []byte, err error) {
 	resp := make([]byte, len(cmdAck))
 	acked := false
 	for tryNum := 0; tryNum < retries; tryNum++ {
+		Trace.Printf("Command\n%s", hex.Dump(cmd))
 		c.dev.Write(cmd)
 
 		c.dev.ReadFull(resp)

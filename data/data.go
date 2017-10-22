@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 // Package data implements encoding and decoding of Davis
-// Insturments binary data types.
+// Instruments binary data types.
 package data
 
 import "errors"

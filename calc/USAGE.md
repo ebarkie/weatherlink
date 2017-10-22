@@ -13,5 +13,5 @@ Package calc implements weather calculations.
 ```go
 func DewPoint(tf float64, h int) float64
 ```
-DewPoint takes a temperature in Fahrenheight and humidity and returns the dew
-point in Fahrenheight. It uses Magnus-Tetens formula.
+DewPoint takes a temperature in Fahrenheit and humidity and returns the dew
+point in Fahrenheit. It uses Magnus-Tetens formula.

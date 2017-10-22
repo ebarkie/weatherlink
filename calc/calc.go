@@ -15,8 +15,8 @@ func c(f float64) float64 {
 	return (f - 32.0) * 5.0 / 9.0
 }
 
-// DewPoint takes a temperature in Fahrenheight and humidity and
-// returns the dew point in Fahrenheight.  It uses Magnus-Tetens
+// DewPoint takes a temperature in Fahrenheit and humidity and
+// returns the dew point in Fahrenheit.  It uses Magnus-Tetens
 // formula.
 func DewPoint(tf float64, h int) float64 {
 	const (

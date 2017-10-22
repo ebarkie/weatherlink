@@ -27,7 +27,7 @@ const (
 
 type cmd uint8
 
-// Commands that can be requested.
+// Commands.
 const (
 	GetDmps cmd = iota
 	GetEEPROM
@@ -61,17 +61,17 @@ type dev interface {
 // Conn holds the weatherlink connnection context.
 type Conn struct {
 	addr string // Device address
-	dev  dev    // Device interface (IP, serial(/USB), or simulator)
+	d    dev    // Device interface (IP, serial(/USB), or simulator)
 
-	CmdQ chan cmd // Broker command queue
-
-	NewArcRec bool      // Indicates a new archive record is available
 	LastDmp   time.Time // Time of the last downloaded archive record
+	NewArcRec bool      // Indicates a new archive record is available
+
+	Q chan cmd // Command queue
 }
 
 // Dial establishes the weatherlink connection.
 func Dial(addr string) (c Conn, err error) {
-	c.CmdQ = make(chan cmd, 1)
+	c.Q = make(chan cmd, 1)
 
 	c.addr = addr
 	err = c.open()
@@ -88,13 +88,13 @@ func (c *Conn) open() (err error) {
 	Trace.Printf("Opening device %s with a %s timeout", c.addr, timeout)
 	switch {
 	case c.addr == "/dev/null":
-		c.dev = &device.Sim{}
+		c.d = &device.Sim{}
 	case strings.HasPrefix(c.addr, "/dev/"):
-		c.dev = &device.Serial{Timeout: timeout}
+		c.d = &device.Serial{Timeout: timeout}
 	default:
-		c.dev = &device.IP{Timeout: timeout}
+		c.d = &device.IP{Timeout: timeout}
 	}
-	err = c.dev.Dial(c.addr)
+	err = c.d.Dial(c.addr)
 
 	return
 }
@@ -102,7 +102,7 @@ func (c *Conn) open() (err error) {
 // Close closes the weatherlink connection.
 func (c Conn) Close() error {
 	Trace.Printf("Closing device %s", c.addr)
-	return c.dev.Close()
+	return c.d.Close()
 }
 
 // softReset tries to get the weatherlink device to abort the current command
@@ -111,9 +111,9 @@ func (c Conn) Close() error {
 func (c Conn) softReset() {
 	const flushTime = 1 * time.Second
 
-	c.dev.Write([]byte{lf})
+	c.d.Write([]byte{lf})
 	time.Sleep(flushTime)
-	c.dev.Flush()
+	c.d.Flush()
 }
 
 // test sends a test command.
@@ -139,9 +139,9 @@ func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p []byte, err error) {
 	acked := false
 	for tryNum := 0; tryNum < retries; tryNum++ {
 		Trace.Printf("Command\n%s", hex.Dump(cmd))
-		c.dev.Write(cmd)
+		c.d.Write(cmd)
 
-		c.dev.ReadFull(resp)
+		c.d.ReadFull(resp)
 		if bytes.Equal(cmdAck, resp) {
 			acked = true
 			break
@@ -168,7 +168,7 @@ func (c Conn) writeCmd(cmd []byte, cmdAck []byte, n int) (p []byte, err error) {
 	}
 
 	p = make([]byte, n)
-	_, err = c.dev.ReadFull(p)
+	_, err = c.d.ReadFull(p)
 	Trace.Printf("Packet\n%s", hex.Dump(p))
 
 	return
@@ -221,9 +221,9 @@ func (c *Conn) Start(idle Idler) <-chan interface{} {
 			}
 
 			// Process command queue channel.
-			Debug.Printf("%d command(s) in queue", len(c.CmdQ))
+			Debug.Printf("%d command(s) in queue", len(c.Q))
 			select {
-			case cmd := <-c.CmdQ:
+			case cmd := <-c.Q:
 				switch cmd {
 				case GetEEPROM:
 					err = c.GetEEPROM(ec)
@@ -269,9 +269,9 @@ func (c Conn) Stop() {
 	// Drain the command queue and send a stop command.
 	for {
 		select {
-		case <-c.CmdQ:
+		case <-c.Q:
 		default:
-			c.CmdQ <- Stop
+			c.Q <- Stop
 			return
 		}
 	}

@@ -33,7 +33,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 	var l data.Loop
 	nextArcRec := -1
 	for loopNum := 0; loopNum < numLoops; loopNum++ {
-		_, err = c.dev.ReadFull(p)
+		_, err = c.d.ReadFull(p)
 		if err != nil {
 			// LOOP stream was interrupted before we received all of the
 			// expected packets.
@@ -78,7 +78,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 		}
 
 		// Loops are low priority so if something else is waiting to run then exit.
-		if len(c.CmdQ) > 0 {
+		if len(c.Q) > 0 {
 			Debug.Println("Command queue is not empty, cancelling get loops")
 			c.softReset()
 			break

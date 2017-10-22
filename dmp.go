@@ -59,7 +59,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 	if err != nil {
 		// Most likely a CRC error so cancel gracefully.
 		Error.Printf("Dmp metadata decode error: %s, aborting", err.Error())
-		c.dev.Write([]byte{esc})
+		c.d.Write([]byte{esc})
 		return
 	}
 	// If numPages is 0 then it means there's nothing newer than what
@@ -73,10 +73,10 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 	// ACK to begin and then loop through all pages we were told are
 	// available.  There are 5 records per page.
 	Debug.Printf("Starting %d page dmp download", dm.Pages)
-	c.dev.Write([]byte{ack})
+	c.d.Write([]byte{ack})
 	p = make([]byte, 267)
 	for pageNum := 0; pageNum < dm.Pages; pageNum++ {
-		_, err = c.dev.ReadFull(p)
+		_, err = c.d.ReadFull(p)
 		if err != nil {
 			// Page read failed before we got all of the expected pages.
 			Error.Printf("Dmp download %d/%d interrupted: %s, aborting",
@@ -90,13 +90,13 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 			// Most likely a CRC error - NAK and retry the page.
 			Error.Printf("Dmp page %d/%d decode error: %s, retrying",
 				pageNum, dm.Pages, err.Error())
-			c.dev.Write([]byte{nak})
+			c.d.Write([]byte{nak})
 			pageNum--
 			continue
 		}
 
 		// We have a valid decoded archive page
-		Debug.Printf("Valid dmp page (%d:%d/%d)", pageNum, int(p[0]), dm.Pages)
+		Debug.Printf("Valid dmp page (%d:%d/%d)", pageNum, int(p[0]), dm.Pages-1)
 		Trace.Printf("Packet\n%s", hex.Dump(p))
 		Trace.Printf("Decoded\n%+v", d)
 
@@ -121,7 +121,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 		}
 
 		// ACK page as received OK so the next is sent.
-		c.dev.Write([]byte{ack})
+		c.d.Write([]byte{ack})
 	}
 
 	return

@@ -21,7 +21,7 @@ const (
 	SyncConsTime
 )
 ```
-Commands that can be requested.
+Commands.
 
 ```go
 var (
@@ -60,10 +60,10 @@ when they're available.
 
 ```go
 type Conn struct {
-	CmdQ chan cmd // Broker command queue
-
-	NewArcRec bool      // Indicates a new archive record is available
 	LastDmp   time.Time // Time of the last downloaded archive record
+	NewArcRec bool      // Indicates a new archive record is available
+
+	Q chan cmd // Command queue
 }
 ```
 

@@ -98,7 +98,7 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 		// We have a valid decoded archive page
 		Debug.Printf("Valid dmp page (%d:%d/%d)", pageNum, int(p[0]), dm.Pages-1)
 		Trace.Printf("Packet\n%s", hex.Dump(p))
-		Trace.Printf("Decoded\n%+v", d)
+		Trace.Printf("Decoded\n%s", Sdump(d))
 
 		for recordNum := 0; recordNum < len(d); recordNum++ {
 			// On the first page skip anything before the offset

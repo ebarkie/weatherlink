@@ -54,7 +54,7 @@ func (c *Conn) GetLoops(ec chan<- interface{}) (err error) {
 		// We have a valid decoded packet
 		Trace.Println("Valid loop")
 		Trace.Printf("Packet\n%s", hex.Dump(p))
-		Trace.Printf("Decoded\n%+v", l)
+		Trace.Printf("Decoded\n%s", Sdump(l))
 
 		// Since our Loop is combiation of LOOP1&2 don't start emitting until we have
 		// at least one of each or some values will still be zeroed resulting in

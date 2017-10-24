@@ -5,8 +5,10 @@
 package weatherlink
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 // Setup loggers that can be overridden by the user.
@@ -31,3 +33,9 @@ var (
 	Warn  = log.New(ioutil.Discard, "[WARN]", log.LstdFlags|log.Lshortfile)
 	Error = log.New(ioutil.Discard, "[ERRO]", log.LstdFlags|log.Lshortfile)
 )
+
+// Sdump returns a variable as a string.  It includes field names and pointers,
+// if applicable.
+var Sdump = func(i ...interface{}) (s string) {
+	return fmt.Sprintf(strings.Repeat("%+v\n", len(i)), i...)
+}

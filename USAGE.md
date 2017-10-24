@@ -48,6 +48,14 @@ var (
 ```
 Errors.
 
+```go
+var Sdump = func(i ...interface{}) (s string) {
+	return fmt.Sprintf(strings.Repeat("%+v\n", len(i)), i...)
+}
+```
+Sdump returns a variable as a string. It includes field names and pointers, if
+applicable.
+
 #### func  StdIdle
 
 ```go

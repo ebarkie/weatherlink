@@ -54,7 +54,7 @@ func (Sim) Flush() error {
 
 // Read reads up to the size of the provided byte buffer from the
 // simulated Weatherlink device.
-func (Sim) Read([]byte) (int, error) {
+func (Sim) Read(_ []byte) (int, error) {
 	return 0, io.ErrUnexpectedEOF
 }
 

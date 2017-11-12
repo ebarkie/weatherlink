@@ -58,12 +58,12 @@ func (a *Archive) UnmarshalBinary(p []byte) error {
 	}
 
 	a.Bar = packet.GetPressure(p, 14)
-	a.ET = packet.GetFloat8(p, 29) / 1000
+	a.ET = packet.GetUFloat8(p, 29) / 1000
 	// There are 2 extra humidity sensors and 3 extra temperature
 	// sensors.  Usually the quantities match but not for archive
 	// records.
 	for j := uint(0); j < 2; j++ {
-		if v := packet.GetInt8(p, 43+j); v != 255 {
+		if v := packet.GetUInt8(p, 43+j); v != 255 {
 			a.ExtraHumidity[j] = &v
 		}
 	}
@@ -73,38 +73,38 @@ func (a *Archive) UnmarshalBinary(p []byte) error {
 		}
 	}
 	a.Forecast = packet.GetForecast(p, 33)
-	a.InHumidity = packet.GetInt8(p, 22)
+	a.InHumidity = packet.GetUInt8(p, 22)
 	a.InTemp = packet.GetFloat16_10(p, 20)
 	for j := uint(0); j < 2; j++ {
 		if v := packet.GetTemp8(p, 34+j); v != 165 {
 			a.LeafTemp[j] = &v
 		}
-		if v := packet.GetInt8(p, 36+j); v != 255 {
+		if v := packet.GetUInt8(p, 36+j); v != 255 {
 			a.LeafWetness[j] = &v
 		}
 	}
-	a.OutHumidity = packet.GetInt8(p, 23)
+	a.OutHumidity = packet.GetUInt8(p, 23)
 	a.OutTemp = packet.GetFloat16_10(p, 4)
 	a.OutTempHi = packet.GetFloat16_10(p, 6)
 	a.OutTempLow = packet.GetFloat16_10(p, 8)
 	a.RainAccum = packet.GetRainClicks(p, 10)
 	a.RainRateHi = packet.GetRainClicks(p, 12)
 	for j := uint(0); j < 4; j++ {
-		if v := packet.GetInt8(p, 48+j); v != 255 {
+		if v := packet.GetUInt8(p, 48+j); v != 255 {
 			a.SoilMoist[j] = &v
 		}
 		if v := packet.GetTemp8(p, 38+j); v != 165 {
 			a.SoilTemp[j] = &v
 		}
 	}
-	a.SolarRad = packet.GetInt16(p, 16)
-	a.SolarRadHi = packet.GetInt16(p, 30)
+	a.SolarRad = packet.GetUInt16(p, 16)
+	a.SolarRadHi = packet.GetUInt16(p, 30)
 	a.Timestamp = packet.GetDateTime32(p, 0)
 	a.UVIndexAvg = packet.GetUVIndex(p, 28)
 	a.UVIndexHi = packet.GetUVIndex(p, 32)
 	a.WindDirHi = packet.GetWindDir(p, 26)
 	a.WindDirPrevail = packet.GetWindDir(p, 27)
-	a.WindSamples = packet.GetInt16(p, 18)
+	a.WindSamples = packet.GetUInt16(p, 18)
 	a.WindSpeedAvg = packet.GetMPH8(p, 24)
 	a.WindSpeedHi = packet.GetMPH8(p, 25)
 
@@ -173,8 +173,8 @@ func (dm *DmpMeta) UnmarshalBinary(p []byte) error {
 		return ErrNotDmpMeta
 	}
 
-	dm.Pages = packet.GetInt16(p, 0)
-	dm.FirstPageOffset = packet.GetInt16(p, 2)
+	dm.Pages = packet.GetUInt16(p, 0)
+	dm.FirstPageOffset = packet.GetUInt16(p, 2)
 
 	return nil
 }

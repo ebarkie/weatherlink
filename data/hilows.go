@@ -283,14 +283,14 @@ func (hl *HiLows) UnmarshalBinary(p []byte) error {
 
 	// Extra humidity and temperatures
 	extraHumidity := func(p []byte, i uint) (h HiLowHumidity) {
-		h.Day.Low = packet.GetInt8(p, 276+i)
+		h.Day.Low = packet.GetUInt8(p, 276+i)
 		h.Day.LowTime = packet.GetTime16(p, 292+i*2)
-		h.Day.Hi = packet.GetInt8(p, 284+i)
+		h.Day.Hi = packet.GetUInt8(p, 284+i)
 		h.Day.HiTime = packet.GetTime16(p, 308+i*2)
-		h.Month.Low = packet.GetInt8(p, 332+i)
-		h.Month.Hi = packet.GetInt8(p, 324+i)
-		h.Year.Low = packet.GetInt8(p, 348+i)
-		h.Year.Hi = packet.GetInt8(p, 340+i)
+		h.Month.Low = packet.GetUInt8(p, 332+i)
+		h.Month.Hi = packet.GetUInt8(p, 324+i)
+		h.Year.Low = packet.GetUInt8(p, 348+i)
+		h.Year.Hi = packet.GetUInt8(p, 340+i)
 
 		return
 	}
@@ -322,14 +322,14 @@ func (hl *HiLows) UnmarshalBinary(p []byte) error {
 	hl.HeatIndex.Year.Hi = packet.GetFloat16(p, 93)
 
 	// Inside humidity
-	hl.InHumidity.Day.Low = packet.GetInt8(p, 38)
+	hl.InHumidity.Day.Low = packet.GetUInt8(p, 38)
 	hl.InHumidity.Day.LowTime = packet.GetTime16(p, 41)
-	hl.InHumidity.Day.Hi = packet.GetInt8(p, 37)
+	hl.InHumidity.Day.Hi = packet.GetUInt8(p, 37)
 	hl.InHumidity.Day.HiTime = packet.GetTime16(p, 39)
-	hl.InHumidity.Month.Low = packet.GetInt8(p, 44)
-	hl.InHumidity.Month.Hi = packet.GetInt8(p, 43)
-	hl.InHumidity.Year.Low = packet.GetInt8(p, 46)
-	hl.InHumidity.Year.Hi = packet.GetInt8(p, 45)
+	hl.InHumidity.Month.Low = packet.GetUInt8(p, 44)
+	hl.InHumidity.Month.Hi = packet.GetUInt8(p, 43)
+	hl.InHumidity.Year.Low = packet.GetUInt8(p, 46)
+	hl.InHumidity.Year.Hi = packet.GetUInt8(p, 45)
 
 	// Inside temperature
 	hl.InTemp.Day.Low = packet.GetFloat16_10(p, 23)
@@ -347,16 +347,16 @@ func (hl *HiLows) UnmarshalBinary(p []byte) error {
 			hl.LeafTemp[i] = &et
 		}
 
-		if low := packet.GetInt8(p, 408+i); low != 255 {
+		if low := packet.GetUInt8(p, 408+i); low != 255 {
 			lw := HiLowLeafWetness{}
 			lw.Day.Low = low
 			lw.Day.LowTime = packet.GetTime16(p, 412+i*2)
-			lw.Day.Hi = packet.GetInt8(p, 396+i)
+			lw.Day.Hi = packet.GetUInt8(p, 396+i)
 			lw.Day.HiTime = packet.GetTime16(p, 400+i*2)
-			lw.Month.Low = packet.GetInt8(p, 420+i)
-			lw.Month.Hi = packet.GetInt8(p, 424+i)
-			lw.Year.Low = packet.GetInt8(p, 428+i)
-			lw.Year.Hi = packet.GetInt8(p, 432+i)
+			lw.Month.Low = packet.GetUInt8(p, 420+i)
+			lw.Month.Hi = packet.GetUInt8(p, 424+i)
+			lw.Year.Low = packet.GetUInt8(p, 428+i)
+			lw.Year.Hi = packet.GetUInt8(p, 432+i)
 			hl.LeafWetness[i] = &lw
 		}
 	}
@@ -383,16 +383,16 @@ func (hl *HiLows) UnmarshalBinary(p []byte) error {
 
 	// Soil moisture and temperature
 	for i := uint(0); i < 4; i++ {
-		if low := packet.GetInt8(p, 368+i); low != 255 {
+		if low := packet.GetUInt8(p, 368+i); low != 255 {
 			sm := HiLowSoilMoist{}
 			sm.Day.Low = low
 			sm.Day.LowTime = packet.GetTime16(p, 372+i*2)
-			sm.Day.Hi = packet.GetInt8(p, 356+i)
+			sm.Day.Hi = packet.GetUInt8(p, 356+i)
 			sm.Day.HiTime = packet.GetTime16(p, 360+i*2)
-			sm.Month.Low = packet.GetInt8(p, 380+i)
-			sm.Month.Hi = packet.GetInt8(p, 384+i)
-			sm.Year.Low = packet.GetInt8(p, 388+i)
-			sm.Year.Hi = packet.GetInt8(p, 392+i)
+			sm.Month.Low = packet.GetUInt8(p, 380+i)
+			sm.Month.Hi = packet.GetUInt8(p, 384+i)
+			sm.Year.Low = packet.GetUInt8(p, 388+i)
+			sm.Year.Hi = packet.GetUInt8(p, 392+i)
 			hl.SoilMoist[i] = &sm
 		}
 
@@ -402,10 +402,10 @@ func (hl *HiLows) UnmarshalBinary(p []byte) error {
 	}
 
 	// Solar radiation
-	hl.SolarRad.Day.Hi = packet.GetInt16(p, 103)
+	hl.SolarRad.Day.Hi = packet.GetUInt16(p, 103)
 	hl.SolarRad.Day.HiTime = packet.GetTime16(p, 105)
-	hl.SolarRad.Month.Hi = packet.GetInt16(p, 107)
-	hl.SolarRad.Year.Hi = packet.GetInt16(p, 109)
+	hl.SolarRad.Month.Hi = packet.GetUInt16(p, 107)
+	hl.SolarRad.Year.Hi = packet.GetUInt16(p, 109)
 
 	// THSW index
 	hl.THSWIndex.Day.Hi = packet.GetFloat16(p, 95)

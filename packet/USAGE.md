@@ -75,13 +75,6 @@ func GetFloat16_10(p []byte, i uint) float64
 GetFloat16_10 gets a 2-byte signed two's complement float value in tenths in a
 given packet at the specified index.
 
-#### func  GetFloat8
-
-```go
-func GetFloat8(p []byte, i uint) float64
-```
-GetFloat8 gets a 1-byte float value from a given packet at the specified index.
-
 #### func  GetForecast
 
 ```go
@@ -96,20 +89,6 @@ func GetForecastIcons(p []byte, i uint) (icons []string)
 ```
 GetForecastIcons gets a forecast icon bit map from a given packet at the
 specified index.
-
-#### func  GetInt16
-
-```go
-func GetInt16(p []byte, i uint) int
-```
-GetInt16 gets a 2-byte integer value from a given packet at the specified index.
-
-#### func  GetInt8
-
-```go
-func GetInt8(p []byte, i uint) int
-```
-GetInt8 gets a 1-byte integer value from a given packet at the specified index.
 
 #### func  GetMPH16
 
@@ -155,6 +134,30 @@ func GetTime16(p []byte, i uint) time.Time
 ```
 GetTime16 gets a 2-byte time (no date) value in a given packet at the specified
 index.
+
+#### func  GetUFloat8
+
+```go
+func GetUFloat8(p []byte, i uint) float64
+```
+GetUFloat8 gets a 1-byte unsigned float value from a given packet at the
+specified index.
+
+#### func  GetUInt16
+
+```go
+func GetUInt16(p []byte, i uint) int
+```
+GetUInt16 gets a 2-byte unsigned integer value from a given packet at the
+specified index.
+
+#### func  GetUInt8
+
+```go
+func GetUInt8(p []byte, i uint) int
+```
+GetUInt8 gets a 1-byte unsigned integer value from a given packet at the
+specified index.
 
 #### func  GetUVIndex
 

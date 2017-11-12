@@ -116,12 +116,12 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 		l.Bar.SeaLevel = packet.GetPressure(p, 7)
 		l.Bar.Trend = packet.GetBarTrend(p, 3)
 		l.Bat.ConsoleVoltage = packet.GetVoltage(p, 87)
-		l.Bat.TransStatus = packet.GetInt8(p, 86)
+		l.Bat.TransStatus = packet.GetUInt8(p, 86)
 		l.ET.Today = packet.GetFloat16(p, 56) / 1000.0
 		l.ET.LastMonth = packet.GetFloat16(p, 58) / 100.0
 		l.ET.LastYear = packet.GetFloat16(p, 60) / 100.0
 		for i := uint(0); i < 7; i++ {
-			if v := packet.GetInt8(p, 34+i); v != 255 {
+			if v := packet.GetUInt8(p, 34+i); v != 255 {
 				l.ExtraHumidity[i] = &v
 			}
 			if v := packet.GetTemp8(p, 18+i); v != 165 {
@@ -130,13 +130,13 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 		}
 		l.Forecast = packet.GetForecast(p, 90)
 		l.Icons = packet.GetForecastIcons(p, 89)
-		l.InHumidity = packet.GetInt8(p, 11)
+		l.InHumidity = packet.GetUInt8(p, 11)
 		l.InTemp = packet.GetFloat16_10(p, 9)
 		for i := uint(0); i < 4; i++ {
 			if v := packet.GetTemp8(p, 29+i); v != 165 {
 				l.LeafTemp[i] = &v
 			}
-			if v := packet.GetInt8(p, 66+i); v != 255 {
+			if v := packet.GetUInt8(p, 66+i); v != 255 {
 				// There's a bug in my Davis firmware where the last leaf
 				// wetness sensor returns 0 when it should be returning the
 				// dash value.  This hack corrects it but could nil out a
@@ -147,7 +147,7 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 				l.LeafWetness[i] = &v
 			}
 		}
-		l.OutHumidity = packet.GetInt8(p, 33)
+		l.OutHumidity = packet.GetUInt8(p, 33)
 		l.OutTemp = packet.GetFloat16_10(p, 12)
 		l.Rain.Accum.Today = packet.GetRainClicks(p, 50)
 		l.Rain.Accum.LastMonth = packet.GetRainClicks(p, 52)
@@ -156,24 +156,24 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 		l.Rain.Rate = packet.GetRainClicks(p, 41)
 		l.Rain.StormStartDate = packet.GetDate16(p, 48)
 		for i := uint(0); i < 4; i++ {
-			if v := packet.GetInt8(p, 62+i); v != 255 {
+			if v := packet.GetUInt8(p, 62+i); v != 255 {
 				l.SoilMoist[i] = &v
 			}
 			if v := packet.GetTemp8(p, 25+i); v != 165 {
 				l.SoilTemp[i] = &v
 			}
 		}
-		l.SolarRad = packet.GetInt16(p, 44)
+		l.SolarRad = packet.GetUInt16(p, 44)
 		l.Sunrise = packet.GetTime16(p, 91)
 		l.Sunset = packet.GetTime16(p, 93)
 		l.UVIndex = packet.GetUVIndex(p, 43)
-		l.Wind.Cur.Dir = packet.GetInt16(p, 16)
+		l.Wind.Cur.Dir = packet.GetUInt16(p, 16)
 		l.Wind.Cur.Speed = packet.GetMPH8(p, 14)
 		// Intentionally skip l.Wind.Avg.Last10MinSpeed because
 		// the loop2 decode is more precise.
 		// l.Wind.Avg.Last10MinSpeed = packet.GetMPH8(p, 15)
 
-		l.NextArcRec = packet.GetInt16(p, 5)
+		l.NextArcRec = packet.GetUInt16(p, 5)
 	case 2:
 		// Loop2
 		l.Bar.Altimeter = packet.GetPressure(p, 69)
@@ -183,9 +183,9 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 		l.DewPoint = packet.GetFloat16(p, 30)
 		l.ET.Today = packet.GetFloat16(p, 56) / 1000.0
 		l.HeatIndex = packet.GetFloat16(p, 35)
-		l.InHumidity = packet.GetInt8(p, 11)
+		l.InHumidity = packet.GetUInt8(p, 11)
 		l.InTemp = packet.GetFloat16_10(p, 9)
-		l.OutHumidity = packet.GetInt8(p, 33)
+		l.OutHumidity = packet.GetUInt8(p, 33)
 		l.OutTemp = packet.GetFloat16_10(p, 12)
 		l.Rain.Accum.Last15Min = packet.GetRainClicks(p, 52)
 		l.Rain.Accum.LastHour = packet.GetRainClicks(p, 54)
@@ -193,14 +193,14 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 		l.Rain.Accum.Today = packet.GetRainClicks(p, 50)
 		l.Rain.Accum.Storm = packet.GetRainClicks(p, 46)
 		l.Rain.Rate = packet.GetRainClicks(p, 41)
-		l.SolarRad = packet.GetInt16(p, 44)
+		l.SolarRad = packet.GetUInt16(p, 44)
 		l.THSWIndex = packet.GetFloat16(p, 39)
 		l.UVIndex = packet.GetUVIndex(p, 43)
-		l.Wind.Cur.Dir = packet.GetInt16(p, 16)
+		l.Wind.Cur.Dir = packet.GetUInt16(p, 16)
 		l.Wind.Cur.Speed = packet.GetMPH8(p, 14)
 		l.Wind.Avg.Last2MinSpeed = packet.GetMPH16(p, 20)
 		l.Wind.Avg.Last10MinSpeed = packet.GetMPH16(p, 18)
-		l.Wind.Gust.Last10MinDir = packet.GetInt16(p, 24)
+		l.Wind.Gust.Last10MinDir = packet.GetUInt16(p, 24)
 		l.Wind.Gust.Last10MinSpeed = packet.GetMPH16(p, 22)
 		l.WindChill = packet.GetFloat16(p, 37)
 	default:
@@ -298,7 +298,7 @@ func getLoopType(p []byte) int {
 		p[0] == 0x4c &&
 		p[1] == 0x4f &&
 		p[2] == 0x4f { // LOO
-		return packet.GetInt8(p, 4) + 1
+		return packet.GetUInt8(p, 4) + 1
 	}
 
 	return -1

@@ -28,7 +28,7 @@ const (
 // GetBarTrend gets a barometer trend from a given packet at
 // the specified index.
 func GetBarTrend(p []byte, i uint) string {
-	switch GetInt8(p, i) {
+	switch GetUInt8(p, i) {
 	case -60:
 		return FallingRapid
 	case -20:
@@ -48,7 +48,7 @@ func GetBarTrend(p []byte, i uint) string {
 // at the specified index.
 func GetDate16(p []byte, i uint) time.Time {
 	// If unitialized then return a zero Time.
-	d := GetInt16(p, i)
+	d := GetUInt16(p, i)
 	if d == 0xffff {
 		return time.Time{}
 	}
@@ -71,13 +71,13 @@ func GetDateTime32(p []byte, i uint) time.Time {
 	//
 	//  YYYY YYYM MMMD DDDD
 	// 15       8         0
-	d := GetInt16(p, i)
+	d := GetUInt16(p, i)
 	day := d & 0x001f
 	month := (d & 0x01e0) >> 5
 	year := 2000 + (d&0xfe00)>>9
 
 	// The time is stored in second two bytes stored as: hour * 100 + min
-	t := GetInt16(p, i+2)
+	t := GetUInt16(p, i+2)
 	hour := t / 100
 	minute := t % 100
 
@@ -87,19 +87,19 @@ func GetDateTime32(p []byte, i uint) time.Time {
 // GetDateTime48 gets a 6-byte date and time value from a given packet
 // at the specified index.
 func GetDateTime48(p []byte, i uint) time.Time {
-	second := GetInt8(p, i)
-	minute := GetInt8(p, i+1)
-	hour := GetInt8(p, i+2)
-	day := GetInt8(p, i+3)
-	month := GetInt8(p, i+4)
-	year := 1900 + GetInt8(p, i+5)
+	second := GetUInt8(p, i)
+	minute := GetUInt8(p, i+1)
+	hour := GetUInt8(p, i+2)
+	day := GetUInt8(p, i+3)
+	month := GetUInt8(p, i+4)
+	year := 1900 + GetUInt8(p, i+5)
 
 	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Local)
 }
 
-// GetFloat8 gets a 1-byte float value from a given packet at
-// the specified index.
-func GetFloat8(p []byte, i uint) float64 {
+// GetUFloat8 gets a 1-byte unsigned float value from a given packet
+// at the specified index.
+func GetUFloat8(p []byte, i uint) float64 {
 	return float64(p[i])
 }
 
@@ -373,7 +373,7 @@ func GetForecast(p []byte, i uint) string {
 		"Windy with possible wind shift to the W, SW, or S.",
 	}
 
-	r := GetInt8(p, i)
+	r := GetUInt8(p, i)
 
 	// If forecast rule is not within the bounds of our table then
 	// return the dash value.
@@ -402,7 +402,7 @@ func GetForecastIcons(p []byte, i uint) (icons []string) {
 	}
 
 	for j := 0; j < len(iconBits); j++ {
-		if GetInt8(p, i)&int(math.Pow(2, float64(j))) != 0 {
+		if GetUInt8(p, i)&int(math.Pow(2, float64(j))) != 0 {
 			icons = append(icons, iconBits[j])
 		}
 	}
@@ -410,22 +410,22 @@ func GetForecastIcons(p []byte, i uint) (icons []string) {
 	return
 }
 
-// GetInt8 gets a 1-byte integer value from a given packet at
-// the specified index.
-func GetInt8(p []byte, i uint) int {
+// GetUInt8 gets a 1-byte unsigned integer value from a given packet
+// at the specified index.
+func GetUInt8(p []byte, i uint) int {
 	return int(p[i])
 }
 
-// GetInt16 gets a 2-byte integer value from a given packet at
-// the specified index.
-func GetInt16(p []byte, i uint) int {
+// GetUInt16 gets a 2-byte unsigned integer value from a given packet
+// at the specified index.
+func GetUInt16(p []byte, i uint) int {
 	return int(p[i+1])<<8 | int(p[i])
 }
 
 // GetMPH8 gets a 1-byte MPH value from a given packet at the
 // specified index.
 func GetMPH8(p []byte, i uint) int {
-	return GetInt8(p, i)
+	return GetUInt8(p, i)
 }
 
 // GetMPH16 gets a 2-byte MPH value from a given packet at the
@@ -437,14 +437,14 @@ func GetMPH16(p []byte, i uint) float64 {
 // GetTemp8 gets a 1-byte temperature value in a given packet
 // at the specified index.
 func GetTemp8(p []byte, i uint) int {
-	return GetInt8(p, i) - 90
+	return GetUInt8(p, i) - 90
 }
 
 // GetTime16 gets a 2-byte time (no date) value in a given packet
 // at the specified index.
 func GetTime16(p []byte, i uint) time.Time {
 	// If uninitialized then return a zero Time.
-	t := GetInt16(p, i)
+	t := GetUInt16(p, i)
 	if t == 0xffff {
 		return time.Time{}
 	}
@@ -472,7 +472,7 @@ func GetRainClicks(p []byte, i uint) float64 {
 // GetUVIndex gets a Ultraviolet index value from a given packet
 // at the specified index.
 func GetUVIndex(p []byte, i uint) float64 {
-	return GetFloat8(p, i) / 10.0
+	return GetUFloat8(p, i) / 10.0
 }
 
 // GetVoltage gets a battery voltage value from a given packet
@@ -484,7 +484,7 @@ func GetVoltage(p []byte, i uint) float64 {
 // GetWindDir gets a wind direction value in degrees from a
 // given packet at the specified index.
 func GetWindDir(p []byte, i uint) int {
-	c := GetInt8(p, i)
+	c := GetUInt8(p, i)
 	if c < 0 || c > 15 {
 		return 0
 	}

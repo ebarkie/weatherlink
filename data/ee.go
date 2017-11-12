@@ -42,7 +42,7 @@ func (ee *EEPROM) UnmarshalBinary(p []byte) error {
 	//      0 = W | 0 = S | 0 = 0.01in    | 0 = Small | 0 = Month/Day | 0 = PM   | 0 = AM/PM
 	//      1 = E | 1 = N | 1 = 0.2mm     | 1 = Large | 1 = Day/Month | 1 = AM   | 1 = 24hr
 	//            |       | 2 = 0.1mm     |
-	setup := packet.GetInt8(p, 43)
+	setup := packet.GetUInt8(p, 43)
 
 	// Unit bit breakdown:
 	//
@@ -54,12 +54,12 @@ func (ee *EEPROM) UnmarshalBinary(p []byte) error {
 	//      1 = m/s   | 1 = mm | 1 = m     | 1 = F (tenth) | 1 = mm
 	//      2 = km/h  |        |           | 2 = C (whole) | 2 = hpa
 	//      3 = knots |        |           | 3 = C (tenth) | 3 = mb
-	unit := packet.GetInt8(p, 41)
+	unit := packet.GetUInt8(p, 41)
 
-	ee.ArchivePeriod = packet.GetInt8(p, 45)
+	ee.ArchivePeriod = packet.GetUInt8(p, 45)
 
 	// Location
-	ee.Elev = packet.GetInt16(p, 15)
+	ee.Elev = packet.GetUInt16(p, 15)
 	if ft := unit&0x10 == 0; !ft {
 		// Elevation is in meters so convert to feet
 		ee.Elev = int(units.Ft(float64(ee.Elev)))

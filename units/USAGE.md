@@ -35,3 +35,26 @@ Ft converts Meters to Feet.
 func Kn(mph float64) float64
 ```
 Kn converts Miles Per Hour (MPH) to Knots.
+
+#### func  SoilMoisture
+
+```go
+func SoilMoisture(t SoilType, cb int) int
+```
+SoilMoisture converts soil moisture tension in centibars to a percentage.
+
+#### type SoilType
+
+```go
+type SoilType uint
+```
+
+
+```go
+const (
+	Sand SoilType = iota
+	SandyLoam
+	Loam
+	ClayLoam
+)
+```

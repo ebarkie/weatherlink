@@ -17,11 +17,3 @@ func TestC(t *testing.T) {
 func TestF(t *testing.T) {
 	assert.Equal(t, 32.0, F(0.0), "Celsius to Fahrenheit")
 }
-
-func TestFt(t *testing.T) {
-	assert.Equal(t, 3.28084, Ft(1.0), "Meters to Feet")
-}
-
-func TestKn(t *testing.T) {
-	assert.Equal(t, 47.784, Kn(55.0), "Miles Per Hour (MPH) to Knots")
-}

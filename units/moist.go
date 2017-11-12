@@ -29,15 +29,7 @@ func SoilMoisture(t SoilType, cb int) int {
 		170, // Clay Loam/Clay
 	}
 
-	var dcb int
-	if t < 0 {
-		dcb = depletedCbs[0]
-	} else if int(t) >= len(depletedCbs) {
-		dcb = depletedCbs[len(depletedCbs)-1]
-	} else {
-		dcb = depletedCbs[t]
-	}
-
+	dcb := depletedCbs[t]
 	if cb > dcb {
 		return 0
 	}

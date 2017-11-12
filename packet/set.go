@@ -55,15 +55,15 @@ func SetFloat16_10(p *[]byte, i uint, v float64) {
 	SetFloat16(p, i, v*10.0)
 }
 
-// SetInt8 sets a 1-byte integer value in a given packet at the
-// specified index.
-func SetInt8(p *[]byte, i uint, v int) {
+// SetUInt8 sets a 1-byte unsigned integer value in a given packet
+// at the specified index.
+func SetUInt8(p *[]byte, i uint, v int) {
 	(*p)[i] = byte(v)
 }
 
-// SetInt16 sets a 2-byte integer value in a given packet at the
-// specified index.
-func SetInt16(p *[]byte, i uint, v int) {
+// SetUInt16 sets a 2-byte unsigned integer value in a given packet
+// at the specified index.
+func SetUInt16(p *[]byte, i uint, v int) {
 	(*p)[i] = byte(v)
 	(*p)[i+1] = byte(uint16(v) >> 8)
 }
@@ -71,7 +71,7 @@ func SetInt16(p *[]byte, i uint, v int) {
 // SetMPH8 sets a 1-byte MPH value in a given packet at the specified
 // index.
 func SetMPH8(p *[]byte, i uint, v int) {
-	SetInt8(p, i, v)
+	SetUInt8(p, i, v)
 }
 
 // SetMPH16 sets a 2-byte MPH value in a given packet at the
@@ -95,7 +95,7 @@ func SetRainClicks(p *[]byte, i uint, v float64) {
 // SetTemp8 sets a 1-byte temprature value in a given packet at
 // the specified index.
 func SetTemp8(p *[]byte, i uint, v int) {
-	SetInt8(p, i, v+90)
+	SetUInt8(p, i, v+90)
 }
 
 // SetVoltage sets a battery voltage value in a given packet

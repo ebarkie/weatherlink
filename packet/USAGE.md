@@ -223,20 +223,6 @@ func SetFloat16_10(p *[]byte, i uint, v float64)
 SetFloat16_10 sets a 2-byte signed two's complement float value in tenths in a
 given packet at the specified index.
 
-#### func  SetInt16
-
-```go
-func SetInt16(p *[]byte, i uint, v int)
-```
-SetInt16 sets a 2-byte integer value in a given packet at the specified index.
-
-#### func  SetInt8
-
-```go
-func SetInt8(p *[]byte, i uint, v int)
-```
-SetInt8 sets a 1-byte integer value in a given packet at the specified index.
-
 #### func  SetMPH16
 
 ```go
@@ -273,6 +259,20 @@ func SetTemp8(p *[]byte, i uint, v int)
 ```
 SetTemp8 sets a 1-byte temprature value in a given packet at the specified
 index.
+
+#### func  SetUInt16
+
+```go
+func SetUInt16(p *[]byte, i uint, v int)
+```
+SetUInt16 sets a 2-byte integer value in a given packet at the specified index.
+
+#### func  SetUInt8
+
+```go
+func SetUInt8(p *[]byte, i uint, v int)
+```
+SetUInt8 sets a 1-byte integer value in a given packet at the specified index.
 
 #### func  SetVoltage
 

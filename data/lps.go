@@ -227,9 +227,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetFloat16(&p, 60, l.ET.LastYear*100.0)
 		for i := uint(0); i < 7; i++ {
 			if l.ExtraHumidity[i] != nil {
-				packet.SetInt8(&p, 34+i, *l.ExtraHumidity[i])
+				packet.SetUInt8(&p, 34+i, *l.ExtraHumidity[i])
 			} else {
-				packet.SetInt8(&p, 34+i, 255)
+				packet.SetUInt8(&p, 34+i, 255)
 			}
 			if l.ExtraTemp[i] != nil {
 				packet.SetTemp8(&p, 18+i, *l.ExtraTemp[i])
@@ -237,9 +237,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 				packet.SetTemp8(&p, 18+i, 165)
 			}
 		}
-		packet.SetInt8(&p, 11, l.InHumidity)
+		packet.SetUInt8(&p, 11, l.InHumidity)
 		packet.SetFloat16_10(&p, 9, l.InTemp)
-		packet.SetInt8(&p, 33, l.OutHumidity)
+		packet.SetUInt8(&p, 33, l.OutHumidity)
 		packet.SetFloat16_10(&p, 12, l.OutTemp)
 		packet.SetRainClicks(&p, 50, l.Rain.Accum.Today)
 		packet.SetRainClicks(&p, 52, l.Rain.Accum.LastMonth)
@@ -248,9 +248,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetRainClicks(&p, 41, l.Rain.Rate)
 		for i := uint(0); i < 4; i++ {
 			if l.SoilMoist[i] != nil {
-				packet.SetInt8(&p, 62+i, *l.SoilMoist[i])
+				packet.SetUInt8(&p, 62+i, *l.SoilMoist[i])
 			} else {
-				packet.SetInt8(&p, 62+i, 255)
+				packet.SetUInt8(&p, 62+i, 255)
 			}
 			if l.SoilTemp[i] != nil {
 				packet.SetTemp8(&p, 25+i, *l.SoilTemp[i])
@@ -260,7 +260,7 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		}
 		packet.SetMPH8(&p, 14, l.Wind.Cur.Speed)
 
-		packet.SetInt16(&p, 5, l.NextArcRec)
+		packet.SetUInt16(&p, 5, l.NextArcRec)
 	case 2:
 		// Loop2
 		packet.SetPressure(&p, 69, l.Bar.Altimeter)
@@ -269,9 +269,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetFloat16(&p, 30, l.DewPoint)
 		packet.SetFloat16(&p, 56, l.ET.Today*1000.0)
 		packet.SetFloat16(&p, 35, l.HeatIndex)
-		packet.SetInt8(&p, 11, l.InHumidity)
+		packet.SetUInt8(&p, 11, l.InHumidity)
 		packet.SetFloat16_10(&p, 9, l.InTemp)
-		packet.SetInt8(&p, 33, l.OutHumidity)
+		packet.SetUInt8(&p, 33, l.OutHumidity)
 		packet.SetFloat16_10(&p, 12, l.OutTemp)
 		packet.SetRainClicks(&p, 52, l.Rain.Accum.Last15Min)
 		packet.SetRainClicks(&p, 54, l.Rain.Accum.LastHour)

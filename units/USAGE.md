@@ -49,12 +49,14 @@ SoilMoisture converts soil moisture tension in centibars to a percentage.
 type SoilType uint
 ```
 
+SoilType is the soil type used for calculating suction.
 
 ```go
 const (
 	Sand SoilType = iota
 	SandyLoam
 	Loam
-	ClayLoam
+	Clay
 )
 ```
+Soil types ranging from sand to clay.

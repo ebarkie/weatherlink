@@ -4,19 +4,21 @@
 
 package units
 
+// SoilType is the soil type used for calculating suction.
 type SoilType uint
 
+// Soil types ranging from sand to clay.
 const (
 	Sand SoilType = iota
 	SandyLoam
 	Loam
-	ClayLoam
+	Clay
 )
 
 // SoilMoisture converts soil moisture tension in centibars to a percentage.
 func SoilMoisture(t SoilType, cb int) int {
-	// This uses a simple linear scale based on depletion of plant
-	// available water for each soil type.
+	// Linear scale based on depletion of plant available water for each
+	// soil type.
 
 	// Scheduling Irrigations: When and How Much Water to Apply.
 	// Division of Agriculture and Natural Resources Publication 3396.

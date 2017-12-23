@@ -97,12 +97,6 @@ func GetDateTime48(p []byte, i uint) time.Time {
 	return time.Date(year, time.Month(month), day, hour, minute, second, 0, time.Local)
 }
 
-// GetUFloat8 gets a 1-byte unsigned float value from a given packet
-// at the specified index.
-func GetUFloat8(p []byte, i uint) float64 {
-	return float64(p[i])
-}
-
 // GetFloat16 gets a 2-byte signed two's complement float value from
 // a given packet at the specified index.
 func GetFloat16(p []byte, i uint) float64 {
@@ -410,18 +404,6 @@ func GetForecastIcons(p []byte, i uint) (icons []string) {
 	return
 }
 
-// GetUInt8 gets a 1-byte unsigned integer value from a given packet
-// at the specified index.
-func GetUInt8(p []byte, i uint) int {
-	return int(p[i])
-}
-
-// GetUInt16 gets a 2-byte unsigned integer value from a given packet
-// at the specified index.
-func GetUInt16(p []byte, i uint) int {
-	return int(p[i+1])<<8 | int(p[i])
-}
-
 // GetMPH8 gets a 1-byte MPH value from a given packet at the
 // specified index.
 func GetMPH8(p []byte, i uint) int {
@@ -467,6 +449,24 @@ func GetPressure(p []byte, i uint) float64 {
 // a given packet at the specified index.
 func GetRainClicks(p []byte, i uint) float64 {
 	return GetFloat16(p, i) / 100.0
+}
+
+// GetUFloat8 gets a 1-byte unsigned float value from a given packet
+// at the specified index.
+func GetUFloat8(p []byte, i uint) float64 {
+	return float64(p[i])
+}
+
+// GetUInt8 gets a 1-byte unsigned integer value from a given packet
+// at the specified index.
+func GetUInt8(p []byte, i uint) int {
+	return int(p[i])
+}
+
+// GetUInt16 gets a 2-byte unsigned integer value from a given packet
+// at the specified index.
+func GetUInt16(p []byte, i uint) int {
+	return int(p[i+1])<<8 | int(p[i])
 }
 
 // GetUVIndex gets a Ultraviolet index value from a given packet

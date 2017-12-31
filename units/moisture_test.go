@@ -10,10 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestC(t *testing.T) {
-	assert.Equal(t, 0.0, C(32.0), "Fahrenheit to Celsius")
-}
-
-func TestF(t *testing.T) {
-	assert.Equal(t, 32.0, F(0.0), "Celsius to Fahrenheit")
+func TestSoilMoisture(t *testing.T) {
+	assert.Equal(t, 100, FromCB(0).P(Loam), "Completely saturated")
+	assert.Equal(t, 50, FromCB(65).P(Loam), "Half saturated")
+	assert.Equal(t, 0, FromCB(130).P(Loam), "No available moisture")
 }

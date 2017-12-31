@@ -11,5 +11,5 @@ import (
 )
 
 func TestKn(t *testing.T) {
-	assert.Equal(t, 47.784, Kn(55.0), "Miles Per Hour (MPH) to Knots")
+	assert.Equal(t, 47.784, FromMPH(55.0).Kn(), "Miles Per Hour (MPH) to Knots")
 }

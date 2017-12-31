@@ -10,6 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFt(t *testing.T) {
-	assert.Equal(t, 3.28084, Ft(1.0), "Meters to Feet")
+func TestC(t *testing.T) {
+	assert.Equal(t, 0.0, FromF(32.0).C(), "Fahrenheit to Celsius")
+}
+
+func TestF(t *testing.T) {
+	assert.Equal(t, 32.0, FromC(0.0).F(), "Celsius to Fahrenheit")
 }

@@ -11,5 +11,5 @@ import (
 )
 
 func TestMb(t *testing.T) {
-	assert.Equal(t, 846.593815, Mb(25.0), "Inches to Millibars")
+	assert.Equal(t, 846.593815, FromMercuryIn(25.0).Mb(), "Inches to Millibars")
 }

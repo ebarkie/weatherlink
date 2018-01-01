@@ -7,123 +7,108 @@ Package units implements simple unit conversion functions.
 
 ## Usage
 
+```go
+const (
+	Inches = 1.0
+	Feet   = 0.0833333333
+	Meters = 39.37008
+)
+```
+From units.
+
+```go
+const (
+	Centibars = 1.0
+)
+```
+From units.
+
+```go
+const (
+	MPH = 1.0
+)
+```
+From units.
+
 #### type Length
 
 ```go
-type Length struct {
-}
+type Length float64
 ```
 
 Length is a length stored in Inches.
 
-#### func  FromFt
+#### func (Length) Feet
 
 ```go
-func FromFt(ft float64) Length
+func (l Length) Feet() float64
 ```
-FromFt returns a length from a value in Feet.
+Feet returns the length in feet.
 
-#### func  FromIn
+#### func (Length) Inches
 
 ```go
-func FromIn(in float64) Length
+func (l Length) Inches() float64
 ```
-FromIn returns a length from a value in Inches.
+Inches returns the length in inches.
 
-#### func  FromM
+#### func (Length) Meters
 
 ```go
-func FromM(m float64) Length
+func (l Length) Meters() float64
 ```
-FromM returns a length from a value in Meters.
+Meters returns the length in meters.
 
-#### func (Length) Ft
+#### func (Length) Millimeters
 
 ```go
-func (l Length) Ft() float64
+func (l Length) Millimeters() float64
 ```
-Ft returns the length in feet.
-
-#### func (Length) In
-
-```go
-func (l Length) In() float64
-```
-In returns the length in inches.
-
-#### func (Length) M
-
-```go
-func (l Length) M() float64
-```
-M returns the length in meters.
-
-#### func (Length) Mm
-
-```go
-func (l Length) Mm() float64
-```
-Mm returns the length in Millimeters.
-
-#### type Moisture
-
-```go
-type Moisture struct {
-}
-```
-
-Moisture is moisture in centibars of tension.
-
-#### func  FromCB
-
-```go
-func FromCB(cb int) Moisture
-```
-FromCB returns a moisure level stored in centibars of tension.
-
-#### func (Moisture) P
-
-```go
-func (m Moisture) P(t SoilType) int
-```
-P returns the soil moisure as a percentage.
+Millimeters returns the length in Millimeters.
 
 #### type Pressure
 
 ```go
-type Pressure struct {
-}
+type Pressure float64
 ```
 
 Pressure is a barometric pressure stored in Inches.
 
-#### func  FromMercuryIn
+#### func (Pressure) Hectopascals
 
 ```go
-func FromMercuryIn(in float64) Pressure
+func (p Pressure) Hectopascals() float64
 ```
-FromMercuryIn returns a pressure from a value in Inches.
+Hectopascals returns the pressure in Hectopascals.
 
-#### func (Pressure) Hpa
+#### func (Pressure) Inches
 
 ```go
-func (p Pressure) Hpa() float64
+func (p Pressure) Inches() float64
 ```
-Hpa returns the pressure in Hectopascals.
+Inches returns the pressure in Inches.
 
-#### func (Pressure) In
+#### func (Pressure) Millibars
 
 ```go
-func (p Pressure) In() float64
+func (p Pressure) Millibars() float64
 ```
-In returns the pressure in Inches.
+Millibars returns the pressure in Millibars.
 
-#### func (Pressure) Mb
+#### type SoilMoisture
 
 ```go
-func (p Pressure) Mb() float64
+type SoilMoisture int
 ```
-Mb returns the pressure in Millibars.
+
+SoilMoisture is moisture in centibars of tension.
+
+#### func (SoilMoisture) Percent
+
+```go
+func (m SoilMoisture) Percent(t SoilType) int
+```
+Percent returns the soil moisure as an approximated percentage.
 
 #### type SoilType
 
@@ -146,25 +131,17 @@ Soil types ranging from sand to clay.
 #### type Speed
 
 ```go
-type Speed struct {
-}
+type Speed float64
 ```
 
-Speed is a speed.
+Speed is a speed stored in MPH.
 
-#### func  FromMPH
+#### func (Speed) Knots
 
 ```go
-func FromMPH(mph float64) Speed
+func (s Speed) Knots() float64
 ```
-FromMPH returns a speed from a value in Miles Per Hour.
-
-#### func (Speed) Kn
-
-```go
-func (s Speed) Kn() float64
-```
-Kn returns the speed in Knots.
+Knots returns the speed in Knots.
 
 #### func (Speed) MPH
 
@@ -183,36 +160,35 @@ MPS returns the speed in Meters per Second.
 #### type Temperature
 
 ```go
-type Temperature struct {
-}
+type Temperature float64
 ```
 
 Temperature is a temperature stored in Fahrenheit.
 
-#### func  FromC
+#### func  Celsius
 
 ```go
-func FromC(c float64) Temperature
+func Celsius(c float64) Temperature
 ```
-FromC returns a temperature from a value in Celsius.
+Celsius returns a temperature from a value in Celsius.
 
-#### func  FromF
+#### func  Fahrenheit
 
 ```go
-func FromF(f float64) Temperature
+func Fahrenheit(f float64) Temperature
 ```
-FromF returns a temperature from a value in Fahrenheit.
+Fahrenheit returns a temperature from a value in Fahrenheit.
 
-#### func (Temperature) C
+#### func (Temperature) Celsius
 
 ```go
-func (t Temperature) C() float64
+func (t Temperature) Celsius() float64
 ```
-C returns the temperature in Celsius.
+Celsius returns the temperature in Celsius.
 
-#### func (Temperature) F
+#### func (Temperature) Fahrenheit
 
 ```go
-func (t Temperature) F() float64
+func (t Temperature) Fahrenheit() float64
 ```
-F returns the temperature in Fahrenheit.
+Fahrenheit returns the temperature in Fahrenheit.

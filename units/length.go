@@ -5,41 +5,31 @@
 package units
 
 // Length is a length stored in Inches.
-type Length struct {
-	in float64
+type Length float64
+
+// From units.
+const (
+	Inches = 1.0
+	Feet   = 0.0833333333
+	Meters = 39.37008
+)
+
+// Feet returns the length in feet.
+func (l Length) Feet() float64 {
+	return l.Inches() / 12.0
 }
 
-// FromFt returns a length from a value in Feet.
-func FromFt(ft float64) Length {
-	return Length{in: ft * 12.0}
+// Inches returns the length in inches.
+func (l Length) Inches() float64 {
+	return float64(l)
 }
 
-// FromIn returns a length from a value in Inches.
-func FromIn(in float64) Length {
-	return Length{in: in}
+// Meters returns the length in meters.
+func (l Length) Meters() float64 {
+	return l.Inches() * 0.025399999187200026
 }
 
-// FromM returns a length from a value in Meters.
-func FromM(m float64) Length {
-	return Length{in: m * 39.37008}
-}
-
-// Ft returns the length in feet.
-func (l Length) Ft() float64 {
-	return l.in / 12.0
-}
-
-// In returns the length in inches.
-func (l Length) In() float64 {
-	return l.in
-}
-
-// M returns the length in meters.
-func (l Length) M() float64 {
-	return l.in * 0.025399999187200026
-}
-
-// Mm returns the length in Millimeters.
-func (l Length) Mm() float64 {
-	return l.M() * 1000.0
+// Millimeters returns the length in Millimeters.
+func (l Length) Millimeters() float64 {
+	return l.Meters() * 1000.0
 }

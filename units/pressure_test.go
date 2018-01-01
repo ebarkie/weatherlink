@@ -10,6 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMb(t *testing.T) {
-	assert.Equal(t, 846.593815, FromMercuryIn(25.0).Mb(), "Inches to Millibars")
+func TestMillibars(t *testing.T) {
+	assert.Equal(t, 846.593815, Pressure(25.0*Inches).Millibars(), "Inches to Millibars")
 }

@@ -5,26 +5,24 @@
 package units
 
 // Pressure is a barometric pressure stored in Inches.
-type Pressure struct {
-	in float64
+type Pressure float64
+
+// From units.
+const (
+//Inches = 1.0
+)
+
+// Hectopascals returns the pressure in Hectopascals.
+func (p Pressure) Hectopascals() float64 {
+	return p.Millibars()
 }
 
-// FromMercuryIn returns a pressure from a value in Inches.
-func FromMercuryIn(in float64) Pressure {
-	return Pressure{in: in}
+// Inches returns the pressure in Inches.
+func (p Pressure) Inches() float64 {
+	return float64(p)
 }
 
-// Hpa returns the pressure in Hectopascals.
-func (p Pressure) Hpa() float64 {
-	return p.Mb()
-}
-
-// In returns the pressure in Inches.
-func (p Pressure) In() float64 {
-	return p.in
-}
-
-// Mb returns the pressure in Millibars.
-func (p Pressure) Mb() float64 {
-	return p.in * 33.8637526
+// Millibars returns the pressure in Millibars.
+func (p Pressure) Millibars() float64 {
+	return p.Inches() * 33.8637526
 }

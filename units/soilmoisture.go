@@ -4,10 +4,13 @@
 
 package units
 
-// Moisture is moisture in centibars of tension.
-type Moisture struct {
-	cb int
-}
+// SoilMoisture is moisture in centibars of tension.
+type SoilMoisture int
+
+// From units.
+const (
+	Centibars = 1.0
+)
 
 // SoilType is the soil type used for calculating suction.
 type SoilType uint
@@ -20,13 +23,8 @@ const (
 	Clay
 )
 
-// FromCB returns a moisure level stored in centibars of tension.
-func FromCB(cb int) Moisture {
-	return Moisture{cb: cb}
-}
-
-// P returns the soil moisure as a percentage.
-func (m Moisture) P(t SoilType) int {
+// Percent returns the soil moisure as an approximated percentage.
+func (m SoilMoisture) Percent(t SoilType) int {
 	// Linear scale based on depletion of plant available water for each
 	// soil type.
 
@@ -42,8 +40,8 @@ func (m Moisture) P(t SoilType) int {
 	}
 
 	dcb := depletedCbs[t]
-	if m.cb > dcb {
+	if int(m) > dcb {
 		return 0
 	}
-	return 100 - int((float32(m.cb)/float32(dcb))*100)
+	return 100 - int((float32(m)/float32(dcb))*100)
 }

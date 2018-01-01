@@ -11,7 +11,7 @@ import (
 )
 
 func TestSoilMoisture(t *testing.T) {
-	assert.Equal(t, 100, FromCB(0).P(Loam), "Completely saturated")
-	assert.Equal(t, 50, FromCB(65).P(Loam), "Half saturated")
-	assert.Equal(t, 0, FromCB(130).P(Loam), "No available moisture")
+	assert.Equal(t, 100, SoilMoisture(0*Centibars).Percent(Loam), "Completely saturated")
+	assert.Equal(t, 50, SoilMoisture(65*Centibars).Percent(Loam), "Half saturated")
+	assert.Equal(t, 0, SoilMoisture(130*Centibars).Percent(Loam), "No available moisture")
 }

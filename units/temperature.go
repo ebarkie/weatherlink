@@ -5,26 +5,24 @@
 package units
 
 // Temperature is a temperature stored in Fahrenheit.
-type Temperature struct {
-	f float64
+type Temperature float64
+
+// Celsius returns a temperature from a value in Celsius.
+func Celsius(c float64) Temperature {
+	return Temperature(c*1.8 + 32.0)
 }
 
-// FromC returns a temperature from a value in Celsius.
-func FromC(c float64) Temperature {
-	return Temperature{f: c*1.8 + 32.0}
+// Fahrenheit returns a temperature from a value in Fahrenheit.
+func Fahrenheit(f float64) Temperature {
+	return Temperature(f)
 }
 
-// FromF returns a temperature from a value in Fahrenheit.
-func FromF(f float64) Temperature {
-	return Temperature{f: f}
+// Celsius returns the temperature in Celsius.
+func (t Temperature) Celsius() float64 {
+	return (t.Fahrenheit() - 32.0) * 5.0 / 9.0
 }
 
-// C returns the temperature in Celsius.
-func (t Temperature) C() float64 {
-	return (t.f - 32.0) * 5.0 / 9.0
-}
-
-// F returns the temperature in Fahrenheit.
-func (t Temperature) F() float64 {
-	return t.f
+// Fahrenheit returns the temperature in Fahrenheit.
+func (t Temperature) Fahrenheit() float64 {
+	return float64(t)
 }

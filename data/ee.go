@@ -62,7 +62,7 @@ func (ee *EEPROM) UnmarshalBinary(p []byte) error {
 	ee.Elev = packet.GetUInt16(p, 15)
 	if ft := unit&0x10 == 0; !ft {
 		// Elevation is in meters so convert to feet
-		ee.Elev = int(units.FromM(float64(ee.Elev)).Ft())
+		ee.Elev = int(units.Length(float64(ee.Elev) * units.Meters).Feet())
 	}
 	ee.Lat = packet.GetFloat16_10(p, 11)
 	if north := setup&0x40 != 0; (north && ee.Lat < 0.0) || (!north && ee.Lat > 0.0) {

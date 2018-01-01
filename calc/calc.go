@@ -20,9 +20,9 @@ func DewPoint(tf float64, h int) float64 {
 		b = 237.7
 	)
 
-	tc := units.FromF(tf).C()
+	tc := units.Fahrenheit(tf).Celsius()
 	x := a*tc/(b+tc) + math.Log(float64(h)/100.0)
 	dpc := b * x / (a - x)
 
-	return units.FromC(dpc).F()
+	return units.Celsius(dpc).Fahrenheit()
 }

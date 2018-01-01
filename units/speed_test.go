@@ -10,6 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestKn(t *testing.T) {
-	assert.Equal(t, 47.784, FromMPH(55.0).Kn(), "Miles Per Hour (MPH) to Knots")
+func TestKnots(t *testing.T) {
+	assert.Equal(t, 47.784, Speed(55.0*MPH).Knots(), "Miles Per Hour (MPH) to Knots")
 }

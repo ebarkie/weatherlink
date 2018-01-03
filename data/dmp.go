@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Eric Barkie. All rights reserved.
+// Copyright (c) 2016 Eric Barkie. All rights reserved.
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
@@ -62,25 +62,25 @@ func (a *Archive) UnmarshalBinary(p []byte) error {
 	// There are 2 extra humidity sensors and 3 extra temperature
 	// sensors.  Usually the quantities match but not for archive
 	// records.
-	for j := uint(0); j < 2; j++ {
-		if v := packet.GetUInt8(p, 43+j); v != 255 {
-			a.ExtraHumidity[j] = &v
+	for i := uint(0); i < 2; i++ {
+		if v := packet.GetUInt8(p, 43+i); v != 255 {
+			a.ExtraHumidity[i] = &v
 		}
 	}
-	for j := uint(0); j < 3; j++ {
-		if v := packet.GetTemp8(p, 45+j); v != 165 {
-			a.ExtraTemp[j] = &v
+	for i := uint(0); i < 3; i++ {
+		if v := packet.GetTemp8(p, 45+i); v != 165 {
+			a.ExtraTemp[i] = &v
 		}
 	}
 	a.Forecast = packet.GetForecast(p, 33)
 	a.InHumidity = packet.GetUInt8(p, 22)
 	a.InTemp = packet.GetFloat16_10(p, 20)
-	for j := uint(0); j < 2; j++ {
-		if v := packet.GetTemp8(p, 34+j); v != 165 {
-			a.LeafTemp[j] = &v
+	for i := uint(0); i < 2; i++ {
+		if v := packet.GetTemp8(p, 34+i); v != 165 {
+			a.LeafTemp[i] = &v
 		}
-		if v := packet.GetUInt8(p, 36+j); v != 255 {
-			a.LeafWetness[j] = &v
+		if v := packet.GetUInt8(p, 36+i); v != 255 {
+			a.LeafWetness[i] = &v
 		}
 	}
 	a.OutHumidity = packet.GetUInt8(p, 23)
@@ -89,12 +89,12 @@ func (a *Archive) UnmarshalBinary(p []byte) error {
 	a.OutTempLow = packet.GetFloat16_10(p, 8)
 	a.RainAccum = packet.GetRainClicks(p, 10)
 	a.RainRateHi = packet.GetRainClicks(p, 12)
-	for j := uint(0); j < 4; j++ {
-		if v := packet.GetUInt8(p, 48+j); v != 255 {
-			a.SoilMoist[j] = &v
+	for i := uint(0); i < 4; i++ {
+		if v := packet.GetUInt8(p, 48+i); v != 255 {
+			a.SoilMoist[i] = &v
 		}
-		if v := packet.GetTemp8(p, 38+j); v != 165 {
-			a.SoilTemp[j] = &v
+		if v := packet.GetTemp8(p, 38+i); v != 165 {
+			a.SoilTemp[i] = &v
 		}
 	}
 	a.SolarRad = packet.GetUInt16(p, 16)

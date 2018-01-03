@@ -135,6 +135,15 @@ func GetTime16(p []byte, i uint) time.Time
 GetTime16 gets a 2-byte time (no date) value in a given packet at the specified
 index.
 
+#### func  GetTransStatus
+
+```go
+func GetTransStatus(p []byte, i uint) (low []int)
+```
+GetTransStatus gets the transmitter status from the given packet at the
+specified index and returns a slice of the ID's/channels that have low battery
+indicators.
+
 #### func  GetUFloat8
 
 ```go
@@ -265,14 +274,16 @@ index.
 ```go
 func SetUInt16(p *[]byte, i uint, v int)
 ```
-SetUInt16 sets a 2-byte integer value in a given packet at the specified index.
+SetUInt16 sets a 2-byte unsigned integer value in a given packet at the
+specified index.
 
 #### func  SetUInt8
 
 ```go
 func SetUInt8(p *[]byte, i uint, v int)
 ```
-SetUInt8 sets a 1-byte integer value in a given packet at the specified index.
+SetUInt8 sets a 1-byte unsigned integer value in a given packet at the specified
+index.
 
 #### func  SetVoltage
 

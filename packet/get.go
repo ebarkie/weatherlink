@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Eric Barkie. All rights reserved.
+// Copyright (c) 2016 Eric Barkie. All rights reserved.
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
@@ -10,7 +10,6 @@ package packet
 // Communication Reference Manual, section X. Data Formats.
 
 import (
-	"math"
 	"strings"
 	"time"
 )
@@ -396,7 +395,7 @@ func GetForecastIcons(p []byte, i uint) (icons []string) {
 	}
 
 	for j := 0; j < len(iconBits); j++ {
-		if GetUInt8(p, i)&int(math.Pow(2, float64(j))) != 0 {
+		if GetUInt8(p, i)&(1<<uint(j)) != 0 {
 			icons = append(icons, iconBits[j])
 		}
 	}
@@ -414,6 +413,18 @@ func GetMPH8(p []byte, i uint) int {
 // specified index.
 func GetMPH16(p []byte, i uint) float64 {
 	return GetFloat16(p, i) / 10.0
+}
+
+// GetPressure gets a pressure value from a given packet at
+// the specified index.
+func GetPressure(p []byte, i uint) float64 {
+	return GetFloat16(p, i) / 1000.0
+}
+
+// GetRainClicks gets a rain rate or accumulation value from
+// a given packet at the specified index.
+func GetRainClicks(p []byte, i uint) float64 {
+	return GetFloat16(p, i) / 100.0
 }
 
 // GetTemp8 gets a 1-byte temperature value in a given packet
@@ -439,16 +450,17 @@ func GetTime16(p []byte, i uint) time.Time {
 	return time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, time.Local)
 }
 
-// GetPressure gets a pressure value from a given packet at
-// the specified index.
-func GetPressure(p []byte, i uint) float64 {
-	return GetFloat16(p, i) / 1000.0
-}
+// GetTransStatus gets the transmitter status from the given packet
+// at the specified index and returns a slice of the ID's/channels
+// that have low battery indicators.
+func GetTransStatus(p []byte, i uint) (low []int) {
+	for j := uint(0); j < 8; j++ {
+		if GetUInt8(p, i)&(1<<j) != 0 {
+			low = append(low, int(j)+1)
+		}
+	}
 
-// GetRainClicks gets a rain rate or accumulation value from
-// a given packet at the specified index.
-func GetRainClicks(p []byte, i uint) float64 {
-	return GetFloat16(p, i) / 100.0
+	return
 }
 
 // GetUFloat8 gets a 1-byte unsigned float value from a given packet

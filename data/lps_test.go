@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Eric Barkie. All rights reserved.
+// Copyright (c) 2016 Eric Barkie. All rights reserved.
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
@@ -121,8 +121,8 @@ func TestLoopUnmarshalBinaryLoop1Rain(t *testing.T) {
 
 	a.Equal(29.982, l.Bar.SeaLevel, "Barometer sea level")
 	a.Equal("Steady", l.Bar.Trend, "Barometer trend")
-	a.Equal(4.763671875, l.Bat.ConsoleVoltage, "Batter voltage")
-	a.Equal(0, l.Bat.TransStatus, "Battery transmitter status")
+	a.Equal(4.763671875, l.Bat.ConsoleVoltage, "Console battery voltage")
+	a.Equal([]int(nil), l.Bat.TransLow, "Transmitters with low battery indicators")
 	a.Equal(0.111, l.ET.Today, "ET today")
 	a.Equal(0.86, l.ET.LastMonth, "ET this month")
 	a.Equal(0.86, l.ET.LastYear, "ET this year")

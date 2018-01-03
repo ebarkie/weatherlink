@@ -529,7 +529,7 @@ LoopBar is the barometer related readings for a Loop struct.
 ```go
 type LoopBat struct {
 	ConsoleVoltage float64 `json:"consoleVoltage"`
-	TransStatus    int     `json:"transmitterStatus"`
+	TransLow       []int   `json:"transmittersLow"`
 }
 ```
 

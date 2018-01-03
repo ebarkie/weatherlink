@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Eric Barkie. All rights reserved.
+// Copyright (c) 2016 Eric Barkie. All rights reserved.
 // Use of this source code is governed by the MIT license
 // that can be found in the LICENSE file.
 
@@ -58,7 +58,7 @@ type LoopBar struct {
 // LoopBat is the console and transmitter battery readings for a Loop struct.
 type LoopBat struct {
 	ConsoleVoltage float64 `json:"consoleVoltage"`
-	TransStatus    int     `json:"transmitterStatus"`
+	TransLow       []int   `json:"transmittersLow"`
 }
 
 // LoopET is the evapotranspiration related readings for a Loop struct.
@@ -116,7 +116,7 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 		l.Bar.SeaLevel = packet.GetPressure(p, 7)
 		l.Bar.Trend = packet.GetBarTrend(p, 3)
 		l.Bat.ConsoleVoltage = packet.GetVoltage(p, 87)
-		l.Bat.TransStatus = packet.GetUInt8(p, 86)
+		l.Bat.TransLow = packet.GetTransStatus(p, 86)
 		l.ET.Today = packet.GetFloat16(p, 56) / 1000.0
 		l.ET.LastMonth = packet.GetFloat16(p, 58) / 100.0
 		l.ET.LastYear = packet.GetFloat16(p, 60) / 100.0

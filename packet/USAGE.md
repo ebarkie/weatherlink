@@ -253,12 +253,12 @@ func SetPressure(p *[]byte, i uint, v float64)
 ```
 SetPressure sets a pressure value in a given packet at the specified index.
 
-#### func  SetRainClicks
+#### func  SetRain
 
 ```go
-func SetRainClicks(p *[]byte, i uint, v float64)
+func SetRain(p *[]byte, i uint, v float64)
 ```
-SetRainClicks sets a rain rate or accumulation value in a given packet at the
+SetRain sets a rain rate or accumulation value in a given packet at the
 specified index.
 
 #### func  SetTemp8

@@ -73,9 +73,9 @@ func SetPressure(p *[]byte, i uint, v float64) {
 	SetFloat16(p, i, v*1000.0)
 }
 
-// SetRainClicks sets a rain rate or accumulation value
-// in a given packet at the specified index.
-func SetRainClicks(p *[]byte, i uint, v float64) {
+// SetRain sets a rain rate or accumulation value in a given
+// packet at the specified index.
+func SetRain(p *[]byte, i uint, v float64) {
 	SetFloat16(p, i, v*100.0)
 }
 

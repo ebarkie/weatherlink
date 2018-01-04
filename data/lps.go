@@ -241,11 +241,11 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetFloat16_10(&p, 9, l.InTemp)
 		packet.SetUInt8(&p, 33, l.OutHumidity)
 		packet.SetFloat16_10(&p, 12, l.OutTemp)
-		packet.SetRainClicks(&p, 50, l.Rain.Accum.Today)
-		packet.SetRainClicks(&p, 52, l.Rain.Accum.LastMonth)
-		packet.SetRainClicks(&p, 54, l.Rain.Accum.LastYear)
-		packet.SetRainClicks(&p, 46, l.Rain.Accum.Storm)
-		packet.SetRainClicks(&p, 41, l.Rain.Rate)
+		packet.SetRain(&p, 50, l.Rain.Accum.Today)
+		packet.SetRain(&p, 52, l.Rain.Accum.LastMonth)
+		packet.SetRain(&p, 54, l.Rain.Accum.LastYear)
+		packet.SetRain(&p, 46, l.Rain.Accum.Storm)
+		packet.SetRain(&p, 41, l.Rain.Rate)
 		for i := uint(0); i < 4; i++ {
 			if l.SoilMoist[i] != nil {
 				packet.SetUInt8(&p, 62+i, *l.SoilMoist[i])
@@ -261,6 +261,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetMPH8(&p, 14, l.Wind.Cur.Speed)
 
 		packet.SetUInt16(&p, 5, l.NextArcRec)
+
+		packet.SetUInt8(&p, 95, 0x0a) // LF
+		packet.SetUInt8(&p, 96, 0x0d) // CR
 	case 2:
 		// Loop2
 		packet.SetPressure(&p, 69, l.Bar.Altimeter)
@@ -273,13 +276,19 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetFloat16_10(&p, 9, l.InTemp)
 		packet.SetUInt8(&p, 33, l.OutHumidity)
 		packet.SetFloat16_10(&p, 12, l.OutTemp)
-		packet.SetRainClicks(&p, 52, l.Rain.Accum.Last15Min)
-		packet.SetRainClicks(&p, 54, l.Rain.Accum.LastHour)
-		packet.SetRainClicks(&p, 58, l.Rain.Accum.Last24Hours)
-		packet.SetRainClicks(&p, 50, l.Rain.Accum.Today)
-		packet.SetRainClicks(&p, 46, l.Rain.Accum.Storm)
-		packet.SetRainClicks(&p, 41, l.Rain.Rate)
+		packet.SetRain(&p, 52, l.Rain.Accum.Last15Min)
+		packet.SetRain(&p, 54, l.Rain.Accum.LastHour)
+		packet.SetRain(&p, 58, l.Rain.Accum.Last24Hours)
+		packet.SetRain(&p, 50, l.Rain.Accum.Today)
+		packet.SetRain(&p, 46, l.Rain.Accum.Storm)
+		packet.SetRain(&p, 41, l.Rain.Rate)
 		packet.SetMPH8(&p, 14, l.Wind.Cur.Speed)
+
+		for i := uint(0); i < 6; i++ {
+			packet.SetUInt16(&p, 83+i*2, 0xff7f) // Unused field
+		}
+		packet.SetUInt8(&p, 95, 0x0a) // LF
+		packet.SetUInt8(&p, 96, 0x0d) // CR
 	default:
 		err = ErrUnknownLoop
 	}

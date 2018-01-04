@@ -284,8 +284,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		packet.SetRain(&p, 41, l.Rain.Rate)
 		packet.SetMPH8(&p, 14, l.Wind.Cur.Speed)
 
-		for i := uint(0); i < 6; i++ {
-			packet.SetUInt16(&p, 83+i*2, 0xff7f) // Unused field
+		// Unused fields.
+		for _, i := range []uint{5, 26, 28, 83, 85, 87, 89, 91, 93} {
+			packet.SetUInt16(&p, i, 0xff7f)
 		}
 		packet.SetUInt8(&p, 95, 0x0a) // LF
 		packet.SetUInt8(&p, 96, 0x0d) // CR

@@ -288,6 +288,7 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 		for _, i := range []uint{5, 26, 28, 83, 85, 87, 89, 91, 93} {
 			packet.SetUInt16(&p, i, 0xff7f)
 		}
+
 		packet.SetUInt8(&p, 95, 0x0a) // LF
 		packet.SetUInt8(&p, 96, 0x0d) // CR
 	default:
@@ -305,9 +306,9 @@ func (l *Loop) MarshalBinary() (p []byte, err error) {
 // is not a valid loop packet.
 func getLoopType(p []byte) int {
 	if len(p) == 99 &&
-		p[0] == 0x4c &&
-		p[1] == 0x4f &&
-		p[2] == 0x4f { // LOO
+		p[0] == 0x4c && // L
+		p[1] == 0x4f && // O
+		p[2] == 0x4f { //  O
 		return packet.GetUInt8(p, 4) + 1
 	}
 
@@ -315,9 +316,9 @@ func getLoopType(p []byte) int {
 }
 
 func setLoopType(p *[]byte, t int) {
-	(*p)[0] = 0x4c
-	(*p)[1] = 0x4f
-	(*p)[2] = 0x4f // LOO
+	(*p)[0] = 0x4c // L
+	(*p)[1] = 0x4f // O
+	(*p)[2] = 0x4f // O
 
 	(*p)[4] = byte(t - 1)
 }

@@ -87,8 +87,8 @@ func (a *Archive) UnmarshalBinary(p []byte) error {
 	a.OutTemp = packet.GetFloat16_10(p, 4)
 	a.OutTempHi = packet.GetFloat16_10(p, 6)
 	a.OutTempLow = packet.GetFloat16_10(p, 8)
-	a.RainAccum = packet.GetRainClicks(p, 10)
-	a.RainRateHi = packet.GetRainClicks(p, 12)
+	a.RainAccum = packet.GetRain(p, 10)
+	a.RainRateHi = packet.GetRain(p, 12)
 	for i := uint(0); i < 4; i++ {
 		if v := packet.GetUInt8(p, 48+i); v != 255 {
 			a.SoilMoist[i] = &v

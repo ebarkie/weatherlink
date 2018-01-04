@@ -111,12 +111,12 @@ func GetPressure(p []byte, i uint) float64
 ```
 GetPressure gets a pressure value from a given packet at the specified index.
 
-#### func  GetRainClicks
+#### func  GetRain
 
 ```go
-func GetRainClicks(p []byte, i uint) float64
+func GetRain(p []byte, i uint) float64
 ```
-GetRainClicks gets a rain rate or accumulation value from a given packet at the
+GetRain gets a rain rate or accumulation value from a given packet at the
 specified index.
 
 #### func  GetTemp8

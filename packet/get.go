@@ -421,9 +421,9 @@ func GetPressure(p []byte, i uint) float64 {
 	return GetFloat16(p, i) / 1000.0
 }
 
-// GetRainClicks gets a rain rate or accumulation value from
-// a given packet at the specified index.
-func GetRainClicks(p []byte, i uint) float64 {
+// GetRain gets a rain rate or accumulation value from a given
+// packet at the specified index.
+func GetRain(p []byte, i uint) float64 {
 	return GetFloat16(p, i) / 100.0
 }
 

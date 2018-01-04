@@ -375,11 +375,11 @@ func (hl *HiLows) UnmarshalBinary(p []byte) error {
 	hl.OutTemp.Year.Hi = packet.GetFloat16_10(p, 59)
 
 	// Rain rate
-	hl.RainRate.Hour.Hi = packet.GetRainClicks(p, 120)
-	hl.RainRate.Day.Hi = packet.GetRainClicks(p, 116)
+	hl.RainRate.Hour.Hi = packet.GetRain(p, 120)
+	hl.RainRate.Day.Hi = packet.GetRain(p, 116)
 	hl.RainRate.Day.HiTime = packet.GetTime16(p, 118)
-	hl.RainRate.Month.Hi = packet.GetRainClicks(p, 122)
-	hl.RainRate.Year.Hi = packet.GetRainClicks(p, 124)
+	hl.RainRate.Month.Hi = packet.GetRain(p, 122)
+	hl.RainRate.Year.Hi = packet.GetRain(p, 124)
 
 	// Soil moisture and temperature
 	for i := uint(0); i < 4; i++ {

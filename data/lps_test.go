@@ -136,7 +136,7 @@ func TestLoopUnmarshalBinaryLoop1Rain(t *testing.T) {
 	a.Equal(79.9, l.InTemp, "Inside temperature")
 	for i := uint(0); i < 4; i++ {
 		a.Nil(l.LeafTemp[i], fmt.Sprintf("Leaf temperature %d", i))
-		a.Nil(l.LeafWetness[i], fmt.Sprintf("Leaf wetness %d", i))
+		a.Nil(l.LeafWet[i], fmt.Sprintf("Leaf wetness %d", i))
 	}
 	a.Equal(284, l.NextArcRec, "Next archive record")
 	a.Equal(73, l.OutHumidity, "Outside humidity")

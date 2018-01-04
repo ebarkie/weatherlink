@@ -29,7 +29,7 @@ type Loop struct {
 	InHumidity    int       `json:"insideHumidity"`
 	InTemp        float64   `json:"insideTemperature"`
 	LeafTemp      [4]*int   `json:"leafTemperature,omitempty"`
-	LeafWetness   [4]*int   `json:"leafWetness,omitempty"`
+	LeafWet       [4]*int   `json:"leafWetness,omitempty"`
 	OutHumidity   int       `json:"outsideHumidity"`
 	OutTemp       float64   `json:"outsideTemperature"`
 	Rain          LoopRain  `json:"rain"`
@@ -144,7 +144,7 @@ func (l *Loop) UnmarshalBinary(p []byte) error {
 				if i == 3 && v == 0 {
 					continue
 				}
-				l.LeafWetness[i] = &v
+				l.LeafWet[i] = &v
 			}
 		}
 		l.OutHumidity = packet.GetUInt8(p, 33)

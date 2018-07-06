@@ -11,9 +11,9 @@ types.
 
 ```go
 var (
+	ErrNotArcB     = errors.New("Not a revision B archive record")
 	ErrBadCRC      = errors.New("CRC check failed")
 	ErrBadLocation = errors.New("Location is inconsistent")
-	ErrNotArchive  = errors.New("Not a revision B archive record")
 	ErrNotDmp      = errors.New("Not a download memory page")
 	ErrNotDmpMeta  = errors.New("Not a download memory page metadata packet")
 	ErrNotLoop     = errors.New("Not a loop packet")
@@ -470,7 +470,7 @@ type Loop struct {
 	InHumidity    int       `json:"insideHumidity"`
 	InTemp        float64   `json:"insideTemperature"`
 	LeafTemp      [4]*int   `json:"leafTemperature,omitempty"`
-	LeafWetness   [4]*int   `json:"leafWetness,omitempty"`
+	LeafWet       [4]*int   `json:"leafWetness,omitempty"`
 	OutHumidity   int       `json:"outsideHumidity"`
 	OutTemp       float64   `json:"outsideTemperature"`
 	Rain          LoopRain  `json:"rain"`

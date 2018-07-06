@@ -54,7 +54,7 @@ type Archive struct {
 // UnmarshalBinary decodes a 52-byte revision B archive record.
 func (a *Archive) UnmarshalBinary(p []byte) error {
 	if getArcType(p) != "b" {
-		return ErrNotArchive
+		return ErrNotArcB
 	}
 
 	a.Bar = packet.GetPressure(p, 14)
@@ -129,7 +129,13 @@ func (d *Dmp) UnmarshalBinary(p []byte) error {
 	for i := 0; i < 5; i++ {
 		offset := 1 + (52 * i)
 		err := d[i].UnmarshalBinary(p[offset : offset+52])
-		if err != nil {
+		if err == ErrNotArcB {
+			// When the archive log is clear any unwritten records of a download
+			// memory page will have the type set to 0xff (archive A).  If this
+			// is encountered it's not an error and there's also no need to
+			// decode any records that follow since they'll be the same.
+			break
+		} else if err != nil {
 			return err
 		}
 	}

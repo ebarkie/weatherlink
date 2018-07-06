@@ -83,21 +83,25 @@ func (c Conn) GetDmps(ec chan<- interface{}, lastRec time.Time) (newLastRec time
 				pageNum, dm.Pages, err.Error())
 			break
 		}
+		Trace.Printf("Packet\n%s", hex.Dump(p))
 
 		d := data.Dmp{}
 		err = d.UnmarshalBinary(p)
-		if err != nil {
-			// Most likely a CRC error - NAK and retry the page.
-			Error.Printf("Dmp page %d/%d decode error: %s, retrying",
+		if err == data.ErrBadCRC {
+			// NAK and retry the page.
+			Error.Printf("Dmp page %d/%d error: %s, retrying",
 				pageNum, dm.Pages, err.Error())
 			c.d.Write([]byte{nak})
 			pageNum--
 			continue
+		} else if err != nil {
+			Error.Printf("Dmp page %d/%d error: %s, aborting",
+				pageNum, dm.Pages, err.Error())
+			break
 		}
 
 		// We have a valid decoded archive page
 		Debug.Printf("Valid dmp page (%d:%d/%d)", pageNum, int(p[0]), dm.Pages-1)
-		Trace.Printf("Packet\n%s", hex.Dump(p))
 		Trace.Printf("Decoded\n%s", Sdump(d))
 
 		for recordNum := 0; recordNum < len(d); recordNum++ {

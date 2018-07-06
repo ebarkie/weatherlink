@@ -10,9 +10,9 @@ import "errors"
 
 // Errors.
 var (
+	ErrNotArcB     = errors.New("Not a revision B archive record")
 	ErrBadCRC      = errors.New("CRC check failed")
 	ErrBadLocation = errors.New("Location is inconsistent")
-	ErrNotArchive  = errors.New("Not a revision B archive record")
 	ErrNotDmp      = errors.New("Not a download memory page")
 	ErrNotDmpMeta  = errors.New("Not a download memory page metadata packet")
 	ErrNotLoop     = errors.New("Not a loop packet")

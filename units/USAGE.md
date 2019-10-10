@@ -1,6 +1,6 @@
 # units
 ```
-import "github.com/ebarkie/weatherlink/units"
+import "gitlab.com/ebarkie/weatherlink/units"
 ```
 
 Package units implements simple unit conversion functions.

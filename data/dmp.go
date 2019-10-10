@@ -16,7 +16,7 @@ package data
 import (
 	"time"
 
-	"github.com/ebarkie/weatherlink/packet"
+	"gitlab.com/ebarkie/weatherlink/packet"
 )
 
 // Archive represents all of the data in a revision B archive

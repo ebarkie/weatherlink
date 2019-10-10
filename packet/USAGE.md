@@ -1,7 +1,7 @@
 # packet
 
 ```go
-import "github.com/ebarkie/weatherlink/packet"
+import "gitlab.com/ebarkie/weatherlink/packet"
 ```
 
 Package packet implements getters and setters for Davis Instruments packets.

@@ -1,8 +1,5 @@
 # Weatherlink
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
-[![Build Status](https://travis-ci.org/ebarkie/weatherlink.svg?branch=master)](https://travis-ci.org/ebarkie/weatherlink)
-
 Go package for working with Davis Instruments Weatherlink protocol over a
 Weatherlink IP, serial, or USB interface.
 
@@ -21,7 +18,7 @@ Features:
 ## Installation
 
 ```
-$ go get github.com/ebarkie/weatherlink
+$ go get gitlab.com/ebarkie/weatherlink
 ```
 
 ## Usage
@@ -38,8 +35,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/ebarkie/weatherlink"
-	"github.com/ebarkie/weatherlink/data"
+	"gitlab.com/ebarkie/weatherlink"
+	"gitlab.com/ebarkie/weatherlink/data"
 )
 
 func main() {

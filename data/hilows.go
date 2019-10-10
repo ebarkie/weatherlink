@@ -13,7 +13,7 @@ package data
 import (
 	"time"
 
-	"github.com/ebarkie/weatherlink/packet"
+	"gitlab.com/ebarkie/weatherlink/packet"
 )
 
 // HiLows represents all of the record high and lows by day, month, and

@@ -4,7 +4,7 @@
 
 package weatherlink
 
-import "github.com/ebarkie/weatherlink/data"
+import "gitlab.com/ebarkie/weatherlink/data"
 
 // GetHiLows retrieves the record high and lows.
 func (c Conn) GetHiLows(ec chan<- interface{}) error {

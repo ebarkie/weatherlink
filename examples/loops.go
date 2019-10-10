@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/ebarkie/weatherlink"
-	"github.com/ebarkie/weatherlink/data"
+	"gitlab.com/ebarkie/weatherlink"
+	"gitlab.com/ebarkie/weatherlink/data"
 )
 
 func main() {

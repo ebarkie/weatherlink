@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"strconv"
 
-	"github.com/ebarkie/weatherlink/data"
+	"gitlab.com/ebarkie/weatherlink/data"
 )
 
 // GetLoops starts a stream of loop packets and sends them to the

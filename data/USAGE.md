@@ -1,7 +1,7 @@
 # data
 
 ```go
-import "github.com/ebarkie/weatherlink/data"
+import "gitlab.com/ebarkie/weatherlink/data"
 ```
 
 Package data implements encoding and decoding of Davis Instruments binary data

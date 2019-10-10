@@ -8,7 +8,7 @@ package calc
 import (
 	"math"
 
-	"github.com/ebarkie/weatherlink/units"
+	"gitlab.com/ebarkie/weatherlink/units"
 )
 
 // DewPoint takes a temperature in Fahrenheit and humidity and

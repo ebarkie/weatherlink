@@ -1,7 +1,7 @@
 # calc
 
 ```go
-import "github.com/ebarkie/weatherlink/calc"
+import "gitlab.com/ebarkie/weatherlink/calc"
 ```
 
 Package calc implements weather calculations.

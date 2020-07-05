@@ -1,3 +1,5 @@
+![Push](https://github.com/ebarkie/weatherlink/workflows/Push/badge.svg)
+
 # Weatherlink
 
 Go package for working with Davis Instruments Weatherlink protocol over a

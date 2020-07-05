@@ -1,4 +1,4 @@
-module gitlab.com/ebarkie/weatherlink
+module github.com/ebarkie/weatherlink
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -8,4 +8,4 @@ require (
 	golang.org/x/sys v0.0.0-20191009170203-06d7bd2c5f4f // indirect
 )
 
-go 1.13
+go 1.14

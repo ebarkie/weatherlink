@@ -1,7 +1,7 @@
 # weatherlink
 
 ```go
-import "gitlab.com/ebarkie/weatherlink"
+import "github.com/ebarkie/weatherlink"
 ```
 
 Package weatherlink implements the Davis Instruments serial, USB, and TCP/IP

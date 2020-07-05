@@ -13,8 +13,8 @@ package data
 import (
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/packet"
-	"gitlab.com/ebarkie/weatherlink/units"
+	"github.com/ebarkie/weatherlink/packet"
+	"github.com/ebarkie/weatherlink/units"
 )
 
 // EEPROM represents the configuration settings.

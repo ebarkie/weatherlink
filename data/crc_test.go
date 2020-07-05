@@ -7,7 +7,7 @@ package data
 import (
 	"testing"
 
-	"gitlab.com/ebarkie/weatherlink/packet"
+	"github.com/ebarkie/weatherlink/packet"
 
 	"github.com/stretchr/testify/assert"
 )

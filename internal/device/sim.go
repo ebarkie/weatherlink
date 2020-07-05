@@ -13,7 +13,7 @@ import (
 	"math/rand"
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/data"
+	"github.com/ebarkie/weatherlink/data"
 )
 
 const (

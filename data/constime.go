@@ -13,7 +13,7 @@ package data
 import (
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/packet"
+	"github.com/ebarkie/weatherlink/packet"
 )
 
 // ConsTime is the console current time.

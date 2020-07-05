@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/internal/device"
+	"github.com/ebarkie/weatherlink/internal/device"
 )
 
 const (

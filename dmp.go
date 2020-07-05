@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/data"
+	"github.com/ebarkie/weatherlink/data"
 )
 
 // Archive interval.

@@ -7,7 +7,7 @@ package weatherlink
 import (
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/data"
+	"github.com/ebarkie/weatherlink/data"
 )
 
 // GetConsTime gets the console time.

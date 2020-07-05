@@ -4,7 +4,7 @@
 
 package weatherlink
 
-import "gitlab.com/ebarkie/weatherlink/data"
+import "github.com/ebarkie/weatherlink/data"
 
 // GetEEPROM retrieves the entire EEPROM configuration.
 func (c Conn) GetEEPROM(ec chan<- interface{}) error {

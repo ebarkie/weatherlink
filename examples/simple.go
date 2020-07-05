@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink"
-	"gitlab.com/ebarkie/weatherlink/data"
+	"github.com/ebarkie/weatherlink"
+	"github.com/ebarkie/weatherlink/data"
 )
 
 func main() {

@@ -7,7 +7,7 @@ package data
 import (
 	"time"
 
-	"gitlab.com/ebarkie/weatherlink/packet"
+	"github.com/ebarkie/weatherlink/packet"
 )
 
 // Loop is a combined struct representation of the union of loop1

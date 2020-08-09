@@ -10,11 +10,11 @@ import "errors"
 
 // Errors.
 var (
-	ErrNotArcB     = errors.New("Not a revision B archive record")
+	ErrNotArcB     = errors.New("not a revision B archive record")
 	ErrBadCRC      = errors.New("CRC check failed")
-	ErrBadLocation = errors.New("Location is inconsistent")
-	ErrNotDmp      = errors.New("Not a download memory page")
-	ErrNotDmpMeta  = errors.New("Not a download memory page metadata packet")
-	ErrNotLoop     = errors.New("Not a loop packet")
-	ErrUnknownLoop = errors.New("Unknown loop packet type")
+	ErrBadLocation = errors.New("location is inconsistent")
+	ErrNotDmp      = errors.New("not a download memory page")
+	ErrNotDmpMeta  = errors.New("not a download memory page metadata packet")
+	ErrNotLoop     = errors.New("not a loop packet")
+	ErrUnknownLoop = errors.New("unknown loop packet type")
 )

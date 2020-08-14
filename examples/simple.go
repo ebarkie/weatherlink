@@ -52,7 +52,7 @@ func main() {
 	w.Q <- weatherlink.GetHiLows
 
 	// Run for a period of time and then send a stop signal
-	runTime := time.Duration(6 * time.Minute)
+	runTime := 6 * time.Minute
 	log.Printf("Receiving events for %s", runTime)
 	time.Sleep(runTime)
 	log.Println("Stopping command broker")

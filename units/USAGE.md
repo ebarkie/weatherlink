@@ -1,5 +1,6 @@
 # units
-```
+
+```go
 import "github.com/ebarkie/weatherlink/units"
 ```
 

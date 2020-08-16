@@ -375,9 +375,9 @@ func GetForecast(p []byte, i uint) string {
 	}
 
 	// Return all of the messages for the rule.
-	var msgs []string
-	for _, j := range rules[r] {
-		msgs = append(msgs, msg[j])
+	msgs := make([]string, len(rules[r]))
+	for j := 0; j < len(rules[r]); j++ {
+		msgs[j] = msg[rules[r][j]]
 	}
 
 	return strings.Join(msgs, " ")

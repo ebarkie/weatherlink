@@ -43,7 +43,7 @@ Tunables.
 
 ```go
 var (
-	ErrCmdFailed = errors.New("Command failed")
+	ErrCmdFailed = errors.New("command failed")
 )
 ```
 Errors.

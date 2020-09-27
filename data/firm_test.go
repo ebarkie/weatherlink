@@ -29,5 +29,5 @@ func TestFirmVerUnmarshalText(t *testing.T) {
 	err := fv.UnmarshalText([]byte("1.73\n\r"))
 	a.Nil(err, "UnmarshalText FirmVer")
 
-	a.Equal("1.73", string(fv), "Firmware version")
+	a.Equal("1.73", string(fv), "Firmware version number")
 }

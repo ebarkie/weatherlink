@@ -117,7 +117,7 @@ func TestLoopUnmarshalBinaryLoop1Rain(t *testing.T) {
 
 	l := Loop{}
 	err := l.UnmarshalBinary(testLoopPackets["1Rain"])
-	a.Nil(err, "UnmarshalBinary loop1")
+	a.Nil(err, "UnmarshalBinary Loop(1)")
 
 	a.Equal(29.982, l.Bar.SeaLevel, "Barometer sea level")
 	a.Equal("Steady", l.Bar.Trend, "Barometer trend")
@@ -168,7 +168,7 @@ func TestLoopUnmarshalBinaryLoop2NoRain(t *testing.T) {
 
 	l := Loop{}
 	err := l.UnmarshalBinary(testLoopPackets["2NoRain"])
-	a.Nil(err, "UnmarshalBinary loop2")
+	a.Nil(err, "UnmarshalBinary Loop(2)")
 
 	a.Equal(30.034, l.Bar.Altimeter, "Barometer altimeter")
 	a.Equal(30.012, l.Bar.SeaLevel, "Barometer sea level")
@@ -204,7 +204,7 @@ func TestLoopUnmarshalBinaryLoop2NegTemp(t *testing.T) {
 
 	l := Loop{}
 	err := l.UnmarshalBinary(testLoopPackets["2NegDewPoint"])
-	a.Nil(err, "UnmarshalBinary loop2")
+	a.Nil(err, "UnmarshalBinary Loop(2)")
 
 	a.Equal(-1.0, l.DewPoint, "Dew point")
 }
@@ -237,7 +237,7 @@ func TestLoopMarshalBinary(t *testing.T) {
 	for t := 1; t < 3; t++ {
 		li.LoopType = t
 		p, err := li.MarshalBinary()
-		a.Nil(err, fmt.Sprintf("MarshalBinary loop%d", t))
+		a.Nil(err, fmt.Sprintf("MarshalBinary Loop(%d)", t))
 		lo.UnmarshalBinary(p)
 	}
 
@@ -270,11 +270,11 @@ func TestLoopMarshalBinaryLoop2NegTemp(t *testing.T) {
 		LoopType: 2,
 	}
 	p, err := li.MarshalBinary()
-	a.Nil(err, "MarshalBinary loop2")
+	a.Nil(err, "MarshalBinary Loop(2)")
 
 	lo := Loop{}
 	err = lo.UnmarshalBinary(p)
-	a.Nil(err, "UnmarshalBinary loop2")
+	a.Nil(err, "UnmarshalBinary Loop(2)")
 
 	a.Equal(-1.0, lo.DewPoint)
 }

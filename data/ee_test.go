@@ -541,7 +541,7 @@ func TestEEPROMUnmarshalBinary(t *testing.T) {
 
 	ee := EEPROM{}
 	err := ee.UnmarshalBinary(testEEPROMPackets["std"])
-	a.Nil(err, "UnmarshalBinary ee")
+	a.Nil(err, "UnmarshalBinary EEPROM")
 
 	a.Equal(5, ee.ArchivePeriod, "Archive period")
 

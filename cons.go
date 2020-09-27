@@ -11,20 +11,14 @@ import (
 )
 
 // GetConsTime gets the console time.
-func (c Conn) GetConsTime() (t time.Time, err error) {
+func (c Conn) GetConsTime() (ct data.ConsTime, err error) {
 	var p []byte
 	p, err = c.writeCmd([]byte("GETTIME\n"), []byte{ack}, 8)
 	if err != nil {
 		return
 	}
 
-	ct := data.ConsTime{}
 	err = ct.UnmarshalBinary(p)
-	if err != nil {
-		return
-	}
-	t = time.Time(ct)
-
 	return
 }
 
@@ -51,11 +45,13 @@ func (c Conn) setConsTime(t time.Time) (err error) {
 func (c Conn) SyncConsTime() (err error) {
 	const maxOffset = 10 * time.Second
 
-	var t time.Time
-	t, err = c.GetConsTime()
+	var ct data.ConsTime
+	ct, err = c.GetConsTime()
 	if err != nil {
 		return
 	}
+
+	t := time.Time(ct)
 	offset := time.Since(t)
 	if offset < 0 {
 		offset *= -1
@@ -69,6 +65,17 @@ func (c Conn) SyncConsTime() (err error) {
 			Error.Println(err.Error())
 		}
 	}
+
+	return
+}
+
+// SetLamps sets the console lamps state.
+func (c Conn) SetLamps(on bool) (err error) {
+	state := "0"
+	if on {
+		state = "1"
+	}
+	_, err = c.writeCmd([]byte("LAMPS "+state+"\n"), []byte{lf, cr, 'O', 'K', lf, cr}, 0)
 
 	return
 }

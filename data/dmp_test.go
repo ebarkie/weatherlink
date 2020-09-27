@@ -66,7 +66,7 @@ func TestDmpUnmarshalBinary(t *testing.T) {
 
 	d := Dmp{}
 	err := d.UnmarshalBinary(testDmpPackets["std"])
-	a.Nil(err, "UnmarshalBinary")
+	a.Nil(err, "UnmarshalBinary Dmp")
 
 	a.Equal(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Local),
 		d[0].Timestamp, "Timestamp")
@@ -81,7 +81,7 @@ func TestDmpMarshalBinary(t *testing.T) {
 
 	da := DmpAft(time.Date(2016, time.June, 20, 20, 0, 0, 0, time.Local))
 	p, err := da.MarshalBinary()
-	a.Nil(err, "MarshalBinary")
+	a.Nil(err, "MarshalBinary Dmp")
 
 	a.Equal([]byte{0xd4, 0x20, 0xd0, 0x07}, p[:len(p)-2], "Packet")
 }

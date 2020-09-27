@@ -6,7 +6,7 @@ package data
 
 // Packet coding logic for console GETTIME and SETTIME commands.
 //
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
 // Communication Reference Manual, section VIII. Command Summary,
 // subsection 7. Configuration Commands.
 

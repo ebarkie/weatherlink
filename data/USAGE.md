@@ -1,7 +1,7 @@
 # data
 
 ```go
-import "github.com/ebarkie/weatherlink/data"
+    import "github.com/ebarkie/weatherlink/data"
 ```
 
 Package data implements encoding and decoding of Davis Instruments binary data
@@ -11,13 +11,13 @@ types.
 
 ```go
 var (
-	ErrNotArcB     = errors.New("Not a revision B archive record")
+	ErrNotArcB     = errors.New("not a revision B archive record")
 	ErrBadCRC      = errors.New("CRC check failed")
-	ErrBadLocation = errors.New("Location is inconsistent")
-	ErrNotDmp      = errors.New("Not a download memory page")
-	ErrNotDmpMeta  = errors.New("Not a download memory page metadata packet")
-	ErrNotLoop     = errors.New("Not a loop packet")
-	ErrUnknownLoop = errors.New("Unknown loop packet type")
+	ErrBadLocation = errors.New("location is inconsistent")
+	ErrNotDmp      = errors.New("not a download memory page")
+	ErrNotDmpMeta  = errors.New("not a download memory page metadata packet")
+	ErrNotLoop     = errors.New("not a loop packet")
+	ErrUnknownLoop = errors.New("unknown loop packet type")
 )
 ```
 Errors.
@@ -161,6 +161,38 @@ EEPROM represents the configuration settings.
 func (ee *EEPROM) UnmarshalBinary(p []byte) error
 ```
 UnmarshalBinary decodes a 4096-byte EEPROM packet into the EEPROM struct.
+
+#### type FirmTime
+
+```go
+type FirmTime time.Time
+```
+
+FirmTime is the firmware build time.
+
+#### func (*FirmTime) UnmarshalText
+
+```go
+func (ft *FirmTime) UnmarshalText(p []byte) error
+```
+UnmarshalText decodes a 13-byte firmware build time response packet into the
+FirmTime struct.
+
+#### type FirmVer
+
+```go
+type FirmVer string
+```
+
+FirmVer is the firmware version number.
+
+#### func (*FirmVer) UnmarshalText
+
+```go
+func (fv *FirmVer) UnmarshalText(p []byte) error
+```
+UnmarshalText decodes a 6-byte firmware version response packet into the FirmVer
+struct.
 
 #### type HiHeatIndex
 

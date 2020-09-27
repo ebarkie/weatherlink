@@ -6,7 +6,7 @@ package data
 
 // Packet coding logic for HILOWS packets.
 //
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
 // Communication Reference Manual, section X. Data Formats,
 // subsection 3. HILOW data format.
 

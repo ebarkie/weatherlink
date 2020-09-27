@@ -6,7 +6,7 @@ package packet
 
 // Common binary packet decoding logic for packets.
 //
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
 // Communication Reference Manual, section X. Data Formats.
 
 import (

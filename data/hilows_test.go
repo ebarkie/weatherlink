@@ -84,7 +84,7 @@ func TestHiLowsUnmarshalBinary(t *testing.T) {
 
 	hl := HiLows{}
 	err := hl.UnmarshalBinary(testHiLowsPackets["std"])
-	a.Nil(err, "UnmarshalBinary hilows")
+	a.Nil(err, "UnmarshalBinary HiLows")
 
 	// Barometer
 	a.Equal(30.056, hl.Bar.Day.Low, "Barometer day low")

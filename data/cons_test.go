@@ -29,7 +29,7 @@ func TestConsTimeUnmarshalBinary(t *testing.T) {
 
 	ct := ConsTime{}
 	err := ct.UnmarshalBinary(testConsTimePackets["std"])
-	a.Nil(err, "UnmarshalBinary constime")
+	a.Nil(err, "UnmarshalBinary ConsTime")
 
 	a.Equal(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local),
 		time.Time(ct), "Console time")
@@ -40,7 +40,7 @@ func TestConsTimeMarshalBinary(t *testing.T) {
 
 	ct := ConsTime(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local))
 	p, err := ct.MarshalBinary()
-	a.Nil(err, "MarshalBinary constime")
+	a.Nil(err, "MarshalBinary ConsTime")
 
 	a.Equal(testConsTimePackets["std"], p, "Console time")
 }

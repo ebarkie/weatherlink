@@ -9,7 +9,7 @@ package data
 // from revision A to B in April 2002.  Since it is 2016 when
 // implementing this it made no sense to support revision A.
 //
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
 // Communication Reference Manual, section X. Data Formats,
 // subsection 4. DMP and DMPAFT data format.
 
@@ -143,7 +143,7 @@ func (d *Dmp) UnmarshalBinary(p []byte) error {
 	return nil
 }
 
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
 // Communication Reference Manual, section XI. Download Protocol.
 
 // DmpAft is a timestamp appropriate for the "DMP after" command.

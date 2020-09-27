@@ -1,7 +1,7 @@
 # weatherlink
 
 ```go
-import "github.com/ebarkie/weatherlink"
+    import "github.com/ebarkie/weatherlink"
 ```
 
 Package weatherlink implements the Davis Instruments serial, USB, and TCP/IP
@@ -94,7 +94,7 @@ Close closes the weatherlink connection.
 #### func (Conn) GetConsTime
 
 ```go
-func (c Conn) GetConsTime() (t time.Time, err error)
+func (c Conn) GetConsTime() (ct data.ConsTime, err error)
 ```
 GetConsTime gets the console time.
 
@@ -116,6 +116,20 @@ left uninitialized) then all records in memory are returned.
 func (c Conn) GetEEPROM(ec chan<- interface{}) error
 ```
 GetEEPROM retrieves the entire EEPROM configuration.
+
+#### func (Conn) GetFirmTime
+
+```go
+func (c Conn) GetFirmTime() (ft data.FirmTime, err error)
+```
+GetFirmTime gets the firmware build time.
+
+#### func (Conn) GetFirmVer
+
+```go
+func (c Conn) GetFirmVer() (fv data.FirmVer, err error)
+```
+GetFirmVer gets the firmware version number.
 
 #### func (Conn) GetHiLows
 

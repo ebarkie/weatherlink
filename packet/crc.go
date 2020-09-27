@@ -10,7 +10,7 @@ package packet
 // accumulated there will be a two byte CRC checksum that will get
 // processed in the same manner as the data bytes.
 //
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM Serial
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
 // Communication Reference Manual, section XII. CRC calculation.
 
 var crcTable = []uint16{

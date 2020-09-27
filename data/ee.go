@@ -6,8 +6,8 @@ package data
 
 // Packet coding logic for EEPROM packets.
 //
-// Refer to Vantage ProTM, Vantage Pro2TM and Vantage VueTM
-// Serial Communication Reference Manual, section XIII. EEPROM
+// Refer to Vantage Pro™, Vantage Pro2™ and Vantage Vue™ Serial
+// Communication Reference Manual, section XIII. EEPROM
 // configuration settings.
 
 import (

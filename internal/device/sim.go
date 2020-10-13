@@ -16,14 +16,16 @@ import (
 	"github.com/ebarkie/weatherlink/data"
 )
 
-const (
-	ack = 0x06 // Acknowledge
-)
-
 // Sim represents a simulted Weatherlink device.
 type Sim struct {
 	l            data.Loop // Current loop packet state
 	nextLoopType int       // Loop type to send next (so they are interleaved)
+
+	// lastWrite and readsSinceWrite are used within ReadFull() to
+	// determine what's trying to be read.  This is simple and avoids
+	// implementing a state machine.
+	lastWrite       []byte
+	readsSinceWrite int
 }
 
 // Dial initializes the state of a simulated Weatherlink device.
@@ -54,27 +56,33 @@ func (Sim) Flush() error {
 
 // Read reads up to the size of the provided byte buffer from the
 // simulated Weatherlink device.
-func (Sim) Read(_ []byte) (int, error) {
+func (Sim) Read([]byte) (int, error) {
 	return 0, io.ErrUnexpectedEOF
 }
 
 // ReadFull reads the full size of the provided byte buffer from the
 // simulted Weatherlink device.
 func (s *Sim) ReadFull(b []byte) (n int, err error) {
-	switch len(b) {
-	case 1:
-		// Command ack
-		b[0] = ack
-		return 1, nil
-	case 8:
-		// GETTIME
-		ct := data.ConsTime(time.Now())
-		var p []byte
-		p, err = ct.MarshalBinary()
-		n = copy(b, p)
-	case 99:
-		// LPS 3 x
+	s.readsSinceWrite++
 
+	var p []byte
+	switch {
+	case len(b) == 1: // Command ack
+		p = []byte{0x06}
+	case len(b) == 6 && s.readsSinceWrite < 2: // Command OK
+		p = []byte("\n\rOK\n\r")
+	case string(s.lastWrite) == "GETTIME\n":
+		ct := data.ConsTime(time.Now())
+		p, err = ct.MarshalBinary()
+	case string(s.lastWrite) == "NVER\n":
+		fv := data.FirmVer("1.73")
+		p, err = fv.MarshalText()
+	case string(s.lastWrite) == "TEST\n":
+		p = []byte("\n\rTEST\n\r")
+	case string(s.lastWrite) == "VER\n":
+		ft := data.FirmTime(time.Date(2002, time.April, 24, 0, 0, 0, 0, time.UTC))
+		p, err = ft.MarshalText()
+	case len(b) == 99: // LPS 3 x
 		// Interleave loop types.
 		s.l.LoopType = s.nextLoopType + 1
 		s.nextLoopType = (s.nextLoopType + 1) % 2
@@ -91,21 +99,23 @@ func (s *Sim) ReadFull(b []byte) (n int, err error) {
 		s.l.LoopType = s.nextLoopType + 1
 		s.nextLoopType = (s.nextLoopType + 1) % 2
 
+		p, err = s.l.MarshalBinary()
+
 		// Create 2s delay between packets.
 		time.Sleep(2 * time.Second)
-		var p []byte
-		p, err = s.l.MarshalBinary()
-		n = copy(b, p)
 	default:
-		err = io.ErrUnexpectedEOF
-		return
+		return 0, io.ErrUnexpectedEOF
 	}
 
+	n = copy(b, p)
 	return
 }
 
 // Write simulates a write of the byte buffer.
-func (Sim) Write(b []byte) (int, error) {
+func (s *Sim) Write(b []byte) (int, error) {
+	s.lastWrite = b
+	s.readsSinceWrite = 0
+
 	return len(b), nil
 }
 

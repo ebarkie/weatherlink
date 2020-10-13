@@ -12,6 +12,7 @@ import "errors"
 var (
 	ErrNotArcB     = errors.New("not a revision B archive record")
 	ErrBadCRC      = errors.New("CRC check failed")
+	ErrBadFirmVer  = errors.New("firmware version is not valid")
 	ErrBadLocation = errors.New("location is inconsistent")
 	ErrNotDmp      = errors.New("not a download memory page")
 	ErrNotDmpMeta  = errors.New("not a download memory page metadata packet")

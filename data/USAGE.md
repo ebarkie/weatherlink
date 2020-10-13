@@ -1,5 +1,4 @@
 # data
-
 ```go
     import "github.com/ebarkie/weatherlink/data"
 ```
@@ -13,6 +12,7 @@ types.
 var (
 	ErrNotArcB     = errors.New("not a revision B archive record")
 	ErrBadCRC      = errors.New("CRC check failed")
+	ErrBadFirmVer  = errors.New("firmware version is not valid")
 	ErrBadLocation = errors.New("location is inconsistent")
 	ErrNotDmp      = errors.New("not a download memory page")
 	ErrNotDmpMeta  = errors.New("not a download memory page metadata packet")
@@ -78,8 +78,8 @@ ConsTime is the console current time.
 ```go
 func (ct ConsTime) MarshalBinary() (p []byte, err error)
 ```
-MarshalBinary encodes the console timestamp into an 8-byte packet suitable for
-the SETTIME command.
+MarshalBinary encodes the console time into an 8-byte packet suitable for the
+SETTIME command.
 
 #### func (*ConsTime) UnmarshalBinary
 
@@ -170,6 +170,14 @@ type FirmTime time.Time
 
 FirmTime is the firmware build time.
 
+#### func (FirmTime) MarshalText
+
+```go
+func (ft FirmTime) MarshalText() ([]byte, error)
+```
+MarshalText encodes the firmware build time into a 13-byte packet suitable for
+the VER command.
+
 #### func (*FirmTime) UnmarshalText
 
 ```go
@@ -185,6 +193,14 @@ type FirmVer string
 ```
 
 FirmVer is the firmware version number.
+
+#### func (FirmVer) MarshalText
+
+```go
+func (fv FirmVer) MarshalText() ([]byte, error)
+```
+MarshalText encodes the firmware version into a 6-byte packet suitable for the
+NVER command.
 
 #### func (*FirmVer) UnmarshalText
 

@@ -75,7 +75,7 @@ func (c Conn) SetLamps(on bool) (err error) {
 	if on {
 		state = "1"
 	}
-	_, err = c.writeCmd([]byte("LAMPS "+state+"\n"), []byte{lf, cr, 'O', 'K', lf, cr}, 0)
+	_, err = c.writeCmd([]byte("LAMPS "+state+"\n"), []byte("\n\rOK\n\r"), 0)
 
 	return
 }

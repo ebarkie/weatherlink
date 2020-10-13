@@ -118,7 +118,7 @@ func (c Conn) softReset() {
 
 // test sends a test command.
 func (c Conn) test() (err error) {
-	_, err = c.writeCmd([]byte("TEST\n"), []byte{lf, cr, 'T', 'E', 'S', 'T', lf, cr}, 0)
+	_, err = c.writeCmd([]byte("TEST\n"), []byte("\n\rTEST\n\r"), 0)
 
 	return
 }

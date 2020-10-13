@@ -17,6 +17,16 @@ var testConsTimePackets = map[string][]byte{
 	},
 }
 
+func TestConsTimeMarshalBinary(t *testing.T) {
+	a := assert.New(t)
+
+	ct := ConsTime(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local))
+	p, err := ct.MarshalBinary()
+	a.Nil(err, "MarshalBinary ConsTime")
+
+	a.Equal(testConsTimePackets["std"], p, "Console time")
+}
+
 func BenchmarkConsTimeUnmarshalBinary(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		ct := ConsTime{}
@@ -33,14 +43,4 @@ func TestConsTimeUnmarshalBinary(t *testing.T) {
 
 	a.Equal(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local),
 		time.Time(ct), "Console time")
-}
-
-func TestConsTimeMarshalBinary(t *testing.T) {
-	a := assert.New(t)
-
-	ct := ConsTime(time.Date(2016, time.June, 30, 15, 44, 2, 0, time.Local))
-	p, err := ct.MarshalBinary()
-	a.Nil(err, "MarshalBinary ConsTime")
-
-	a.Equal(testConsTimePackets["std"], p, "Console time")
 }

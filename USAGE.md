@@ -1,5 +1,4 @@
 # weatherlink
-
 ```go
     import "github.com/ebarkie/weatherlink"
 ```

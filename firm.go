@@ -17,6 +17,7 @@ func (c Conn) GetFirmTime() (ft data.FirmTime, err error) {
 	}
 
 	err = ft.UnmarshalText(p)
+
 	return
 }
 
@@ -29,5 +30,6 @@ func (c Conn) GetFirmVer() (fv data.FirmVer, err error) {
 	}
 
 	err = fv.UnmarshalText(p)
+
 	return
 }

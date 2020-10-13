@@ -22,7 +22,7 @@ type Sim struct {
 	nextLoopType int       // Loop type to send next (so they are interleaved)
 
 	// lastWrite and readsSinceWrite are used by ReadFull() to determine
-	// what's trying to be read.  This is simple and avoids implementing
+	// what's expected to be read.  This is simple and avoids implementing
 	// a state machine.
 	lastWrite       []byte
 	readsSinceWrite int

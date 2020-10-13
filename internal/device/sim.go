@@ -21,9 +21,9 @@ type Sim struct {
 	l            data.Loop // Current loop packet state
 	nextLoopType int       // Loop type to send next (so they are interleaved)
 
-	// lastWrite and readsSinceWrite are used within ReadFull() to
-	// determine what's trying to be read.  This is simple and avoids
-	// implementing a state machine.
+	// lastWrite and readsSinceWrite are used by ReadFull() to determine
+	// what's trying to be read.  This is simple and avoids implementing
+	// a state machine.
 	lastWrite       []byte
 	readsSinceWrite int
 }

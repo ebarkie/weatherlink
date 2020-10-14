@@ -5,31 +5,31 @@
 package weatherlink
 
 import (
+	"time"
+
 	"github.com/ebarkie/weatherlink/data"
 )
 
-// GetFirmTime gets the firmware build time.
-func (c Conn) GetFirmTime() (ft data.FirmTime, err error) {
-	var p []byte
-	p, err = c.writeCmd([]byte("VER\n"), []byte("\n\rOK\n\r"), 13)
+// GetFirmBuildTime gets the firmware build time.
+func (c Conn) GetFirmBuildTime() (time.Time, error) {
+	p, err := c.writeCmd([]byte("VER\n"), []byte("\n\rOK\n\r"), 13)
 	if err != nil {
-		return
+		return time.Time{}, err
 	}
 
+	var ft data.FirmTime
 	err = ft.UnmarshalText(p)
-
-	return
+	return time.Time(ft), err
 }
 
 // GetFirmVer gets the firmware version number.
-func (c Conn) GetFirmVer() (fv data.FirmVer, err error) {
-	var p []byte
-	p, err = c.writeCmd([]byte("NVER\n"), []byte("\n\rOK\n\r"), 6)
+func (c Conn) GetFirmVer() (string, error) {
+	p, err := c.writeCmd([]byte("NVER\n"), []byte("\n\rOK\n\r"), 6)
 	if err != nil {
-		return
+		return "", err
 	}
 
+	var fv data.FirmVer
 	err = fv.UnmarshalText(p)
-
-	return
+	return string(fv), err
 }

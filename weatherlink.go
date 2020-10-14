@@ -18,11 +18,11 @@ import (
 )
 
 const (
-	cr  = 0x0d // Carriage return
-	lf  = 0x0a // Line Feed
 	ack = 0x06 // Acknowledge
-	nak = 0x21 // Not acknowledge
+	lf  = 0x0a // Line Feed
+	cr  = 0x0d // Carriage return
 	esc = 0x18 // Escape
+	nak = 0x21 // Not acknowledge
 )
 
 type cmd uint8

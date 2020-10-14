@@ -11,15 +11,15 @@ import (
 )
 
 // GetConsTime gets the console time.
-func (c Conn) GetConsTime() (ct data.ConsTime, err error) {
-	var p []byte
-	p, err = c.writeCmd([]byte("GETTIME\n"), []byte{ack}, 8)
+func (c Conn) GetConsTime() (time.Time, error) {
+	p, err := c.writeCmd([]byte("GETTIME\n"), []byte{ack}, 8)
 	if err != nil {
-		return
+		return time.Time{}, err
 	}
 
+	var ct data.ConsTime
 	err = ct.UnmarshalBinary(p)
-	return
+	return time.Time(ct), err
 }
 
 // setConsTime sets the console time.
@@ -42,16 +42,14 @@ func (c Conn) setConsTime(t time.Time) (err error) {
 
 // SyncConsTime synchronizes the console time with the local
 // system time if the offset exceeds 10 seconds.
-func (c Conn) SyncConsTime() (err error) {
+func (c Conn) SyncConsTime() error {
 	const maxOffset = 10 * time.Second
 
-	var ct data.ConsTime
-	ct, err = c.GetConsTime()
+	t, err := c.GetConsTime()
 	if err != nil {
-		return
+		return err
 	}
 
-	t := time.Time(ct)
 	offset := time.Since(t)
 	if offset < 0 {
 		offset *= -1
@@ -66,7 +64,7 @@ func (c Conn) SyncConsTime() (err error) {
 		}
 	}
 
-	return
+	return err
 }
 
 // SetLamps sets the console lamps state.

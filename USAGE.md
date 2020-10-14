@@ -93,7 +93,7 @@ Close closes the weatherlink connection.
 #### func (Conn) GetConsTime
 
 ```go
-func (c Conn) GetConsTime() (ct data.ConsTime, err error)
+func (c Conn) GetConsTime() (time.Time, error)
 ```
 GetConsTime gets the console time.
 
@@ -116,17 +116,17 @@ func (c Conn) GetEEPROM(ec chan<- interface{}) error
 ```
 GetEEPROM retrieves the entire EEPROM configuration.
 
-#### func (Conn) GetFirmTime
+#### func (Conn) GetFirmBuildTime
 
 ```go
-func (c Conn) GetFirmTime() (ft data.FirmTime, err error)
+func (c Conn) GetFirmBuildTime() (time.Time, error)
 ```
-GetFirmTime gets the firmware build time.
+GetFirmBuildTime gets the firmware build time.
 
 #### func (Conn) GetFirmVer
 
 ```go
-func (c Conn) GetFirmVer() (fv data.FirmVer, err error)
+func (c Conn) GetFirmVer() (string, error)
 ```
 GetFirmVer gets the firmware version number.
 
@@ -170,7 +170,7 @@ Stop stops the command broker.
 #### func (Conn) SyncConsTime
 
 ```go
-func (c Conn) SyncConsTime() (err error)
+func (c Conn) SyncConsTime() error
 ```
 SyncConsTime synchronizes the console time with the local system time if the
 offset exceeds 10 seconds.

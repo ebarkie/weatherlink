@@ -63,12 +63,14 @@ func (Sim) Read([]byte) (int, error) {
 // ReadFull reads the full size of the provided byte buffer from the
 // simulted Weatherlink device.
 func (s *Sim) ReadFull(b []byte) (n int, err error) {
+	const ack = 0x06 // Acknowledge
+
 	s.readsSinceWrite++
 
 	var p []byte
 	switch {
 	case len(b) == 1: // Command ack
-		p = []byte{0x06}
+		p = []byte{ack}
 	case len(b) == 6 && s.readsSinceWrite < 2: // Command OK
 		p = []byte("\n\rOK\n\r")
 	case string(s.lastWrite) == "GETTIME\n":

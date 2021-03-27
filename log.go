@@ -6,7 +6,7 @@ package weatherlink
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"strings"
 )
@@ -14,9 +14,9 @@ import (
 // Setup loggers that can be overridden by the user.
 //
 // When using the standard logger it would be useful to use SetOutput
-// to toggle between os.Std* and ioutil.Discard, For example:
+// to toggle between os.Std* and io.Discard, For example:
 //
-// Info.SetOutput(ioutil.Discard)
+// Info.SetOutput(io.Discard)
 //
 // When using other loggers like Logrus SetOutput can be used to set
 // the output to its io.Writer interface and SetFlags can be used to
@@ -27,11 +27,11 @@ import (
 
 // Loggers.
 var (
-	Trace = log.New(ioutil.Discard, "[TRCE]", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
-	Debug = log.New(ioutil.Discard, "[DBUG]", log.LstdFlags|log.Lshortfile)
-	Info  = log.New(ioutil.Discard, "[INFO]", log.LstdFlags)
-	Warn  = log.New(ioutil.Discard, "[WARN]", log.LstdFlags|log.Lshortfile)
-	Error = log.New(ioutil.Discard, "[ERRO]", log.LstdFlags|log.Lshortfile)
+	Trace = log.New(io.Discard, "[TRCE]", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+	Debug = log.New(io.Discard, "[DBUG]", log.LstdFlags|log.Lshortfile)
+	Info  = log.New(io.Discard, "[INFO]", log.LstdFlags)
+	Warn  = log.New(io.Discard, "[WARN]", log.LstdFlags|log.Lshortfile)
+	Error = log.New(io.Discard, "[ERRO]", log.LstdFlags|log.Lshortfile)
 )
 
 // Sdump returns a variable as a string.  It includes field names and pointers,
